@@ -12,7 +12,7 @@ namespace hello {
   size_t length(const world& x) { return strlen(x.get()); }
 }
 
-#include <py_cpp/class_wrapper.h>
+#include <boost/python/class_builder.hpp>
 
 // Python requires an exported function called init<module-name> in every
 // extension module. This is where we build the module contents.
@@ -25,13 +25,13 @@ void inithello()
     try
     {
        // create an object representing this extension module
-       py::Module hello("hello");
+       boost::python::module_builder hello("hello");
 
        // Create the Python type object for our extension class
-       py::ClassWrapper<hello::world> world_class(hello, "world");
+       boost::python::class_builder<hello::world> world_class(hello, "world");
 
        // Add the __init__ function
-       world_class.def(py::Constructor<int>());
+       world_class.def(boost::python::constructor<int>());
        // Add a regular member function
        world_class.def(&hello::world::get, "get");
 
@@ -40,7 +40,7 @@ void inithello()
     }
     catch(...)
     {
-       py::handle_exception();    // Deal with the exception for Python
+       boost::python::handle_exception();    // Deal with the exception for Python
     }
 }
 
