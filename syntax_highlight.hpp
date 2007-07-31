@@ -1,5 +1,5 @@
 /*=============================================================================
-    Copyright (c) 2002 2004 Joel de Guzman
+    Copyright (c) 2002 2004 2006 Joel de Guzman
     Copyright (c) 2004 Eric Niebler
     http://spirit.sourceforge.net/
 
@@ -48,7 +48,7 @@ namespace quickbook
                 program
                     =
                     *(  (+space_p)      [Space(self.out)]
-                    |   self.macro      [self.do_macro]
+                    |   macro
                     |   escape
                     |   preprocessor    [Process("preprocessor", self.out)]
                     |   comment         [Process("comment", self.out)]
@@ -62,20 +62,29 @@ namespace quickbook
                     )
                     ;
 
+                macro = 
+                    eps_p(self.macro                    // must not be followed by
+                        >> (eps_p - (alpha_p | '_')))   // alpha or underscore
+                    >> self.macro                       [self.do_macro]
+                    ;
+
                 qbk_phrase =
                    *(   common
-                    |   (anychar_p - ']')   [self.escape_actions.plain_char]
+                    |   (anychar_p - str_p("``"))   [self.escape_actions.plain_char]
                     )
                     ;
 
                 escape
-                    = str_p("[[")           [PreEscape(self.escape_actions, save)]
-                    >> qbk_phrase
-                    >> str_p("]]")          [PostEscape(self.out, self.escape_actions, save)]
+                    = str_p("``")           [PreEscape(self.escape_actions, save)]
+                    >>  (
+                            (+(anychar_p - "``") >> eps_p("``"))
+                            & qbk_phrase
+                        )
+                    >> str_p("``")          [PostEscape(self.out, self.escape_actions, save)]
                     ;
 
                 preprocessor
-                    =   '#' >> ((alpha_p | '_') >> *(alnum_p | '_'))
+                    =   '#' >> *space_p >> ((alpha_p | '_') >> *(alnum_p | '_'))
                     ;
 
                 comment
@@ -176,7 +185,7 @@ namespace quickbook
                 program
                     =
                     *(  (+space_p)      [Space(self.out)]
-                    |   self.macro      [self.do_macro]
+                    |   macro
                     |   escape          
                     |   comment         [Process("comment", self.out)]
                     |   keyword         [Process("keyword", self.out)]
@@ -188,16 +197,25 @@ namespace quickbook
                     )
                     ;
 
+                macro = 
+                    eps_p(self.macro                    // must not be followed by
+                        >> (eps_p - (alpha_p | '_')))   // alpha or underscore
+                    >> self.macro                       [self.do_macro]
+                    ;
+
                 qbk_phrase =
                    *(   common
-                    |   (anychar_p - ']')   [self.escape_actions.plain_char]
+                    |   (anychar_p - str_p("``"))   [self.escape_actions.plain_char]
                     )
                     ;
 
                 escape
-                    = str_p("[[")           [PreEscape(self.escape_actions, save)]
-                    >> qbk_phrase
-                    >> str_p("]]")          [PostEscape(self.out, self.escape_actions, save)]
+                    = str_p("``")           [PreEscape(self.escape_actions, save)]
+                    >>  (
+                            (+(anychar_p - "``") >> eps_p("``"))
+                            & qbk_phrase
+                        )
+                    >> str_p("``")          [PostEscape(self.out, self.escape_actions, save)]
                     ;
 
                 comment

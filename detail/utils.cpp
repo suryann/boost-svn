@@ -1,5 +1,5 @@
 /*=============================================================================
-    Copyright (c) 2002 2004 Joel de Guzman
+    Copyright (c) 2002 2004 2006 Joel de Guzman
     Copyright (c) 2004 Eric Niebler
     http://spirit.sourceforge.net/
 
@@ -8,11 +8,21 @@
     http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
 #include "./utils.hpp"
+#include <boost/spirit/core.hpp>
+
+#include <cctype>
+#include <stdexcept>
+#include <fstream>
+#include <iostream>
+#include <map>
+
+namespace quickbook {
+    extern bool ms_errors;
+}
 
 namespace quickbook { namespace detail
 {
-    void
-    print_char(char ch, std::ostream& out)
+    void print_char(char ch, std::ostream& out)
     {
         switch (ch)
         {
@@ -21,13 +31,12 @@ namespace quickbook { namespace detail
             case '&': out << "&amp;";   break;
             case '"': out << "&quot;";  break;
             default:  out << ch;        break;
-            // note &apos; is not included. see the curse of apos: 
+            // note &apos; is not included. see the curse of apos:
             // http://fishbowl.pastiche.org/2003/07/01/the_curse_of_apos
         }
     }
 
-    void
-    print_string(std::basic_string<char> const& str, std::ostream& out)
+    void print_string(std::basic_string<char> const& str, std::ostream& out)
     {
         for (std::string::const_iterator cur = str.begin();
             cur != str.end(); ++cur)
@@ -36,22 +45,12 @@ namespace quickbook { namespace detail
         }
     }
 
-    void
-    print_space(char ch, std::ostream& out)
+    void print_space(char ch, std::ostream& out)
     {
         out << ch;
     }
 
-    void
-    convert_nbsp(std::basic_string<char>& str)
-    {
-        std::string::size_type pos;
-        while (std::string::npos != (pos = str.find("> <")))
-            str.replace(pos, 3, ">&nbsp;<");
-    }
-
-    char
-    filter_identifier_char(char ch)
+    char filter_identifier_char(char ch)
     {
         if (!std::isalnum(static_cast<unsigned char>(ch)))
             ch = '_';
@@ -61,14 +60,35 @@ namespace quickbook { namespace detail
     // un-indent a code segment
     void unindent(std::string& program)
     {
+        // Erase leading newlines
         std::string::size_type const start = program.find_first_not_of("\r\n");
-        program.erase(0, start); // erase leading newlines
+        program.erase(0, start);
 
-        std::string::size_type const n = program.find_first_not_of(" \t");
-        BOOST_ASSERT(std::string::npos != n);
-        program.erase(0, n);
-
+        // Get the first line indent
+        std::string::size_type indent = program.find_first_not_of(" \t");
         std::string::size_type pos = 0;
+        BOOST_ASSERT(std::string::npos != indent);
+
+        // Calculate the minimum indent from the rest of the lines
+        do
+        {
+            pos = program.find_first_not_of("\r\n", pos);
+            if (std::string::npos == pos)
+                break;
+
+            std::string::size_type n = program.find_first_not_of(" \t", pos);
+            if (n != std::string::npos)
+            {
+                char ch = program[n];
+                if (ch != '\r' && ch != '\n') // ignore empty lines
+                    indent = (std::min)(indent, n-pos);
+            }
+        }
+        while (std::string::npos != (pos = program.find_first_of("\r\n", pos)));
+
+        // Trim white spaces from column 0..indent
+        pos = 0;
+        program.erase(0, indent);
         while (std::string::npos != (pos = program.find_first_of("\r\n", pos)))
         {
             if (std::string::npos == (pos = program.find_first_not_of("\r\n", pos)))
@@ -76,7 +96,8 @@ namespace quickbook { namespace detail
                 break;
             }
 
-            program.erase(pos, n);
+            std::string::size_type next = program.find_first_of("\r\n", pos);
+            program.erase(pos, (std::min)(indent, next-pos));
         }
     }
 
@@ -112,6 +133,86 @@ namespace quickbook { namespace detail
         }
         return uri;
     }
+
+    std::ostream& outerr(std::string const& file, int line)
+    {
+        if (line >= 0)
+        {
+            if (ms_errors)
+                return std::clog << file << "(" << line << "): error: ";
+            else
+                return std::clog << file << ":" << line << ": error: ";
+        }
+        else
+        {
+            return std::clog << file << ": error: ";
+        }
+    }
+
+    std::ostream& outwarn(std::string const& file, int line)
+    {
+        if (line >= 0)
+        {
+            if (ms_errors)
+                return std::clog << file << "(" << line << "): warning: ";
+            else
+                return std::clog << file << ":" << line << ": warning: ";
+        }
+        else
+        {
+            return std::clog << file << ": warning: ";
+        }
+    }
+
+    int load(std::string const& filename, std::string& storage)
+    {
+        using std::cerr;
+        using std::endl;
+        using std::ios;
+        using std::ifstream;
+        using std::istream_iterator;
+
+        ifstream in(filename.c_str(), std::ios_base::in);
+
+        if (!in)
+        {
+            outerr(filename,-1) << "Could not open input file." << endl;
+            return 1;
+        }
+
+        // Turn off white space skipping on the stream
+        in.unsetf(ios::skipws);
+
+        std::copy(
+            istream_iterator<char>(in),
+            istream_iterator<char>(),
+            std::back_inserter(storage));
+
+        //  ensure that we have enough trailing newlines to eliminate
+        //  the need to check for end of file in the grammar.
+        storage.push_back('\n');
+        storage.push_back('\n');
+        return 0;
+    }
+
+    file_type get_file_type(std::string const& extension)
+    {
+        static std::map<std::string, file_type> ftypes;
+        if (ftypes.empty())
+        {
+            // init the map of types
+            ftypes["cpp"] = cpp_file;
+            ftypes["hpp"] = cpp_file;
+            ftypes["h"] = cpp_file;
+            ftypes["c"] = cpp_file;
+            ftypes["cxx"] = cpp_file;
+            ftypes["hxx"] = cpp_file;
+            ftypes["ipp"] = cpp_file;
+            ftypes["py"] = python_file;
+        }
+        return ftypes[extension];
+    }
+
 }}
 
 

@@ -1,5 +1,5 @@
 /*=============================================================================
-    Copyright (c) 2002 2004 Joel de Guzman
+    Copyright (c) 2002 2004 2006 Joel de Guzman
     Copyright (c) 2004 Eric Niebler
     http://spirit.sourceforge.net/
 
@@ -7,11 +7,11 @@
     License, Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
     http://www.boost.org/LICENSE_1_0.txt)
 =============================================================================*/
+#include "./actions_class.hpp"
 #include "../block.hpp"
 #include "../doc_info.hpp"
 #include "./post_process.hpp"
-#include "utils.hpp"
-#include "actions.hpp"
+#include "./utils.hpp"
 #include <boost/spirit/iterator/position_iterator.hpp>
 #include <boost/program_options.hpp>
 #include <boost/filesystem/path.hpp>
@@ -21,13 +21,12 @@
 #include <stdexcept>
 #include <fstream>
 #include <iostream>
-#include <sstream>
 
 #if (defined(BOOST_MSVC) && (BOOST_MSVC <= 1310))
 #pragma warning(disable:4355)
 #endif
 
-#define QUICKBOOK_VERSION "Quickbook Version 1.3"
+#define QUICKBOOK_VERSION "Quickbook Version 1.4"
 
 namespace quickbook
 {
@@ -39,43 +38,7 @@ namespace quickbook
     unsigned qbk_major_version = 0;
     unsigned qbk_minor_version = 0;
     unsigned qbk_version_n = 0; // qbk_major_version * 100 + qbk_minor_version
-
-    ///////////////////////////////////////////////////////////////////////////
-    //
-    //  Load a file
-    //
-    ///////////////////////////////////////////////////////////////////////////
-    static int
-    load(char const* filename, file_storage& storage)
-    {
-        using std::cerr;
-        using std::endl;
-        using std::ios;
-        using std::ifstream;
-        using std::istream_iterator;
-
-        ifstream in(filename, std::ios_base::in);
-
-        if (!in)
-        {
-            cerr << "Could not open input file: " << filename << endl;
-            return 1;
-        }
-
-        // Turn off white space skipping on the stream
-        in.unsetf(ios::skipws);
-
-        std::copy(
-            istream_iterator<char>(in),
-            istream_iterator<char>(),
-            std::back_inserter(storage));
-
-        //  ensure that we have enough trailing newlines to eliminate
-        //  the need to check for end of file in the grammar.
-        storage.push_back('\n');
-        storage.push_back('\n');
-        return 0;
-    }
+    bool ms_errors = false; // output errors/warnings as if for VS
 
     ///////////////////////////////////////////////////////////////////////////
     //
@@ -89,12 +52,12 @@ namespace quickbook
         using std::vector;
         using std::string;
 
-        file_storage storage;
-        int err = quickbook::load(filein_, storage);
+        std::string storage;
+        int err = detail::load(filein_, storage);
         if (err != 0)
             return err;
 
-        typedef position_iterator<file_storage::const_iterator> iterator_type;
+        typedef position_iterator<std::string::const_iterator> iterator_type;
         iterator_type first(storage.begin(), storage.end(), filein_);
         iterator_type last(storage.end(), storage.end());
 
@@ -116,10 +79,8 @@ namespace quickbook
         if (!info.full)
         {
             file_position const pos = info.stop.get_position();
-            cerr
-                << "Syntax error at \"" << pos.file
-                << "\" line " << pos.line
-                << ", column " << pos.column << ".\n";
+            detail::outerr(pos.file,pos.line)
+                << "Syntax Error near column " << pos.column << ".\n";
             return 1;
         }
 
@@ -127,10 +88,15 @@ namespace quickbook
     }
 
     static int
-        parse(char const* filein_, fs::path const& outdir, std::ostream& out, bool ignore_docinfo = false)
+    parse(char const* filein_, fs::path const& outdir, string_stream& out, bool ignore_docinfo = false)
     {
         actions actor(filein_, outdir, out);
-        return parse(filein_, actor);
+        bool r = parse(filein_, actor);
+        if (actor.section_level != 0)
+            detail::outwarn(filein_,1)
+                << "Warning missing [endsect] detected at end of file."
+                << std::endl;
+        return r;
     }
 
     static int
@@ -138,17 +104,28 @@ namespace quickbook
         char const* filein_
       , char const* fileout_
       , int indent
-      , int linewidth)
+      , int linewidth
+      , bool pretty_print)
     {
-        std::stringstream buffer;
+        int result = 0;
+        std::ofstream fileout(fileout_);
         fs::path outdir = fs::path(fileout_, fs::native).branch_path();
         if (outdir.empty())
             outdir = ".";
-        int result = parse(filein_, outdir, buffer);
-        if (result == 0)
+        if (pretty_print)
         {
-            std::ofstream fileout(fileout_);
-            post_process(buffer.str(), fileout, indent, linewidth);
+            string_stream buffer;
+            result = parse(filein_, outdir, buffer);
+            if (result == 0)
+            {
+                post_process(buffer.str(), fileout, indent, linewidth);
+            }
+        }
+        else
+        {
+            string_stream buffer;
+            result = parse(filein_, outdir, buffer);
+            fileout << buffer.str();
         }
         return result;
     }
@@ -162,7 +139,7 @@ namespace quickbook
 int
 main(int argc, char* argv[])
 {
-    try 
+    try
     {
         using boost::program_options::options_description;
         using boost::program_options::variables_map;
@@ -176,35 +153,30 @@ main(int argc, char* argv[])
         // First thing, the filesystem should record the current working directory.
         boost::filesystem::initial_path();
 
-        if(!boost::filesystem::path::default_name_check_writable())
-        {
-            throw std::runtime_error("filesystem::default_name_check_writable");
-        }
-
-        // By default, don't do path validation
-        boost::filesystem::path::default_name_check(boost::filesystem::no_check);
-
         options_description desc("Allowed options");
         desc.add_options()
             ("help", "produce help message")
             ("version", "print version string")
+            ("no-pretty-print", "disable XML pretty printing")
             ("indent", value<int>(), "indent spaces")
             ("linewidth", value<int>(), "line width")
             ("input-file", value<std::string>(), "input file")
             ("output-file", value<std::string>(), "output file")
             ("debug", "debug mode (for developers)")
+            ("ms-errors", "use Microsoft Visual Studio style error & warn message format")
         ;
-        
+
         positional_options_description p;
         p.add("input-file", -1);
-    
+
         variables_map vm;
         int indent = -1;
         int linewidth = -1;
+        bool pretty_print = true;
         store(command_line_parser(argc, argv).options(desc).positional(p).run(), vm);
-        notify(vm);    
-    
-        if (vm.count("help")) 
+        notify(vm);
+
+        if (vm.count("help"))
         {
             std::cout << desc << "\n";
             return 0;
@@ -216,12 +188,18 @@ main(int argc, char* argv[])
             return 0;
         }
 
+        if (vm.count("ms-errors"))
+            quickbook::ms_errors = true;
+
+        if (vm.count("no-pretty-print"))
+            pretty_print = false;
+
         if (vm.count("indent"))
             indent = vm["indent"].as<int>();
 
         if (vm.count("linewidth"))
             linewidth = vm["linewidth"].as<int>();
-        
+
         if (vm.count("debug"))
         {
             static tm timeinfo;
@@ -265,24 +243,24 @@ main(int argc, char* argv[])
             std::cout << "Generating Output File: "
                 << fileout
                 << std::endl;
-    
-            return quickbook::parse(filein.c_str(), fileout.c_str(), indent, linewidth);
+
+            return quickbook::parse(filein.c_str(), fileout.c_str(), indent, linewidth, pretty_print);
         }
         else
         {
-            std::cerr << "Error: No filename given" << std::endl;
+            quickbook::detail::outerr("",0) << "Error: No filename given" << std::endl;
         }
     }
-    
-    catch(std::exception& e) 
+
+    catch(std::exception& e)
     {
-        std::cerr << "Error: " << e.what() << "\n";
+        quickbook::detail::outerr("",0) << "Error: " << e.what() << "\n";
         return 1;
     }
 
-    catch(...) 
+    catch(...)
     {
-        std::cerr << "Error: Exception of unknown type caught\n";
+        quickbook::detail::outerr("",0) << "Error: Exception of unknown type caught\n";
     }
 
     return 0;
