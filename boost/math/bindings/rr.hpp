@@ -14,7 +14,7 @@
 
 #include <ostream>
 #include <istream>
-#include <cmath>
+#include <boost/config/no_tr1/cmath.hpp>
 #include <NTL/RR.h>
 
 #ifndef BOOST_MATH_NTL_RR_HPP
@@ -79,11 +79,11 @@ public:
       assign_large_int(c);
    }
 #ifdef BOOST_HAS_LONG_LONG
-   RR(unsigned long long c)
+   RR(boost::ulong_long_type c)
    {
       assign_large_int(c);
    }
-   RR(long long c)
+   RR(boost::long_long_type c)
    {
       assign_large_int(c);
    }
@@ -115,8 +115,8 @@ public:
    RR& operator=(long c) { assign_large_int(c); return *this; }
    RR& operator=(unsigned long c) { assign_large_int(c); return *this; }
 #ifdef BOOST_HAS_LONG_LONG
-   RR& operator=(long long c) { assign_large_int(c); return *this; }
-   RR& operator=(unsigned long long c) { assign_large_int(c); return *this; }
+   RR& operator=(boost::long_long_type c) { assign_large_int(c); return *this; }
+   RR& operator=(boost::ulong_long_type c) { assign_large_int(c); return *this; }
 #endif
    RR& operator=(float c) { m_value = c; return *this; }
    RR& operator=(double c) { m_value = c; return *this; }
@@ -413,7 +413,7 @@ inline std::basic_ostream<charT, traits>& operator<<(std::basic_ostream<charT, t
 template <class charT, class traits>
 inline std::basic_istream<charT, traits>& operator>>(std::basic_istream<charT, traits>& is, RR& a)
 {
-   long double v;
+   ::NTL::RR v;
    is >> v;
    a = v;
    return is;
@@ -425,7 +425,7 @@ namespace tools
 {
 
 template<>
-inline int digits<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+inline int digits<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
    return ::NTL::RR::precision();
 }
@@ -493,7 +493,7 @@ inline int real_cast<int, boost::math::ntl::RR>(boost::math::ntl::RR t)
 }
 
 template <>
-inline boost::math::ntl::RR max_value<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+inline boost::math::ntl::RR max_value<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
    static bool has_init = false;
    static NTL::RR val;
@@ -507,7 +507,7 @@ inline boost::math::ntl::RR max_value<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPL
 }
 
 template <>
-inline boost::math::ntl::RR min_value<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+inline boost::math::ntl::RR min_value<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
    static bool has_init = false;
    static NTL::RR val;
@@ -521,7 +521,7 @@ inline boost::math::ntl::RR min_value<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPL
 }
 
 template <>
-inline boost::math::ntl::RR log_max_value<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+inline boost::math::ntl::RR log_max_value<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
    static bool has_init = false;
    static NTL::RR val;
@@ -536,7 +536,7 @@ inline boost::math::ntl::RR log_max_value<boost::math::ntl::RR>(BOOST_EXPLICIT_T
 }
 
 template <>
-inline boost::math::ntl::RR log_min_value<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+inline boost::math::ntl::RR log_min_value<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
    static bool has_init = false;
    static NTL::RR val;
@@ -551,7 +551,7 @@ inline boost::math::ntl::RR log_min_value<boost::math::ntl::RR>(BOOST_EXPLICIT_T
 }
 
 template <>
-inline boost::math::ntl::RR epsilon<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+inline boost::math::ntl::RR epsilon<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
    return ldexp(boost::math::ntl::RR(1), 1-boost::math::policies::digits<boost::math::ntl::RR, boost::math::policies::policy<> >());
 }
@@ -564,17 +564,17 @@ inline boost::math::ntl::RR epsilon<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLAT
 //
 namespace constants{
 
-template<> inline boost::math::ntl::RR pi<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+template<> inline boost::math::ntl::RR pi<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
-	 NTL::RR result;
-	 ComputePi(result);
-	 return result;
+    NTL::RR result;
+    ComputePi(result);
+    return result;
 }
-template<> inline boost::math::ntl::RR e<boost::math::ntl::RR>(BOOST_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
+template<> inline boost::math::ntl::RR e<boost::math::ntl::RR>(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(boost::math::ntl::RR))
 {
-	 NTL::RR result;
+    NTL::RR result;
     result = 1;
-	 return exp(result);
+    return exp(result);
 }
 
 } // namespace constants
@@ -695,6 +695,18 @@ namespace ntl{
       // of digits to get us out of trouble...
       RR factor = floor(x/y);
       return x - factor * y;
+   }
+
+   template <class Policy>
+   inline int iround(RR const& x, const Policy& pol)
+   {
+      return tools::real_cast<int>(round(x, pol));
+   }
+
+   template <class Policy>
+   inline int itrunc(RR const& x, const Policy& pol)
+   {
+      return tools::real_cast<int>(trunc(x, pol));
    }
 
 } // namespace ntl

@@ -13,11 +13,12 @@
 #include <boost/intrusive/set.hpp>
 #include <vector>
 #include <algorithm>
+#include <cassert>
 
 using namespace boost::intrusive;
 
-                  //This is a base hook
-class MyClass : public set_base_hook<>
+                  //This is a base hook optimized for size
+class MyClass : public set_base_hook<optimize_size<true> >
 {
    int int_;
 
@@ -36,12 +37,12 @@ class MyClass : public set_base_hook<>
       {  return a.int_ < b.int_;  }
 };
 
-//Define an set using the base hook that will store values in reverse order
+//Define a set using the base hook that will store values in reverse order
 typedef set< MyClass, compare<std::greater<MyClass> > >     BaseSet;
 
 //Define an multiset using the member hook
 typedef member_hook<MyClass, set_member_hook<>, &MyClass::member_hook_> MemberOption;
-typedef multiset< MyClass, MemberOption>   MemberIMultiset;
+typedef multiset< MyClass, MemberOption>   MemberMultiset;
 
 int main()
 {
@@ -53,20 +54,23 @@ int main()
    for(int i = 0; i < 100; ++i)  values.push_back(MyClass(i));
 
    BaseSet baseset;
-   MemberIMultiset membermultiset;
+   MemberMultiset membermultiset;
+   
+   //Check that size optimization is activated in the base hook 
+   assert(sizeof(set_base_hook<optimize_size<true> >) == 3*sizeof(void*));
+   //Check that size optimization is deactivated in the member hook 
+   assert(sizeof(set_member_hook<>) > 3*sizeof(void*));
 
    //Now insert them in the reverse order in the base hook set
-   for(VectIt it(values.begin()), itend(values.end()); it != itend; ++it)
+   for(VectIt it(values.begin()), itend(values.end()); it != itend; ++it){
       baseset.insert(*it);
-
-   //Now insert them in the same order as in vector in the member hook set
-   for(VectIt it(values.begin()), itend(values.end()); it != itend; ++it)
       membermultiset.insert(*it);
+   }
 
    //Now test sets
    {
       BaseSet::reverse_iterator rbit(baseset.rbegin()), rbitend(baseset.rend());
-      MemberIMultiset::iterator mit(membermultiset.begin()), mitend(membermultiset.end());
+      MemberMultiset::iterator mit(membermultiset.begin()), mitend(membermultiset.end());
       VectIt it(values.begin()), itend(values.end());
 
       //Test the objects inserted in the base hook set

@@ -5,17 +5,17 @@
 <link rel="stylesheet" href="../../../../../../../doc/html/boostbook.css" type="text/css">
 <meta name="generator" content="DocBook XSL Stylesheets Vsnapshot_2006-12-17_0120">
 <link rel="start" href="../../index.html" title="Math Toolkit">
-<link rel="up" href="../using_udt.html" title="Use with User Defined Floating-Point Types">
+<link rel="up" href="../using_udt.html" title="Use with User-Defined Floating-Point Types">
 <link rel="prev" href="dist_concept.html" title="Conceptual Requirements for Distribution Types">
 <link rel="next" href="../policy.html" title="Policies">
 </head>
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -33,12 +33,10 @@
 <p>
         
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">concepts</span><span class="special">/</span><span class="identifier">std_real_concept</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">concepts</span><span class="special">/</span><span class="identifier">std_real_concept</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span>
 <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 <span class="keyword">namespace</span> <span class="identifier">concepts</span><span class="special">{</span>
 
@@ -73,19 +71,17 @@
         declaration.
       </p>
 <p>
-        There is a test program <a href="../../../../../teststd_real_concept_check.cpp" target="_top">libs/math/test/std_real_concept_check.cpp</a>
+        There is a test program <a href="../../../../../test/std_real_concept_check.cpp" target="_top">libs/math/test/std_real_concept_check.cpp</a>
         that instantiates every template in this library with type <code class="computeroutput"><span class="identifier">std_real_concept</span></code> to verify it's usage of
         standard library functions.
       </p>
 <p>
         
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">concepts</span><span class="special">/</span><span class="identifier">real_concept</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">concepts</span><span class="special">/</span><span class="identifier">real_concept</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> 
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> 
 <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span> 
 <span class="keyword">namespace</span> <span class="identifier">concepts</span><span class="special">{</span>
 
@@ -117,12 +113,10 @@
 <p>
         
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">concepts</span><span class="special">/</span><span class="identifier">distribution</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">concepts</span><span class="special">/</span><span class="identifier">distribution</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
 <p>
       </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span>
 <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 <span class="keyword">namespace</span> <span class="identifier">concepts</span><span class="special">{</span>
 
@@ -145,7 +139,7 @@
         class</a> for distribution types.
       </p>
 <p>
-        The test program <a href="../../../../../test/distribution_concept_check.cpp" target="_top">distribution_concept_check.cpp</a>
+        The test program <a href="../../../../../test/compile_test/distribution_concept_check.cpp" target="_top">distribution_concept_check.cpp</a>
         is responsible for using <code class="computeroutput"><span class="identifier">DistributionConcept</span></code>
         to verify that all the distributions in this library conform to the <a href="dist_concept.html" title="Conceptual Requirements for Distribution Types">Distribution concept</a>.
       </p>
@@ -169,8 +163,12 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

@@ -55,6 +55,34 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "external_value_traits", "ex
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "splay_multiset", "splay_multiset\splay_multiset.vcproj", "{01E70176-B6C5-BF47-2C91-A949077BA323}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "splay_set", "splay_set\splay_set.vcproj", "{1E6909E7-C971-F24A-6C7B-A92094B71B59}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "avl_multiset", "avl_multiset\avl_multiset.vcproj", "{0AE70176-5B8C-4BC7-392C-A4A312B07893}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "avl_set", "avl_set\avl_set.vcproj", "{16909EE7-24AF-97C1-C76B-204B971BA959}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sg_multiset", "sg_multiset\sg_multiset.vcproj", "{07022E76-6CB5-92C1-B47F-A10772A79B43}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sg_set", "sg_set\sg_set.vcproj", "{1690A9E7-DB57-971C-F24A-09B752A942F7}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "any_hook", "any_test\any_test.vcproj", "{97B61B24-4C97-9681-50BF-243175A813B6}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -119,6 +147,34 @@ Global
 		{97B69A72-B9D3-7389-17FB-74612F4A9543}.Debug.Build.0 = Debug|Win32
 		{97B69A72-B9D3-7389-17FB-74612F4A9543}.Release.ActiveCfg = Release|Win32
 		{97B69A72-B9D3-7389-17FB-74612F4A9543}.Release.Build.0 = Release|Win32
+		{01E70176-B6C5-BF47-2C91-A949077BA323}.Debug.ActiveCfg = Debug|Win32
+		{01E70176-B6C5-BF47-2C91-A949077BA323}.Debug.Build.0 = Debug|Win32
+		{01E70176-B6C5-BF47-2C91-A949077BA323}.Release.ActiveCfg = Release|Win32
+		{01E70176-B6C5-BF47-2C91-A949077BA323}.Release.Build.0 = Release|Win32
+		{1E6909E7-C971-F24A-6C7B-A92094B71B59}.Debug.ActiveCfg = Debug|Win32
+		{1E6909E7-C971-F24A-6C7B-A92094B71B59}.Debug.Build.0 = Debug|Win32
+		{1E6909E7-C971-F24A-6C7B-A92094B71B59}.Release.ActiveCfg = Release|Win32
+		{1E6909E7-C971-F24A-6C7B-A92094B71B59}.Release.Build.0 = Release|Win32
+		{0AE70176-5B8C-4BC7-392C-A4A312B07893}.Debug.ActiveCfg = Debug|Win32
+		{0AE70176-5B8C-4BC7-392C-A4A312B07893}.Debug.Build.0 = Debug|Win32
+		{0AE70176-5B8C-4BC7-392C-A4A312B07893}.Release.ActiveCfg = Release|Win32
+		{0AE70176-5B8C-4BC7-392C-A4A312B07893}.Release.Build.0 = Release|Win32
+		{16909EE7-24AF-97C1-C76B-204B971BA959}.Debug.ActiveCfg = Debug|Win32
+		{16909EE7-24AF-97C1-C76B-204B971BA959}.Debug.Build.0 = Debug|Win32
+		{16909EE7-24AF-97C1-C76B-204B971BA959}.Release.ActiveCfg = Release|Win32
+		{16909EE7-24AF-97C1-C76B-204B971BA959}.Release.Build.0 = Release|Win32
+		{07022E76-6CB5-92C1-B47F-A10772A79B43}.Debug.ActiveCfg = Debug|Win32
+		{07022E76-6CB5-92C1-B47F-A10772A79B43}.Debug.Build.0 = Debug|Win32
+		{07022E76-6CB5-92C1-B47F-A10772A79B43}.Release.ActiveCfg = Release|Win32
+		{07022E76-6CB5-92C1-B47F-A10772A79B43}.Release.Build.0 = Release|Win32
+		{1690A9E7-DB57-971C-F24A-09B752A942F7}.Debug.ActiveCfg = Debug|Win32
+		{1690A9E7-DB57-971C-F24A-09B752A942F7}.Debug.Build.0 = Debug|Win32
+		{1690A9E7-DB57-971C-F24A-09B752A942F7}.Release.ActiveCfg = Release|Win32
+		{1690A9E7-DB57-971C-F24A-09B752A942F7}.Release.Build.0 = Release|Win32
+		{97B61B24-4C97-9681-50BF-243175A813B6}.Debug.ActiveCfg = Debug|Win32
+		{97B61B24-4C97-9681-50BF-243175A813B6}.Debug.Build.0 = Debug|Win32
+		{97B61B24-4C97-9681-50BF-243175A813B6}.Release.ActiveCfg = Release|Win32
+		{97B61B24-4C97-9681-50BF-243175A813B6}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

@@ -20,7 +20,8 @@ ECHO ###
 ECHO ### You can specify the toolset as the argument, i.e.:
 ECHO ###     .\build.bat msvc
 ECHO ###
-ECHO ### Toolsets supported by this script are: borland, como, gcc, gcc-nocygwin, intel-win32, metrowerks, mingw, msvc, vc7, vc8
+ECHO ### Toolsets supported by this script are: borland, como, gcc, gcc-nocygwin,
+ECHO ###     intel-win32, metrowerks, mingw, msvc, vc7, vc8, vc9
 ECHO ###
 set _error_=
 endlocal
@@ -40,7 +41,7 @@ goto :eof
 
 
 :Test_Option
-REM Tests wether the given string is in the form of an option: "-*"
+REM Tests whether the given string is in the form of an option: "--*"
 setlocal & endlocal
 setlocal
 set test=%1
@@ -48,7 +49,7 @@ set test=###%test%###
 set test=%test:"###=%
 set test=%test:###"=%
 set test=%test:###=%
-if not [-] == [%test:~0,1%] set _error_=
+if not [-] == [%test:~1,1%] set _error_=
 endlocal
 goto :eof
 
@@ -67,6 +68,16 @@ REM location of the found toolset.
 if "_%ProgramFiles%_" == "__" set ProgramFiles=C:\Program Files
 
 setlocal & endlocal
+if NOT "_%VS90COMNTOOLS%_" == "__" (
+    set "BOOST_JAM_TOOLSET=vc9"
+    set "BOOST_JAM_TOOLSET_ROOT=%VS90COMNTOOLS%..\..\VC\"
+    goto :eof)
+setlocal & endlocal
+if EXIST "%ProgramFiles%\Microsoft Visual Studio 9.0\VC\VCVARSALL.BAT" (
+    set "BOOST_JAM_TOOLSET=vc9"
+    set "BOOST_JAM_TOOLSET_ROOT=%ProgramFiles%\Microsoft Visual Studio 9.0\VC\"
+    goto :eof)
+setlocal & endlocal
 if NOT "_%VS80COMNTOOLS%_" == "__" (
     set "BOOST_JAM_TOOLSET=vc8"
     set "BOOST_JAM_TOOLSET_ROOT=%VS80COMNTOOLS%..\..\VC\"
@@ -83,6 +94,7 @@ if NOT "_%VS71COMNTOOLS%_" == "__" (
     goto :eof)
 setlocal & endlocal
 if NOT "_%VCINSTALLDIR%_" == "__" (
+    REM %VCINSTALLDIR% is also set for VC9 (and probably VC8)
     set "BOOST_JAM_TOOLSET=vc7"
     set "BOOST_JAM_TOOLSET_ROOT=%VCINSTALLDIR%\VC7\"
     goto :eof)
@@ -281,6 +293,21 @@ set "BOOST_JAM_OPT_MKJAMBASE=/Febootstrap\mkjambase0"
 set "BOOST_JAM_OPT_YYACC=/Febootstrap\yyacc0"
 set "_known_=1"
 :Skip_VC8
+if NOT "_%BOOST_JAM_TOOLSET%_" == "_vc9_" goto :Skip_VC9
+if NOT "_%VS90COMNTOOLS%_" == "__" (
+    set "BOOST_JAM_TOOLSET_ROOT=%VS90COMNTOOLS%..\..\VC\"
+    )
+if "_%VCINSTALLDIR%_" == "__" call :Call_If_Exists "%BOOST_JAM_TOOLSET_ROOT%VCVARSALL.BAT" %BOOST_JAM_ARGS%
+if NOT "_%BOOST_JAM_TOOLSET_ROOT%_" == "__" (
+    if "_%VCINSTALLDIR%_" == "__" (
+        set "PATH=%BOOST_JAM_TOOLSET_ROOT%bin;%PATH%"
+        ) )
+set "BOOST_JAM_CC=cl /nologo /RTC1 /Zi /MTd /Fobootstrap/ /Fdbootstrap/ -DNT -DYYDEBUG -wd4996 kernel32.lib advapi32.lib user32.lib"
+set "BOOST_JAM_OPT_JAM=/Febootstrap\jam0"
+set "BOOST_JAM_OPT_MKJAMBASE=/Febootstrap\mkjambase0"
+set "BOOST_JAM_OPT_YYACC=/Febootstrap\yyacc0"
+set "_known_=1"
+:Skip_VC9
 if NOT "_%BOOST_JAM_TOOLSET%_" == "_borland_" goto :Skip_BORLAND
 if "_%BOOST_JAM_TOOLSET_ROOT%_" == "__" (
     call :Test_Path bcc32.exe )
@@ -353,7 +380,7 @@ set BJAM_SOURCES=%BJAM_SOURCES% hdrmacro.c headers.c jam.c jambase.c jamgram.c l
 set BJAM_SOURCES=%BJAM_SOURCES% newstr.c option.c output.c parse.c pathunix.c regexp.c
 set BJAM_SOURCES=%BJAM_SOURCES% rules.c scan.c search.c subst.c timestamp.c variable.c modules.c
 set BJAM_SOURCES=%BJAM_SOURCES% strings.c filesys.c builtins.c pwd.c class.c w32_getreg.c native.c
-set BJAM_SOURCES=%BJAM_SOURCES% modules/set.c modules/path.c modules/regex.c 
+set BJAM_SOURCES=%BJAM_SOURCES% modules/set.c modules/path.c modules/regex.c
 set BJAM_SOURCES=%BJAM_SOURCES% modules/property-set.c modules/sequence.c modules/order.c
 
 set BJAM_UPDATE=

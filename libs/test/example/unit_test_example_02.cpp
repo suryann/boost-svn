@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2002-2006.
+//  (C) Copyright Gennadiy Rozental 2002-2008.
 //  (C) Copyright Gennadiy Rozental & Ullrich Koethe 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at 
@@ -21,7 +21,7 @@ void free_test_function()
 
     // reports 'unknown location(0): fatal error in "free_test_function": memory access violation
     //          d:\source code\boost\libs\test\example\unit_test_example_02.cpp(25): last checkpoint'
-    int* p = (int*)0;
+    int* p = (int*)0x01;
     BOOST_CHECK( *p == 0 );
 }
 

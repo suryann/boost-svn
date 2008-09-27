@@ -55,27 +55,36 @@ void expected_results()
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
    if(boost::math::policies::digits<double, boost::math::policies::policy<> >() == boost::math::policies::digits<long double, boost::math::policies::policy<> >())
    {
-      largest_type = "(long\\s+)?double";
+      largest_type = "(long\\s+)?double|real_concept";
    }
    else
    {
-      largest_type = "long double";
+      largest_type = "long double|real_concept";
    }
 #else
-   largest_type = "(long\\s+)?double";
+   largest_type = "(long\\s+)?double|real_concept";
 #endif
+   //
+   // On MacOS X cyl_bessel_k has much higher error levels than
+   // expected: given that the implementation is basically
+   // just a continued fraction evaluation combined with
+   // exponentiation, we conclude that exp and pow are less
+   // accurate on this platform, especially when the result 
+   // is outside the range of a double.
+   //
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Mac OS",                      // platform
+      largest_type,                  // test type(s)
+      ".*",                          // test data group
+      ".*", 4000, 1300);             // test function
+
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
       ".*",                          // platform
       largest_type,                  // test type(s)
-      ".*",                          // test data group
-      ".*", 35, 15);                 // test function
-   add_expected_result(
-      ".*",                          // compiler
-      ".*",                          // stdlib
-      ".*",                          // platform
-      "real_concept",                // test type(s)
       ".*",                          // test data group
       ".*", 35, 15);                 // test function
    //
@@ -91,7 +100,7 @@ T cyl_bessel_k_int_wrapper(T v, T x)
 {
    return static_cast<T>(
       boost::math::cyl_bessel_k(
-      boost::math::tools::real_cast<int>(v), x));
+      boost::math::itrunc(v), x));
 }
 
 template <class T>
@@ -101,7 +110,11 @@ void do_test_cyl_bessel_k(const T& data, const char* type_name, const char* test
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::cyl_bessel_k<value_type, value_type>;
+#else
    pg funcp = boost::math::cyl_bessel_k;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -143,7 +156,11 @@ void do_test_cyl_bessel_k_int(const T& data, const char* type_name, const char* 
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = cyl_bessel_k_int_wrapper<value_type>;
+#else
    pg funcp = cyl_bessel_k_int_wrapper;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 

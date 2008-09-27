@@ -18,7 +18,7 @@
 #include <iterator>
 #include <boost/intrusive/detail/pointer_to_other.hpp>
 #include <boost/intrusive/rbtree_algorithms.hpp>
-#include <boost/intrusive/pointer_plus_bit.hpp>
+#include <boost/intrusive/pointer_plus_bits.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
 
 namespace boost {
@@ -110,7 +110,7 @@ struct compact_rbtree_node_traits_impl
    typedef typename boost::pointer_to_other
       <VoidPointer, const node>::type    const_node_ptr;
 
-   typedef pointer_plus_bit<node_ptr> ptr_bit;
+   typedef pointer_plus_bits<node_ptr, 1> ptr_bit;
 
    typedef typename node::color color;
 
@@ -133,10 +133,10 @@ struct compact_rbtree_node_traits_impl
    {  n->right_ = r;  }
 
    static color get_color(const_node_ptr n)
-   {  return (color)ptr_bit::get_bit(n->parent_);  }
+   {  return (color)ptr_bit::get_bits(n->parent_);  }
 
    static void set_color(node_ptr n, color c)
-   {  ptr_bit::set_bit(n->parent_, c != 0);  }
+   {  ptr_bit::set_bits(n->parent_, c != 0);  }
 
    static color black()
    {  return node::black_t;  }
@@ -146,7 +146,7 @@ struct compact_rbtree_node_traits_impl
 };
 
 //Dispatches the implementation based on the boolean
-template<class VoidPointer, bool compact>
+template<class VoidPointer, bool Compact>
 struct rbtree_node_traits_dispatch
    :  public default_rbtree_node_traits_impl<VoidPointer>
 {};
@@ -157,140 +157,17 @@ struct rbtree_node_traits_dispatch<VoidPointer, true>
 {};
 
 //Inherit from the detail::link_dispatch depending on the embedding capabilities
-template<class VoidPointer>
+template<class VoidPointer, bool OptimizeSize = false>
 struct rbtree_node_traits
    :  public rbtree_node_traits_dispatch
          < VoidPointer
-         , has_pointer_plus_bit
+         ,  OptimizeSize &&
+           (max_pointer_plus_bits
             < VoidPointer
             , detail::alignment_of<compact_rbtree_node<VoidPointer> >::value 
-            >::value
+            >::value >= 1)
          >
 {};
-
-/////////////////////////////////////////////////////////////////////////////
-//                                                                         //
-//                   Implementation of the rbtree iterator                 //
-//                                                                         //
-/////////////////////////////////////////////////////////////////////////////
-
-// rbtree_iterator provides some basic functions for a 
-// node oriented bidirectional iterator:
-template<class Container, bool IsConst>
-class rbtree_iterator
-   :  public std::iterator
-         < std::bidirectional_iterator_tag
-         , typename detail::add_const_if_c
-            <typename Container::value_type, IsConst>::type
-         >
-{
-   protected:
-   typedef typename Container::real_value_traits   real_value_traits;
-   typedef typename real_value_traits::node_traits node_traits;
-   typedef typename node_traits::node              node;
-   typedef typename node_traits::node_ptr          node_ptr;
-   typedef rbtree_algorithms<node_traits>          node_algorithms;
-   typedef typename boost::pointer_to_other
-      <node_ptr, void>::type                       void_pointer;
-   static const bool store_container_ptr = 
-      detail::store_cont_ptr_on_it<Container>::value;
-
-   public:
-   public:
-   typedef typename detail::add_const_if_c
-      <typename Container::value_type, IsConst>
-      ::type                                       value_type;
-   typedef value_type & reference;
-   typedef value_type * pointer;
-
-   rbtree_iterator()
-      : members_ (0, 0)
-   {}
-
-   explicit rbtree_iterator(node_ptr node, const Container *cont_ptr)
-      : members_ (node, cont_ptr)
-   {}
-
-   rbtree_iterator(rbtree_iterator<Container, false> const& other)
-      :  members_(other.pointed_node(), other.get_container())
-   {}
-
-   const node_ptr &pointed_node() const
-   { return members_.nodeptr_; }
-
-   rbtree_iterator &operator=(const node_ptr &node)
-   {  members_.nodeptr_ = node;  return static_cast<rbtree_iterator&>(*this);  }
-
-   public:
-   rbtree_iterator& operator++() 
-   { 
-      members_.nodeptr_ = node_algorithms::next_node(members_.nodeptr_); 
-      return static_cast<rbtree_iterator&> (*this); 
-   }
-   
-   rbtree_iterator operator++(int)
-   {
-      rbtree_iterator result (*this);
-      members_.nodeptr_ = node_algorithms::next_node(members_.nodeptr_);
-      return result;
-   }
-
-   rbtree_iterator& operator--() 
-   { 
-      members_.nodeptr_ = node_algorithms::prev_node(members_.nodeptr_); 
-      return static_cast<rbtree_iterator&> (*this); 
-   }
-   
-   rbtree_iterator operator--(int)
-   {
-      rbtree_iterator result (*this);
-      members_.nodeptr_ = node_algorithms::prev_node(members_.nodeptr_);
-      return result;
-   }
-
-   bool operator== (const rbtree_iterator& i) const
-   { return members_.nodeptr_ == i.pointed_node(); }
-
-   bool operator!= (const rbtree_iterator& i) const
-   { return !operator== (i); }
-
-   value_type& operator*() const
-   {  return *operator->();   }
-
-   pointer operator->() const
-   { return detail::get_pointer(this->get_real_value_traits()->to_value_ptr(members_.nodeptr_)); }
-
-   const Container *get_container() const
-   {
-      if(store_container_ptr)
-         return static_cast<const Container*>(members_.get_ptr());
-      else
-         return 0;
-   }
-
-   const real_value_traits *get_real_value_traits() const
-   {
-      if(store_container_ptr)
-         return &this->get_container()->get_real_value_traits();
-      else
-         return 0;
-   }
-
-   private:
-   struct members
-      :  public detail::select_constptr
-         <void_pointer, store_container_ptr>::type
-   {
-      typedef typename detail::select_constptr
-         <void_pointer, store_container_ptr>::type Base;
-
-      members(const node_ptr &n_ptr, const void *cont)
-         :  Base(cont), nodeptr_(n_ptr)
-      {}
-
-      node_ptr nodeptr_;
-   } members_;
-};
 
 } //namespace intrusive 
 } //namespace boost 

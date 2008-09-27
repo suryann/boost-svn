@@ -1,4 +1,4 @@
-//  (C) Copyright John Maddock 2001-7.
+//  (C) Copyright John Maddock 2001-8.
 //  (C) Copyright Peter Dimov 2001.
 //  (C) Copyright Jens Maurer 2001.
 //  (C) Copyright David Abrahams 2002 - 2003.
@@ -146,18 +146,28 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #if BOOST_INTEL_CXX_VERSION < 500
 #  error "Compiler not supported or configured - please reconfigure"
 #endif
+
+// Intel on MacOS requires
+#if defined(__APPLE__) && defined(__INTEL_COMPILER)
+#  define BOOST_NO_TWO_PHASE_NAME_LOOKUP
+#endif
+
+// Intel on Altix Itanium
+#if defined(__itanium__) && defined(__INTEL_COMPILER)
+#  define BOOST_NO_TWO_PHASE_NAME_LOOKUP
+#endif
+
 //
 // last known and checked version:
-#if (BOOST_INTEL_CXX_VERSION > 1000)
+#if (BOOST_INTEL_CXX_VERSION > 1010)
 #  if defined(BOOST_ASSERT_CONFIG)
 #     error "Unknown compiler version - please run the configure tests and report the results"
 #  elif defined(_MSC_VER)
-#     pragma message("Unknown compiler version - please run the configure tests and report the results")
+//
+//      We don't emit this warning any more, since we have so few
+//      defect macros set anyway (just the one).
+//
+//#     pragma message("Unknown compiler version - please run the configure tests and report the results")
 #  endif
 #endif
-
-
-
-
-
 

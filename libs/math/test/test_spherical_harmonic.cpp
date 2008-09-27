@@ -9,10 +9,7 @@
 #include <boost/math/special_functions/spherical_harmonic.hpp>
 #include <boost/math/constants/constants.hpp>
 #include <boost/array.hpp>
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#endif
+#include "functor.hpp"
 
 #include "handle_test_result.hpp"
 
@@ -100,14 +97,15 @@ void expected_results()
 template <class T>
 void do_test_spherical_harmonic(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(unsigned, int, value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::spherical_harmonic_r<value_type, value_type>;
+#else
    pg funcp = boost::math::spherical_harmonic_r;
-   typedef unsigned (*cast_t)(value_type);
-   cast_t cf = &boost::math::tools::real_cast<unsigned, value_type>;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -119,42 +117,25 @@ void do_test_spherical_harmonic(const T& data, const char* type_name, const char
    //
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp,
-         boost::lambda::ret<unsigned>(
-            boost::lambda::bind(
-            cf,
-            boost::lambda::ret<value_type>(boost::lambda::_1[0]))),
-         boost::lambda::ret<unsigned>(
-            boost::lambda::bind(
-            cf,
-            boost::lambda::ret<value_type>(boost::lambda::_1[1]))),
-         boost::lambda::ret<value_type>(boost::lambda::_1[2]),
-         boost::lambda::ret<value_type>(boost::lambda::_1[3])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[4]));
+      bind_func_int2(funcp, 0, 1, 2, 3),
+      extract_result(4));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::spherical_harmonic_r", test_name);
 
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::spherical_harmonic_i<value_type, value_type>;
+#else
    funcp = boost::math::spherical_harmonic_i;
+#endif
    //
    // test Spheric Harmonic against data:
    //
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp,
-         boost::lambda::ret<unsigned>(
-            boost::lambda::bind(
-            cf,
-            boost::lambda::ret<value_type>(boost::lambda::_1[0]))),
-         boost::lambda::ret<unsigned>(
-            boost::lambda::bind(
-            cf,
-            boost::lambda::ret<value_type>(boost::lambda::_1[1]))),
-         boost::lambda::ret<value_type>(boost::lambda::_1[2]),
-         boost::lambda::ret<value_type>(boost::lambda::_1[3])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[5]));
+      bind_func_int2(funcp, 0, 1, 2, 3),
+      extract_result(5));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::spherical_harmonic_i", test_name);
 
    std::cout << std::endl;
-#endif
 }
 
 template <class T>
@@ -303,6 +284,7 @@ void test_spots(T, const char* t)
 
 int test_main(int, char* [])
 {
+   BOOST_MATH_CONTROL_FP;
    test_spots(0.0F, "float");
    test_spots(0.0, "double");
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS

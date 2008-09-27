@@ -146,7 +146,7 @@ public:
 };
 
 template <typename PixelRef, int Tag=0>
-class reference_core : value_core<typename boost::remove_reference<PixelRef>::type::value_type, Tag> {
+class reference_core : public value_core<typename boost::remove_reference<PixelRef>::type::value_type, Tag> {
 public:
     typedef PixelRef type;
     typedef typename boost::remove_reference<PixelRef>::type pixel_t;
@@ -324,3 +324,9 @@ void test_pixel() {
     error_if(g != 8);
     error_if(g16 != 8);
 }
+
+int main(int argc, char* argv[]) {
+    test_pixel();
+    return 0;
+}
+

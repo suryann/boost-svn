@@ -6,7 +6,11 @@
 #ifndef BOOST_MATH_TOOLS_TEST_DATA_HPP
 #define BOOST_MATH_TOOLS_TEST_DATA_HPP
 
-#include <boost/config.hpp>
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+#include <boost/math/tools/config.hpp>
 #include <boost/assert.hpp>
 #ifdef BOOST_MSVC
 #  pragma warning(push)
@@ -27,6 +31,7 @@
 
 #include <set>
 #include <vector>
+#include <iostream>
 
 #ifdef BOOST_MSVC
 #  pragma warning(push)
@@ -41,7 +46,7 @@ enum parameter_type
    random_in_range = 0,
    periodic_in_range = 1,
    power_series = 2,
-   dummy_param = 0x80,
+   dummy_param = 0x80
 };
 
 parameter_type operator | (parameter_type a, parameter_type b)
@@ -323,8 +328,14 @@ private:
 template <class T>
 inline float test_data<T>::truncate_to_float(float const * pf)
 {
-   extern_val = *pf;
-   return *pf;
+   BOOST_MATH_STD_USING
+   int expon;
+   float f = floor(ldexp(frexp(*pf, &expon), 22));
+   f = ldexp(f, expon - 22);
+   return f;
+
+   //extern_val = *pf;
+   //return *pf;
 }
 
 template <class T>
@@ -333,6 +344,7 @@ float test_data<T>::extern_val = 0;
 template <class T>
 void test_data<T>::create_test_points(std::set<T>& points, const parameter_info<T>& arg1)
 {
+   BOOST_MATH_STD_USING
    //
    // Generate a set of test points as requested, try and generate points
    // at only float precision: otherwise when testing float versions of functions
@@ -751,4 +763,5 @@ std::ostream& write_code(std::ostream& os,
 
 
 #endif // BOOST_MATH_TOOLS_TEST_DATA_HPP
+
 

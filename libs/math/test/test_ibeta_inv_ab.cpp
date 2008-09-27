@@ -3,6 +3,8 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#define BOOST_MATH_OVERFLOW_ERROR_POLICY ignore_error
+
 #include <boost/math/concepts/real_concept.hpp>
 #include <boost/test/included/test_exec_monitor.hpp>
 #include <boost/test/floating_point_comparison.hpp>
@@ -12,10 +14,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#endif
+#include "functor.hpp"
 
 #ifdef TEST_GSL
 #include <gsl/gsl_errno.h>
@@ -140,7 +139,9 @@ void test_inverses(const T& data)
          BOOST_CHECK_EQUAL(boost::math::ibeta_inva(data[i][1], data[i][2], data[i][5]), boost::math::tools::max_value<value_type>());
          BOOST_CHECK_EQUAL(boost::math::ibeta_invb(data[i][0], data[i][2], data[i][5]), boost::math::tools::min_value<value_type>());
       }
-      else if((1 - data[i][5] > 0.001) && (fabs(data[i][5]) >= boost::math::tools::min_value<value_type>()))
+      else if((1 - data[i][5] > 0.001) 
+         && (fabs(data[i][5]) > 2 * boost::math::tools::min_value<value_type>()) 
+         && (fabs(data[i][5]) > 2 * boost::math::tools::min_value<double>()))
       {
          value_type inv = boost::math::ibeta_inva(data[i][1], data[i][2], data[i][5]);
          BOOST_CHECK_CLOSE(data[i][0], inv, precision);
@@ -158,7 +159,9 @@ void test_inverses(const T& data)
          BOOST_CHECK_EQUAL(boost::math::ibetac_inva(data[i][1], data[i][2], data[i][6]), boost::math::tools::min_value<value_type>());
          BOOST_CHECK_EQUAL(boost::math::ibetac_invb(data[i][0], data[i][2], data[i][6]), boost::math::tools::max_value<value_type>());
       }
-      else if((1 - data[i][6] > 0.001) && (fabs(data[i][6]) >= boost::math::tools::min_value<value_type>()))
+      else if((1 - data[i][6] > 0.001) 
+         && (fabs(data[i][6]) > 2 * boost::math::tools::min_value<value_type>()) 
+         && (fabs(data[i][6]) > 2 * boost::math::tools::min_value<double>()))
       {
          value_type inv = boost::math::ibetac_inva(data[i][1], data[i][2], data[i][6]);
          BOOST_CHECK_CLOSE(data[i][0], inv, precision);
@@ -176,14 +179,15 @@ void test_inverses(const T& data)
 template <class T>
 void test_inverses2(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::ibeta_inva<value_type, value_type, value_type>;
+#else
    pg funcp = boost::math::ibeta_inva;
-
-   using namespace boost::lambda;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -195,37 +199,48 @@ void test_inverses2(const T& data, const char* type_name, const char* test_name)
    //
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1]), ret<value_type>(_1[2])),
-      ret<value_type>(_1[3]));
+      bind_func(funcp, 0, 1, 2),
+      extract_result(3));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::ibeta_inva", test_name);
    //
    // test ibetac_inva(T, T, T) against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::ibetac_inva<value_type, value_type, value_type>;
+#else
    funcp = boost::math::ibetac_inva;
+#endif
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1]), ret<value_type>(_1[2])),
-      ret<value_type>(_1[4]));
+      bind_func(funcp, 0, 1, 2),
+      extract_result(4));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::ibetac_inva", test_name);
    //
    // test ibeta_invb(T, T, T) against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::ibeta_invb<value_type, value_type, value_type>;
+#else
    funcp = boost::math::ibeta_invb;
+#endif
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1]), ret<value_type>(_1[2])),
-      ret<value_type>(_1[5]));
+      bind_func(funcp, 0, 1, 2),
+      extract_result(5));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::ibeta_invb", test_name);
    //
    // test ibetac_invb(T, T, T) against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::ibetac_invb<value_type, value_type, value_type>;
+#else
    funcp = boost::math::ibetac_invb;
+#endif
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1]), ret<value_type>(_1[2])),
-      ret<value_type>(_1[6]));
+      bind_func(funcp, 0, 1, 2),
+      extract_result(6));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::ibetac_invb", test_name);
-#endif
 }
 
 template <class T>
@@ -239,17 +254,25 @@ void test_beta(T, const char* name)
    //
    std::cout << "Running sanity checks for type " << name << std::endl;
 
+#if !defined(TEST_DATA) || (TEST_DATA == 1)
 #  include "ibeta_small_data.ipp"
 
    test_inverses(ibeta_small_data);
+#endif
 
+#if !defined(TEST_DATA) || (TEST_DATA == 2)
 #  include "ibeta_data.ipp"
 
    test_inverses(ibeta_data);
+#endif
 
+#if !defined(TEST_DATA) || (TEST_DATA == 3)
 #  include "ibeta_large_data.ipp"
 
    test_inverses(ibeta_large_data);
+#endif
+
+#if !defined(TEST_REAL_CONCEPT) || defined(FULL_TEST)
 #ifndef FULL_TEST
    if(boost::is_floating_point<T>::value){
 #endif
@@ -265,13 +288,12 @@ void test_beta(T, const char* name)
 #ifndef FULL_TEST
    }
 #endif
+#endif
 }
 
 int test_main(int, char* [])
 {
    expected_results();
-   boost::math::ibetac_invb(15.3268413543701171875f, 0.3082362115383148193359375f, 0.913384497165679931640625f);
-   boost::math::ibetac(15.3268413543701171875f, 21.432123240471673235001418f, 0.3082362115383148193359375f);
 #ifdef TEST_GSL
    gsl_set_error_handler_off();
 #endif
@@ -299,7 +321,4 @@ int test_main(int, char* [])
 #endif
    return 0;
 }
-
-
-
 

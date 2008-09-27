@@ -61,11 +61,11 @@ The following graph illustrates how the
 [@http://en.wikipedia.org/wiki/Probability_density_function probability density function PDF]
 varies with the shape parameter:
 
-[$../graphs/uniform_pdf.png]
+[graph uniform_pdf]
 
 Likewise for the CDF:
 
-[$../graphs/uniform_cdf.png]
+[graph uniform_cdf]
 
 [h4 Member Functions]
 
@@ -124,4 +124,11 @@ b is the /upper/ parameter,
 * [@http://www.itl.nist.gov/div898/handbook/eda/section3/eda3662.htm]
 
 [endsect][/section:uniform_dist Uniform]
+
+[/ 
+  Copyright 2006 John Maddock and Paul A. Bristow.
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
 

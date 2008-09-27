@@ -702,8 +702,8 @@ struct HomogeneousColorBaseConcept {
         typedef typename kth_element_type<ColorBase,num_elements-1>::type TN; 
 
         BOOST_STATIC_ASSERT((is_same<T0,TN>::value));   // better than nothing
-        typedef typename kth_element_const_reference_type<ColorBase,0>::type CR0; 
-        CR0 e0=dynamic_at_c(cb,0);
+        typedef typename kth_element_const_reference_type<ColorBase,0>::type CRef0; 
+        CRef0 e0=dynamic_at_c(cb,0);
     }
     ColorBase cb;
 };
@@ -1363,7 +1363,7 @@ struct IteratorAdaptorConcept {
         typedef typename iterator_adaptor_get_base<Iterator>::type base_t;
         gil_function_requires<boost_concepts::ForwardTraversalConcept<base_t> >();
 
-        BOOST_STATIC_ASSERT(is_iterator_adaptor<Iterator>());
+        BOOST_STATIC_ASSERT(is_iterator_adaptor<Iterator>::value);
         typedef typename iterator_adaptor_rebind<Iterator, void*>::type rebind_t;
 
         base_t base=it.base();  ignore_unused_variable_warning(base);

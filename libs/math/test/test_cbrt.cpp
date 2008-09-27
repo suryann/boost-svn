@@ -58,6 +58,17 @@ void expected_results()
       ".*", 10, 6);                 // test function
 }
 
+struct negative_cbrt
+{
+   negative_cbrt(){}
+
+   template <class S>
+   typename S::value_type operator()(const S& row)
+   {
+      return boost::math::cbrt(-row[1]);
+   }
+};
+
 
 template <class T>
 void do_test_cbrt(const T& data, const char* type_name, const char* test_name)
@@ -66,7 +77,11 @@ void do_test_cbrt(const T& data, const char* type_name, const char* test_name)
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::cbrt<value_type>;
+#else
    pg funcp = boost::math::cbrt;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -82,7 +97,7 @@ void do_test_cbrt(const T& data, const char* type_name, const char* test_name)
       extract_result(0));
    result += boost::math::tools::test(
       data, 
-      negate(bind_func(funcp, 1)), 
+      negative_cbrt(), 
       negate(extract_result(0)));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::cbrt", test_name);
    std::cout << std::endl;
@@ -108,9 +123,11 @@ int test_main(int, char* [])
    BOOST_MATH_CONTROL_FP;
    test_cbrt(0.1F, "float");
    test_cbrt(0.1, "double");
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
    test_cbrt(0.1L, "long double");
 #ifndef BOOST_MATH_NO_REAL_CONCEPT_TESTS
    test_cbrt(boost::math::concepts::real_concept(0.1), "real_concept");
+#endif
 #endif
    return 0;
 }

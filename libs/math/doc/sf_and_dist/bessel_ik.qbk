@@ -44,11 +44,11 @@ when `x <= 0`.
 
 The following graph illustrates the exponential behaviour of I[sub v].
 
-[$../graphs/bessel_i.png]
+[graph cyl_bessel_i]
 
 The following graph illustrates the exponential decay of K[sub v].
 
-[$../graphs/bessel_k.png]
+[graph cyl_bessel_k]
 
 [h4 Testing]
 
@@ -189,3 +189,9 @@ f[sub [nu]], the Wronskian yields I[sub [nu]](x) directly.
 
 [endsect]
 
+[/ 
+  Copyright 2006 John Maddock, Paul A. Bristow and Xiaogang Zhang.
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]

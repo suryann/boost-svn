@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -53,8 +53,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">negative_binomial</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span> <span class="comment">// for negative_binomial_distribution
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">negative_binomial</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span> <span class="comment">// for negative_binomial_distribution
 </span>  <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial_distribution</span><span class="special">;</span> <span class="comment">// default type is double.
 </span>  <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial</span><span class="special">;</span> <span class="comment">// typedef provides default type is double.
 </span><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">binomial</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span> <span class="comment">// for binomial_distribution.
@@ -66,9 +65,7 @@
 <p>
             </p>
 <p>
-              Several examples of constructing distributions follow: </p>
-<div class="calloutlist"><table border="0" summary="Callout list"></table></div>
-<p>
+              Several examples of constructing distributions follow:
             </p>
 <p>
             </p>
@@ -81,8 +78,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="identifier">mydist0</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span></pre>
+<pre class="programlisting"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="identifier">mydist0</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span></pre>
 <p>
             </p>
 <p>
@@ -95,8 +91,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">;</span></pre>
 <p>
             </p>
 <p>
@@ -109,8 +104,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial_distribution</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial_distribution</span><span class="special">;</span></pre>
 <p>
             </p>
 <p>
@@ -130,8 +124,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mydist9</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span> <span class="comment">// Uses default RealType = double.</span></pre>
+<pre class="programlisting"><span class="identifier">negative_binomial_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mydist9</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span> <span class="comment">// Uses default RealType = double.</span></pre>
 <p>
             </p>
 <p>
@@ -144,8 +137,7 @@
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="keyword">typedef</span> <span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="identifier">negative_binomial</span><span class="special">;</span> <span class="comment">// Reserved name of type double.
+<pre class="programlisting"><span class="keyword">typedef</span> <span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span> <span class="identifier">negative_binomial</span><span class="special">;</span> <span class="comment">// Reserved name of type double.
 </span></pre>
 <p>
             </p>
@@ -170,8 +162,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial</span><span class="special">;</span></pre>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">negative_binomial</span><span class="special">;</span></pre>
 <p>
             </p>
 <p>
@@ -184,8 +175,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial</span> <span class="identifier">mydist</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span></pre>
+<pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">mydist</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span></pre>
 <p>
             </p>
 <p>
@@ -198,8 +188,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial</span> <span class="identifier">mydist10</span><span class="special">(</span><span class="number">5.</span><span class="special">,</span> <span class="number">0.4</span><span class="special">);</span> <span class="comment">// Both arguments double.</span></pre>
+<pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">mydist10</span><span class="special">(</span><span class="number">5.</span><span class="special">,</span> <span class="number">0.4</span><span class="special">);</span> <span class="comment">// Both arguments double.</span></pre>
 <p>
             </p>
 <p>
@@ -212,8 +201,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial</span> <span class="identifier">mydist11</span><span class="special">(</span><span class="number">5</span><span class="special">,</span> <span class="number">0.4</span><span class="special">);</span> <span class="comment">// Using provided typedef double, int and double arguments.</span></pre>
+<pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">mydist11</span><span class="special">(</span><span class="number">5</span><span class="special">,</span> <span class="number">0.4</span><span class="special">);</span> <span class="comment">// Using provided typedef double, int and double arguments.</span></pre>
 <p>
             </p>
 <p>
@@ -226,8 +214,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial</span> <span class="identifier">mydist12</span><span class="special">(</span><span class="number">5.</span><span class="special">,</span> <span class="number">0.4F</span><span class="special">);</span> <span class="comment">// Double and float arguments.
+<pre class="programlisting"><span class="identifier">negative_binomial</span> <span class="identifier">mydist12</span><span class="special">(</span><span class="number">5.</span><span class="special">,</span> <span class="number">0.4F</span><span class="special">);</span> <span class="comment">// Double and float arguments.
 </span><span class="identifier">negative_binomial</span> <span class="identifier">mydist13</span><span class="special">(</span><span class="number">5</span><span class="special">,</span> <span class="number">1</span><span class="special">);</span> <span class="comment">// Both arguments integer.</span></pre>
 <p>
             </p>
@@ -241,8 +228,7 @@
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">binomial</span> <span class="identifier">mybinomial</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span> <span class="comment">// is more concise than
+<pre class="programlisting"><span class="identifier">binomial</span> <span class="identifier">mybinomial</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span> <span class="comment">// is more concise than
 </span><span class="identifier">binomial_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mybinomd1</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span></pre>
 <p>
             </p>
@@ -257,8 +243,7 @@
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">beta</span><span class="special">;</span>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">beta</span><span class="special">;</span>
 <span class="identifier">beta</span> <span class="identifier">mybetad0</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span> <span class="comment">// Error beta is a math FUNCTION!
 </span></pre>
 <p>
@@ -283,8 +268,7 @@ error C3861: 'mybetad0': identifier not found
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">beta_distribution</span><span class="special">;</span>
+<pre class="programlisting"><span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">beta_distribution</span><span class="special">;</span>
 <span class="identifier">beta_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mybetad1</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span></pre>
 <p>
             </p>
@@ -298,8 +282,7 @@ error C3861: 'mybetad0': identifier not found
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="identifier">gamma_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mygammad1</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span></pre>
+<pre class="programlisting"><span class="identifier">gamma_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mygammad1</span><span class="special">(</span><span class="number">1</span><span class="special">,</span> <span class="number">0.5</span><span class="special">);</span></pre>
 <p>
             </p>
 <p>
@@ -312,8 +295,7 @@ error C3861: 'mybetad0': identifier not found
 <p>
               
 </p>
-<pre class="programlisting">
-<span class="comment">// Explicit double precision:
+<pre class="programlisting"><span class="comment">// Explicit double precision:
 </span><span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="keyword">double</span><span class="special">&gt;</span>        <span class="identifier">mydist1</span><span class="special">(</span><span class="number">8.</span><span class="special">,</span> <span class="number">0.25</span><span class="special">);</span> 
 
 <span class="comment">// Explicit float precision, double arguments are truncated to float:
@@ -344,14 +326,13 @@ error C3861: 'mybetad0': identifier not found
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="identifier">MyFPType</span><span class="special">&gt;</span>  <span class="identifier">mydist6</span><span class="special">(</span><span class="number">8</span><span class="special">,</span> <span class="number">1</span><span class="special">);</span> <span class="comment">// Integer arguments -&gt; MyFPType.
+<pre class="programlisting"><span class="identifier">negative_binomial_distribution</span><span class="special">&lt;</span><span class="identifier">MyFPType</span><span class="special">&gt;</span>  <span class="identifier">mydist6</span><span class="special">(</span><span class="number">8</span><span class="special">,</span> <span class="number">1</span><span class="special">);</span> <span class="comment">// Integer arguments -&gt; MyFPType.
 </span></pre>
 <p>
             <a name="math_toolkit.dist.stat_tut.weg.dist_construct_eg.default_arguments_to_distribution_constructors_"></a>
             </p>
 <h6>
-<a name="id501028"></a>
+<a name="id523372"></a>
               <a href="dist_construct_eg.html#math_toolkit.dist.stat_tut.weg.dist_construct_eg.default_arguments_to_distribution_constructors_">Default
               arguments to distribution constructors.</a>
             </h6>
@@ -365,8 +346,7 @@ error C3861: 'mybetad0': identifier not found
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="identifier">negative_binomial_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mydist8</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">negative_binomial_distribution</span><span class="special">&lt;&gt;</span> <span class="identifier">mydist8</span><span class="special">;</span>
 </pre>
 <p>
             
@@ -384,8 +364,7 @@ error C3861: 'mybetad0': identifier not found
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="identifier">normal_distribution</span><span class="special">(</span><span class="identifier">RealType</span> <span class="identifier">mean</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="identifier">RealType</span> <span class="identifier">sd</span> <span class="special">=</span> <span class="number">1</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">normal_distribution</span><span class="special">(</span><span class="identifier">RealType</span> <span class="identifier">mean</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="identifier">RealType</span> <span class="identifier">sd</span> <span class="special">=</span> <span class="number">1</span><span class="special">);</span>
 </pre>
 <p>
             </p>
@@ -397,8 +376,7 @@ error C3861: 'mybetad0': identifier not found
 <p>
               
 </p>
-<pre class="programlisting">
-  <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">normal</span><span class="special">;</span>
+<pre class="programlisting">  <span class="keyword">using</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">normal</span><span class="special">;</span>
   
   <span class="identifier">normal</span> <span class="identifier">norm1</span><span class="special">;</span>       <span class="comment">// Standard normal distribution.
 </span>  <span class="identifier">normal</span> <span class="identifier">norm2</span><span class="special">(</span><span class="number">2</span><span class="special">);</span>    <span class="comment">// Mean = 2, std deviation = 1.
@@ -411,17 +389,19 @@ error C3861: 'mybetad0': identifier not found
 <p>
             </p>
 <p>
-              There is no useful output from this program, of course. </p>
-<div class="calloutlist"><table border="0" summary="Callout list"></table></div>
-<p>
+              There is no useful output from this program, of course.
             </p>
 <p>
           </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

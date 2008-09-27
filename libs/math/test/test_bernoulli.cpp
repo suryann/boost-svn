@@ -13,11 +13,11 @@
 // Default domain error policy is
 // #define BOOST_MATH_DOMAIN_ERROR_POLICY throw_on_error
 
-#include <boost/math/distributions/bernoulli.hpp> // for bernoulli_distribution
-using boost::math::bernoulli_distribution;
-
 #include <boost/math/concepts/real_concept.hpp> // for real_concept
 using ::boost::math::concepts::real_concept;
+
+#include <boost/math/distributions/bernoulli.hpp> // for bernoulli_distribution
+using boost::math::bernoulli_distribution;
 
 #include <boost/test/included/test_exec_monitor.hpp> // for test_main
 #include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION, BOOST_CHECK_EQUAL...
@@ -210,9 +210,9 @@ void test_spots(RealType)
 int test_main(int, char* [])
 {
    BOOST_MATH_CONTROL_FP;
-	// Check that can generate bernoulli distribution using both convenience methods:
-	bernoulli_distribution<double> bn1(0.5); // Using default RealType double.
-	boost::math::bernoulli bn2(0.5); // Using typedef. 
+   // Check that can generate bernoulli distribution using both convenience methods:
+   bernoulli_distribution<double> bn1(0.5); // Using default RealType double.
+   boost::math::bernoulli bn2(0.5); // Using typedef. 
 
   BOOST_CHECK_EQUAL(bn1.success_fraction(), 0.5);
   BOOST_CHECK_EQUAL(bn2.success_fraction(), 0.5);

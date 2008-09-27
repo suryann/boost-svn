@@ -49,21 +49,68 @@ struct eval_bucket_traits
    typedef typename BucketTraits::bucket_traits type;
 };
 
+template <class T, class BaseHook>
+struct concrete_hook_base_value_traits
+{
+   typedef typename BaseHook::boost_intrusive_tags tags;
+   typedef detail::base_hook_traits
+      < T
+      , typename tags::node_traits
+      , tags::link_mode
+      , typename tags::tag
+      , tags::hook_type> type;
+};
+
+template <class BaseHook>
+struct concrete_hook_base_node_traits
+{  typedef typename BaseHook::boost_intrusive_tags::node_traits type;  };
+
+template <class T, class BaseHook>
+struct any_hook_base_value_traits
+{
+   typedef typename BaseHook::boost_intrusive_tags tags;
+   typedef detail::base_hook_traits
+      < T
+      , typename BaseHook::node_traits
+      , tags::link_mode
+      , typename tags::tag
+      , tags::hook_type> type;
+};
+
+template <class BaseHook>
+struct any_hook_base_node_traits
+{  typedef typename BaseHook::node_traits type; };
+
 template<class T, class BaseHook>
 struct get_base_value_traits
 {
-   typedef detail::base_hook_traits
-      < T
-      , typename BaseHook::boost_intrusive_tags::node_traits
-      , BaseHook::boost_intrusive_tags::link_mode
-      , typename BaseHook::boost_intrusive_tags::tag
-      , BaseHook::boost_intrusive_tags::hook_type> type;
+   typedef typename detail::eval_if_c
+      < internal_any_hook_bool_is_true<BaseHook>::value
+      , any_hook_base_value_traits<T, BaseHook>
+      , concrete_hook_base_value_traits<T, BaseHook>
+      >::type type;
+};
+
+template<class BaseHook>
+struct get_base_node_traits
+{
+   typedef typename detail::eval_if_c
+      < internal_any_hook_bool_is_true<BaseHook>::value
+      , any_hook_base_node_traits<BaseHook>
+      , concrete_hook_base_node_traits<BaseHook>
+      >::type type;
 };
 
 template<class T, class MemberHook>
 struct get_member_value_traits
 {
    typedef typename MemberHook::member_value_traits type;
+};
+
+template<class MemberHook>
+struct get_member_node_traits
+{
+   typedef typename MemberHook::member_value_traits::node_traits type;
 };
 
 template<class T, class SupposedValueTraits>
@@ -86,24 +133,11 @@ struct get_value_traits
       >::type type;
 };
 
-template<class BaseHook>
-struct get_base_node_traits
-{
-   typedef typename BaseHook::boost_intrusive_tags::node_traits type;
-};
-
-template<class MemberHook>
-struct get_member_node_traits
-{
-   typedef typename MemberHook::member_value_traits::node_traits type;
-};
-
 template<class ValueTraits>
 struct get_explicit_node_traits
 {
    typedef typename ValueTraits::node_traits type;
 };
-
 
 template<class SupposedValueTraits>
 struct get_node_traits
@@ -124,7 +158,6 @@ struct get_node_traits
          >
       >::type type;
 };
-
 
 }  //namespace detail{
 
@@ -183,6 +216,30 @@ struct compare
 /// @endcond
 };
 
+//!This option setter for scapegoat containers specifies if
+//!the intrusive scapegoat container should use a non-variable
+//!alpha value that does not need floating-point operations.
+//!
+//!If activated, the fixed alpha value is 1/sqrt(2). This
+//!option also saves some space in the container since 
+//!the alpha value and some additional data does not need
+//!to be stored in the container.
+//!
+//!If the user only needs an alpha value near 1/sqrt(2), this
+//!option also improves performance since avoids logarithm
+//!and division operations when rebalancing the tree.
+template<bool Enabled>
+struct floating_point
+{
+/// @cond
+    template<class Base>
+    struct pack : Base
+    {
+        static const bool floating_point = Enabled;
+    };
+/// @endcond
+};
+
 //!This option setter specifies the equality
 //!functor for the value type
 template<class Equal>
@@ -234,7 +291,6 @@ template< typename Parent
 struct member_hook
 {
 /// @cond
-   typedef char Parent::* GenericPtrToMember;
    typedef detail::member_hook_traits
       < Parent
       , MemberHook
@@ -247,6 +303,7 @@ struct member_hook
    };
 /// @endcond
 };
+
 
 //!This option setter specifies that the container
 //!must use the specified base hook
@@ -282,22 +339,20 @@ struct void_pointer
 //!the tag of a base hook. A type can not have two
 //!base hooks of the same type, so a tag can be used
 //!to differentiate two base hooks with otherwise same type
-template<class BaseTag>
+template<class Tag>
 struct tag
 {
 /// @cond
    template<class Base>
    struct pack : Base
    {
-      typedef BaseTag tag;
+      typedef Tag tag;
    };
 /// @endcond
 };
 
-//!This option setter specifies the type of
-//!a void pointer. This will instruct the hook
-//!to use this type of pointer instead of the
-//!default one
+//!This option setter specifies the link mode
+//!(normal_link, safe_link or auto_unlink)
 template<link_mode_type LinkType>
 struct link_mode
 {
@@ -306,6 +361,48 @@ struct link_mode
    struct pack : Base
    {
       static const link_mode_type link_mode = LinkType;
+   };
+/// @endcond
+};
+
+//!This option setter specifies if the hook
+//!should be optimized for size instead of for speed.
+template<bool Enabled>
+struct optimize_size
+{
+/// @cond
+   template<class Base>
+   struct pack : Base
+   {
+      static const bool optimize_size = Enabled;
+   };
+/// @endcond
+};
+
+//!This option setter specifies if the list container should
+//!use a linear implementation instead of a circular one.
+template<bool Enabled>
+struct linear
+{
+/// @cond
+   template<class Base>
+   struct pack : Base
+   {
+      static const bool linear = Enabled;
+   };
+/// @endcond
+};
+
+//!This option setter specifies if the list container should
+//!use a linear implementation instead of a circular one.
+template<bool Enabled>
+struct cache_last
+{
+/// @cond
+   template<class Base>
+   struct pack : Base
+   {
+      static const bool cache_last = Enabled;
    };
 /// @endcond
 };
@@ -325,6 +422,41 @@ struct bucket_traits
 /// @endcond
 };
 
+//!This option setter specifies if the unordered hook
+//!should offer room to store the hash value.
+//!Storing the hash in the hook will speed up rehashing
+//!processes in applications where rehashing is frequent,
+//!rehashing might throw or the value is heavy to hash.
+template<bool Enabled>
+struct store_hash
+{
+/// @cond
+    template<class Base>
+    struct pack : Base
+    {
+        static const bool store_hash = Enabled;
+    };
+/// @endcond
+};
+
+//!This option setter specifies if the unordered hook
+//!should offer room to store another link to another node
+//!with the same key.
+//!Storing this link will speed up lookups and insertions on
+//!unordered_multiset containers with a great number of elements
+//!with the same key.
+template<bool Enabled>
+struct optimize_multikey
+{
+/// @cond
+    template<class Base>
+    struct pack : Base
+    {
+        static const bool optimize_multikey = Enabled;
+    };
+/// @endcond
+};
+
 //!This option setter specifies if the bucket array will be always power of two.
 //!This allows using masks instead of the default modulo operation to determine
 //!the bucket number from the hash value, leading to better performance.
@@ -338,6 +470,41 @@ struct power_2_buckets
    struct pack : Base
    {
       static const bool power_2_buckets = Enabled;
+   };
+/// @endcond
+};
+
+//!This option setter specifies if the container will cache a pointer to the first
+//!non-empty bucket so that begin() is always constant-time.
+//!This is specially helpful when we can have containers with a few elements
+//!but with big bucket arrays (that is, hashtables with low load factors).
+template<bool Enabled>
+struct cache_begin
+{
+/// @cond
+   template<class Base>
+   struct pack : Base
+   {
+      static const bool cache_begin = Enabled;
+   };
+/// @endcond
+};
+
+
+//!This option setter specifies if the container will compare the hash value
+//!before comparing objects. This option can't be specified if store_hash<>
+//!is not true.
+//!This is specially helpful when we have containers with a high load factor.
+//!and the comparison function is much more expensive that comparing already
+//!stored hash values.
+template<bool Enabled>
+struct compare_hash
+{
+/// @cond
+   template<class Base>
+   struct pack : Base
+   {
+      static const bool compare_hash = Enabled;
    };
 /// @endcond
 };
@@ -370,7 +537,7 @@ template
    , class O7         = none
    , class O8         = none
    , class O9         = none
-   , class Option10        = none
+   , class Option10   = none
    >
 struct pack_options
 {
@@ -416,6 +583,10 @@ struct hook_defaults
       , void_pointer<void*>
       , link_mode<safe_link>
       , tag<default_tag>
+      , optimize_size<false>
+      , store_hash<false>
+      , linear<false>
+      , optimize_multikey<false>
       >::type
 {};
 

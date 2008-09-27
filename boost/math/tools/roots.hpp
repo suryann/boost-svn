@@ -6,10 +6,15 @@
 #ifndef BOOST_MATH_TOOLS_NEWTON_SOLVER_HPP
 #define BOOST_MATH_TOOLS_NEWTON_SOLVER_HPP
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <utility>
-#include <cmath>
+#include <boost/config/no_tr1/cmath.hpp>
 #include <stdexcept>
 
+#include <boost/tr1/tuple.hpp>
 #include <boost/math/tools/config.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/assert.hpp>
@@ -31,6 +36,10 @@
 namespace boost{ namespace math{ namespace tools{
 
 namespace detail{
+
+template <class Tuple, class T>
+inline void unpack_0(const Tuple& t, T& val)
+{ val = std::tr1::get<0>(t); }
 
 template <class F, class T>
 void handle_zero_derivative(F f,
@@ -54,7 +63,8 @@ void handle_zero_derivative(F f,
       {
          guess = min;
       }
-      last_f0 = std::tr1::get<0>(f(guess));
+      unpack_0(f(guess), last_f0);
+      //last_f0 = std::tr1::get<0>(f(guess));
       delta = guess - result;
    }
    if(sign(last_f0) * sign(f0) < 0)
@@ -513,5 +523,6 @@ inline T schroeder_iterate(F f, T guess, T min, T max, int digits)
 } // namespace boost
 
 #endif // BOOST_MATH_TOOLS_NEWTON_SOLVER_HPP
+
 
 

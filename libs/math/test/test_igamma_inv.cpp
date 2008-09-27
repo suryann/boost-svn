@@ -12,10 +12,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#endif
+#include "functor.hpp"
 
 #include "test_gamma_hooks.hpp"
 #include "handle_test_result.hpp"
@@ -188,6 +185,19 @@ void expected_results()
       << BOOST_STDLIB << ", " << BOOST_PLATFORM << std::endl;
 }
 
+#define BOOST_CHECK_CLOSE_EX(a, b, prec, i) \
+   {\
+      unsigned int failures = boost::unit_test::results_collector.results( boost::unit_test::framework::current_test_case().p_id ).p_assertions_failed;\
+      BOOST_CHECK_CLOSE(a, b, prec); \
+      if(failures != boost::unit_test::results_collector.results( boost::unit_test::framework::current_test_case().p_id ).p_assertions_failed)\
+      {\
+         std::cerr << "Failure was at row " << i << std::endl;\
+         std::cerr << std::setprecision(35); \
+         std::cerr << "{ " << data[i][0] << " , " << data[i][1] << " , " << data[i][2];\
+         std::cerr << " , " << data[i][3] << " , " << data[i][4] << " , " << data[i][5] << " } " << std::endl;\
+      }\
+   }
+
 template <class T>
 void do_test_gamma_2(const T& data, const char* type_name, const char* test_name)
 {
@@ -225,10 +235,12 @@ void do_test_gamma_2(const T& data, const char* type_name, const char* test_name
       //
       if(data[i][5] == 0)
          BOOST_CHECK_EQUAL(boost::math::gamma_p_inv(data[i][0], data[i][5]), value_type(0));
-      else if((1 - data[i][5] > 0.001) && (fabs(data[i][5]) >= boost::math::tools::min_value<value_type>()))
+      else if((1 - data[i][5] > 0.001) 
+         && (fabs(data[i][5]) > 2 * boost::math::tools::min_value<value_type>()) 
+         && (fabs(data[i][5]) > 2 * boost::math::tools::min_value<double>()))
       {
          value_type inv = boost::math::gamma_p_inv(data[i][0], data[i][5]);
-         BOOST_CHECK_CLOSE(data[i][1], inv, precision);
+         BOOST_CHECK_CLOSE_EX(data[i][1], inv, precision, i);
       }
       else if(1 == data[i][5])
          BOOST_CHECK_EQUAL(boost::math::gamma_p_inv(data[i][0], data[i][5]), boost::math::tools::max_value<value_type>());
@@ -237,24 +249,24 @@ void do_test_gamma_2(const T& data, const char* type_name, const char* test_name
          // not enough bits in our input to get back to x, but we should be in
          // the same ball park:
          value_type inv = boost::math::gamma_p_inv(data[i][0], data[i][5]);
-         BOOST_CHECK_CLOSE(data[i][1], inv, 100000);
+         BOOST_CHECK_CLOSE_EX(data[i][1], inv, 100000, i);
       }
 
       if(data[i][3] == 0)
          BOOST_CHECK_EQUAL(boost::math::gamma_q_inv(data[i][0], data[i][3]), boost::math::tools::max_value<value_type>());
-      else if((1 - data[i][3] > 0.001) && (fabs(data[i][3]) >= boost::math::tools::min_value<value_type>()))
+      else if((1 - data[i][3] > 0.001) && (fabs(data[i][3]) > 2 * boost::math::tools::min_value<value_type>()))
       {
          value_type inv = boost::math::gamma_q_inv(data[i][0], data[i][3]);
-         BOOST_CHECK_CLOSE(data[i][1], inv, precision);
+         BOOST_CHECK_CLOSE_EX(data[i][1], inv, precision, i);
       }
       else if(1 == data[i][3])
          BOOST_CHECK_EQUAL(boost::math::gamma_q_inv(data[i][0], data[i][3]), value_type(0));
-      else
+      else if(fabs(data[i][3]) > 2 * boost::math::tools::min_value<value_type>())
       {
          // not enough bits in our input to get back to x, but we should be in
          // the same ball park:
          value_type inv = boost::math::gamma_q_inv(data[i][0], data[i][3]);
-         BOOST_CHECK_CLOSE(data[i][1], inv, 100);
+         BOOST_CHECK_CLOSE_EX(data[i][1], inv, 100, i);
       }
    }
    std::cout << std::endl;
@@ -263,14 +275,15 @@ void do_test_gamma_2(const T& data, const char* type_name, const char* test_name
 template <class T>
 void do_test_gamma_inv(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::gamma_p_inv<value_type, value_type>;
+#else
    pg funcp = boost::math::gamma_p_inv;
-
-   using namespace boost::lambda;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -282,19 +295,22 @@ void do_test_gamma_inv(const T& data, const char* type_name, const char* test_na
    //
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1])),
-      ret<value_type>(_1[2]));
+      bind_func(funcp, 0, 1),
+      extract_result(2));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::gamma_p_inv", test_name);
    //
    // test gamma_q_inv(T, T) against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::gamma_q_inv<value_type, value_type>;
+#else
    funcp = boost::math::gamma_q_inv;
+#endif
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1])),
-      ret<value_type>(_1[3]));
+      bind_func(funcp, 0, 1),
+      extract_result(3));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::gamma_q_inv", test_name);
-#endif
 }
 
 template <class T>
@@ -339,9 +355,9 @@ void test_spots(T, const char* type_name)
 {
    std::cout << "Running spot checks for type " << type_name << std::endl;
    //
-   // basic sanity checks, tolerance is 100 epsilon expressed as a percentage:
+   // basic sanity checks, tolerance is 150 epsilon expressed as a percentage:
    //
-   T tolerance = boost::math::tools::epsilon<T>() * 10000;
+   T tolerance = boost::math::tools::epsilon<T>() * 15000;
    if(tolerance < 1e-25f)
       tolerance = 1e-25f;  // limit of test data?
    BOOST_CHECK_CLOSE(::boost::math::gamma_q_inv(static_cast<T>(1)/100, static_cast<T>(1.0/128)), static_cast<T>(0.35767144525455121503672919307647515332256996883787L), tolerance);
@@ -371,15 +387,24 @@ void test_spots(T, const char* type_name)
 int test_main(int, char* [])
 {
    expected_results();
+   BOOST_MATH_CONTROL_FP;
 
 #ifndef BOOST_MATH_BUGGY_LARGE_FLOAT_CONSTANTS
+#ifdef TEST_FLOAT
    test_spots(0.0F, "float");
 #endif
+#endif
+#ifdef TEST_DOUBLE
    test_spots(0.0, "double");
+#endif
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+#ifdef TEST_LDOUBLE
    test_spots(0.0L, "long double");
+#endif
 #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
+#ifdef TEST_REAL_CONCEPT
    test_spots(boost::math::concepts::real_concept(0.1), "real_concept");
+#endif
 #endif
 #endif
 

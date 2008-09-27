@@ -15,8 +15,18 @@ static const long double l = 0;
 static const unsigned u = 0;
 static const int i = 0;
 
-template <class T>
-inline void check_result_imp(T, T){}
+//template <class T>
+//inline void check_result_imp(T, T){}
+
+inline void check_result_imp(float, float){}
+inline void check_result_imp(double, double){}
+inline void check_result_imp(long double, long double){}
+inline void check_result_imp(int, int){}
+inline void check_result_imp(long, long){}
+#ifdef BOOST_HAS_LONG_LONG
+inline void check_result_imp(boost::long_long_type, boost::long_long_type){}
+#endif
+inline void check_result_imp(bool, bool){}
 
 template <class T1, class T2>
 inline void check_result_imp(T1, T2)
@@ -113,8 +123,13 @@ private:
    }
 }; // struct DistributionConcept
 
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
 #define TEST_DIST_FUNC(dist)\
    DistributionConcept< boost::math::dist##_distribution<float> >::constraints();\
    DistributionConcept< boost::math::dist##_distribution<double> >::constraints();\
    DistributionConcept< boost::math::dist##_distribution<long double> >::constraints();
-
+#else
+#define TEST_DIST_FUNC(dist)\
+   DistributionConcept< boost::math::dist##_distribution<float> >::constraints();\
+   DistributionConcept< boost::math::dist##_distribution<double> >::constraints();
+#endif

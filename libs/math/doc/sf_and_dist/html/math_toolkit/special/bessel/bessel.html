@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -28,11 +28,10 @@
         of the First and Second Kinds</a>
 </h4></div></div></div>
 <a name="math_toolkit.special.bessel.bessel.synopsis"></a><h5>
-<a name="id669290"></a>
+<a name="id707608"></a>
           <a href="bessel.html#math_toolkit.special.bessel.bessel.synopsis">Synopsis</a>
         </h5>
-<pre class="programlisting">
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">cyl_bessel_j</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">v</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">x</span><span class="special">);</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">,</span> <span class="keyword">class</span> <a href="../../policy.html" title="Policies">Policy</a><span class="special">&gt;</span>
@@ -45,7 +44,7 @@
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">cyl_neumann</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">v</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">x</span><span class="special">,</span> <span class="keyword">const</span> <a href="../../policy.html" title="Policies">Policy</a><span class="special">&amp;);</span>
 </pre>
 <a name="math_toolkit.special.bessel.bessel.description"></a><h5>
-<a name="id669800"></a>
+<a name="id708116"></a>
           <a href="bessel.html#math_toolkit.special.bessel.bessel.description">Description</a>
         </h5>
 <p>
@@ -101,26 +100,26 @@
           The following graph illustrates the cyclic nature of J<sub>v</sub>:
         </p>
 <p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/bessel_jn.png" alt="bessel_jn"></span>
+          <span class="inlinemediaobject"><img src="../../../../graphs/cyl_bessel_j.png" align="middle"></span>
         </p>
 <p>
           The following graph shows the behaviour of Y<sub>v</sub>: this is also cyclic for
           large <span class="emphasis"><em>x</em></span>, but tends to -&#8734; for small <span class="emphasis"><em>x</em></span>:
         </p>
 <p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/bessel_yv.png" alt="bessel_yv"></span>
+          <span class="inlinemediaobject"><img src="../../../../graphs/cyl_neumann.png" align="middle"></span>
         </p>
 <a name="math_toolkit.special.bessel.bessel.testing"></a><h5>
-<a name="id670172"></a>
+<a name="id708517"></a>
           <a href="bessel.html#math_toolkit.special.bessel.bessel.testing">Testing</a>
         </h5>
 <p>
-          There are two sets of test values: spot values calculated using <a href="http//:functions.wolfram.com" target="_top">functions.wolfram.com</a>, and a
+          There are two sets of test values: spot values calculated using <a href="http://functions.wolfram.com" target="_top">functions.wolfram.com</a>, and a
           much larger set of tests computed using a simplified version of this implementation
           (with all the special case handling removed).
         </p>
 <a name="math_toolkit.special.bessel.bessel.accuracy"></a><h5>
-<a name="id670211"></a>
+<a name="id708556"></a>
           <a href="bessel.html#math_toolkit.special.bessel.bessel.accuracy">Accuracy</a>
         </h5>
 <p>
@@ -136,7 +135,7 @@
           zero error</a>. All values are relative errors in units of epsilon.
         </p>
 <div class="table">
-<a name="id670268"></a><p class="title"><b>Table 29. Errors Rates in cyl_bessel_j</b></p>
+<a name="id708613"></a><p class="title"><b>Table 36. Errors Rates in cyl_bessel_j</b></p>
 <div class="table-contents"><table class="table" summary="Errors Rates in cyl_bessel_j">
 <colgroup>
 <col>
@@ -305,7 +304,7 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="id670572"></a><p class="title"><b>Table 30. Errors Rates in cyl_neumann</b></p>
+<a name="id708917"></a><p class="title"><b>Table 37. Errors Rates in cyl_neumann</b></p>
 <div class="table-contents"><table class="table" summary="Errors Rates in cyl_neumann">
 <colgroup>
 <col>
@@ -490,12 +489,12 @@
           the test data (no significant figures correct), and even GSL performs badly
           with some inputs to J<sub>v</sub>. Note that by way of double-checking these results,
           the worst performing <a href="http://www.netlib.org/cephes/" target="_top">Cephes</a>
-          and GSL cases were recomputed using <a href="http//:functions.wolfram.com" target="_top">functions.wolfram.com</a>,
+          and GSL cases were recomputed using <a href="http://functions.wolfram.com" target="_top">functions.wolfram.com</a>,
           and the result checked against our test data: no errors in the test data
           were found.
         </p>
 <a name="math_toolkit.special.bessel.bessel.implementation"></a><h5>
-<a name="id671001"></a>
+<a name="id709346"></a>
           <a href="bessel.html#math_toolkit.special.bessel.bessel.implementation">Implementation</a>
         </h5>
 <p>
@@ -658,8 +657,12 @@ are also computed by recursions (involving gamma functions), but
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

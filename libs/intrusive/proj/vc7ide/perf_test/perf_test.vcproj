@@ -25,9 +25,10 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
 				DisableLanguageExtensions="FALSE"
+				TreatWChar_tAsBuiltInType="TRUE"
 				ForceConformanceInForLoopScope="TRUE"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				Detect64BitPortabilityProblems="TRUE"
 				DebugInformationFormat="4"/>
 			<Tool
@@ -120,16 +121,6 @@
 			<File
 				RelativePath="..\..\..\perf\perf_list.cpp">
 			</File>
-		</Filter>
-		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
-		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{68B017A6-F80D6A2-084c-06A6-8A323C1ABD01}">
 		</Filter>
 	</Files>
 	<Globals>

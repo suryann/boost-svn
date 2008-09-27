@@ -35,6 +35,7 @@ void instantiate(RealType)
    function_requires<DistributionConcept<triangular_distribution<RealType> > >();
    function_requires<DistributionConcept<uniform_distribution<RealType> > >();
    function_requires<DistributionConcept<negative_binomial_distribution<RealType> > >();
+   function_requires<DistributionConcept<non_central_chi_squared_distribution<RealType> > >();
 }
 
 
@@ -42,6 +43,8 @@ int main()
 {
    instantiate(float(0));
    instantiate(double(0));
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
    instantiate((long double)(0));
+#endif
 }
 

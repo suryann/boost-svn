@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -39,15 +39,14 @@
           </li>
 </ul></div>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.available_actions_when_an_error_is_raised"></a><h5>
-<a name="id761014"></a>
+<a name="id836856"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.available_actions_when_an_error_is_raised">Available
           Actions When an Error is Raised</a>
         </h5>
 <p>
           What to do with the error is encapsulated by an enumerated type:
         </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">policies</span> <span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span> <span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">policies</span> <span class="special">{</span>
 
 <span class="keyword">enum</span> <span class="identifier">error_policy_type</span>
 <span class="special">{</span>
@@ -63,7 +62,7 @@
           The various enumerated values have the following meanings:
         </p>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.throw_on_error"></a><h6>
-<a name="id761268"></a>
+<a name="id837108"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.throw_on_error">throw_on_error</a>
         </h6>
 <p>
@@ -160,10 +159,22 @@
                 </p>
                 </td>
 </tr>
+<tr>
+<td>
+                <p>
+                  Indeterminate Result Error
+                </p>
+                </td>
+<td>
+                <p>
+                  std::domain_error
+                </p>
+                </td>
+</tr>
 </tbody>
 </table></div>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.errno_on_error"></a><h6>
-<a name="id761450"></a>
+<a name="id837310"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.errno_on_error">errno_on_error</a>
         </h6>
 <p>
@@ -261,14 +272,26 @@
                 </p>
                 </td>
 </tr>
+<tr>
+<td>
+                <p>
+                  Indeterminate Result Error
+                </p>
+                </td>
+<td>
+                <p>
+                  EDOM
+                </p>
+                </td>
+</tr>
 </tbody>
 </table></div>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.ignore_error"></a><h6>
-<a name="id761649"></a>
+<a name="id837528"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.ignore_error">ignore_error</a>
         </h6>
 <p>
-          Will return a one of the values below depending on the error type (<code class="computeroutput"><span class="special">::</span><span class="identifier">errno</span></code>
+          Will return one of the values below depending on the error type (<code class="computeroutput"><span class="special">::</span><span class="identifier">errno</span></code>
           is NOT changed)::
         </p>
 <div class="informaltable"><table class="table">
@@ -362,18 +385,29 @@
                 </p>
                 </td>
 </tr>
+<tr>
+<td>
+                <p>
+                  Indeterminate Result Error
+                </p>
+                </td>
+<td>
+                <p>
+                  Depends on the function where the error occurred
+                </p>
+                </td>
+</tr>
 </tbody>
 </table></div>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.user_error"></a><h6>
-<a name="id761850"></a>
+<a name="id837748"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.user_error">user_error</a>
         </h6>
 <p>
           Will call a user defined error handler: these are forward declared in boost/math/policies/error_handling.hpp,
           but the actual definitions must be provided by the user:
         </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">policies</span><span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">policies</span><span class="special">{</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="identifier">T</span> <span class="identifier">user_domain_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">);</span>
@@ -391,7 +425,13 @@
 <span class="identifier">T</span> <span class="identifier">user_denorm_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">);</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<span class="identifier">T</span> <span class="identifier">user_rounding_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">);</span>
+
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <span class="identifier">T</span> <span class="identifier">user_evaluation_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">);</span>
+
+<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
+<span class="identifier">T</span> <span class="identifier">user_indeterminate_result_error</span><span class="special">(</span><span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">function</span><span class="special">,</span> <span class="keyword">const</span> <span class="keyword">char</span><span class="special">*</span> <span class="identifier">message</span><span class="special">,</span> <span class="keyword">const</span> <span class="identifier">T</span><span class="special">&amp;</span> <span class="identifier">val</span><span class="special">);</span>
 
 <span class="special">}}}</span> <span class="comment">// namespaces
 </span></pre>
@@ -409,12 +449,12 @@
           here</a>.
         </p>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.kinds_of_error_raised"></a><h5>
-<a name="id762789"></a>
+<a name="id838949"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.kinds_of_error_raised">Kinds
           of Error Raised</a>
         </h5>
 <p>
-          There are five kinds of error reported by this library, which are summarised
+          There are six kinds of error reported by this library, which are summarised
           in the following table:
         </p>
 <div class="informaltable"><table class="table">
@@ -568,6 +608,34 @@
 <tr>
 <td>
                 <p>
+                  Rounding Error
+                </p>
+                </td>
+<td>
+                <p>
+                  boost::math::policies::rounding_error&lt;<span class="emphasis"><em>action</em></span>&gt;
+                </p>
+                </td>
+<td>
+                <p>
+                  Raised When one of the rounding functions <a href="../../special/rounding/round.html" title="Rounding Functions">round</a>,
+                  <a href="../../special/rounding/trunc.html" title="Truncation Functions">trunc</a>
+                  or <a href="../../special/rounding/modf.html" title="Integer and Fractional Part Splitting (modf)">modf</a>
+                  is called with an argument that has no integer representation,
+                  or is too large to be represented in the result type
+                </p>
+                <p>
+                  Defaults to <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">rounding_error</span><span class="special">&lt;</span><span class="identifier">throw_on_error</span><span class="special">&gt;</span></code>
+                </p>
+                <p>
+                  When the action is <span class="emphasis"><em>throw_on_error</em></span> then throws
+                  <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">rounding_error</span></code>
+                </p>
+                </td>
+</tr>
+<tr>
+<td>
+                <p>
                   Evaluation Error
                 </p>
                 </td>
@@ -592,10 +660,35 @@
                 </p>
                 </td>
 </tr>
+<tr>
+<td>
+                <p>
+                  Indeterminate Result Error
+                </p>
+                </td>
+<td>
+                <p>
+                  boost::math::policies::indeterminate_result_error&lt;<span class="emphasis"><em>action</em></span>&gt;
+                </p>
+                </td>
+<td>
+                <p>
+                  Raised when the result of a function is not defined for the values
+                  that were passed to it.
+                </p>
+                <p>
+                  Defaults to <code class="computeroutput"><span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">::</span><span class="identifier">indeterminate_result_error</span><span class="special">&lt;</span><span class="identifier">ignore_error</span><span class="special">&gt;</span></code>
+                </p>
+                <p>
+                  When the action is <span class="emphasis"><em>throw_on_error</em></span> then throws
+                  <code class="computeroutput"><span class="identifier">std</span><span class="special">::</span><span class="identifier">domain_error</span></code>
+                </p>
+                </td>
+</tr>
 </tbody>
 </table></div>
 <a name="math_toolkit.policy.pol_ref.error_handling_policies.examples"></a><h5>
-<a name="id763630"></a>
+<a name="id840080"></a>
           <a href="error_handling_policies.html#math_toolkit.policy.pol_ref.error_handling_policies.examples">Examples</a>
         </h5>
 <p>
@@ -608,8 +701,7 @@
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">/</span><span class="identifier">gamma</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">/</span><span class="identifier">gamma</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">;</span>
 <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">;</span>
@@ -637,13 +729,6 @@
 <p>
           </p>
 <p>
-          </p>
-<p>
-            </p>
-<div class="calloutlist"><table border="0" summary="Callout list"></table></div>
-<p>
-          </p>
-<p>
         </p>
 <p>
           Suppose we want a statistical distribution to return infinities, rather
@@ -654,8 +739,7 @@
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">normal</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">normal</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 
 <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">::</span><span class="identifier">policies</span><span class="special">;</span>
 <span class="keyword">using</span> <span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">::</span><span class="identifier">math</span><span class="special">;</span>
@@ -675,19 +759,16 @@
 <p>
           </p>
 <p>
-          </p>
-<p>
-            </p>
-<div class="calloutlist"><table border="0" summary="Callout list"></table></div>
-<p>
-          </p>
-<p>
         </p>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

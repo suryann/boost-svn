@@ -13,6 +13,7 @@
 // Default domain error policy is
 // #define BOOST_MATH_DOMAIN_ERROR_POLICY throw_on_error
 
+#include <boost/math/concepts/real_concept.hpp> // for real_concept
 #include <boost/math/distributions/normal.hpp> // for normal_distribution
   using boost::math::normal; // Default type double.
   using boost::math::normal_distribution; // All floating-point types.
@@ -28,7 +29,6 @@
 
 #include <boost/test/included/test_exec_monitor.hpp> // for test_main
 #include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION, BOOST_CHECK_EQUAL...
-#include <boost/math/concepts/real_concept.hpp> // for real_concept
 
 #include <iostream>
   using std::cout; using std::endl; using std::fixed;
@@ -64,7 +64,7 @@ void test_spots(RealType)
   BOOST_CHECK_EQUAL(n.location(), 0); // aka mean.
   BOOST_CHECK_EQUAL(n.scale(), 1); // aka standard_deviation.
 
-	// Check for 'bad' arguments.
+   // Check for 'bad' arguments.
   BOOST_CHECK_THROW(find_location<normal>(0., -1., 0.), std::domain_error); // p below 0 to 1.
   BOOST_CHECK_THROW(find_location<normal>(0., 2., 0.), std::domain_error); // p above 0 to 1.
   BOOST_CHECK_THROW(find_location<normal>(numeric_limits<double>::infinity(), 0.5, 0.),

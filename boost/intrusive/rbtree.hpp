@@ -13,21 +13,23 @@
 #define BOOST_INTRUSIVE_RBTREE_HPP
 
 #include <boost/intrusive/detail/config_begin.hpp>
+#include <algorithm>
+#include <cstddef>
 #include <functional>
 #include <iterator>
 #include <utility>
+
 #include <boost/intrusive/detail/assert.hpp>
 #include <boost/static_assert.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
-#include <boost/intrusive/detail/pointer_to_other.hpp>
 #include <boost/intrusive/set_hook.hpp>
 #include <boost/intrusive/detail/rbtree_node.hpp>
+#include <boost/intrusive/detail/tree_node.hpp>
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
+#include <boost/intrusive/detail/pointer_to_other.hpp>
 #include <boost/intrusive/options.hpp>
 #include <boost/intrusive/rbtree_algorithms.hpp>
 #include <boost/intrusive/link_mode.hpp>
-#include <cstddef>
-#include <iterator>
 
 namespace boost {
 namespace intrusive {
@@ -77,7 +79,7 @@ struct set_defaults
 /// @endcond
 
 //! The class template rbtree is an intrusive red-black tree container, that
-//! is used to construct intrusive set and tree containers. The no-throw 
+//! is used to construct intrusive set and multiset containers. The no-throw 
 //! guarantee holds only, if the value_compare object 
 //! doesn't throw.
 //!
@@ -117,11 +119,11 @@ class rbtree_impl
    typedef typename Config::size_type                                size_type;
    typedef typename Config::compare                                  value_compare;
    typedef value_compare                                             key_compare;
-   typedef rbtree_iterator<rbtree_impl, false>                       iterator;
-   typedef rbtree_iterator<rbtree_impl, true>                        const_iterator;
+   typedef tree_iterator<rbtree_impl, false>                         iterator;
+   typedef tree_iterator<rbtree_impl, true>                          const_iterator;
    typedef std::reverse_iterator<iterator>                           reverse_iterator;
    typedef std::reverse_iterator<const_iterator>                     const_reverse_iterator;
-   typedef typename real_value_traits::node_traits                        node_traits;
+   typedef typename real_value_traits::node_traits                   node_traits;
    typedef typename node_traits::node                                node;
    typedef typename boost::pointer_to_other
       <pointer, node>::type                                          node_ptr;
@@ -234,7 +236,7 @@ class rbtree_impl
    //!   [b, e).
    //!
    //! <b>Complexity</b>: Linear in N if [b, e) is already sorted using
-   //!   comp and otherwise N * log N, where N is last ­ first.
+   //!   comp and otherwise N * log N, where N is the distance between first and last.
    //! 
    //! <b>Throws</b>: Nothing unless the copy constructor of the value_compare object throws.
    template<class Iterator>
@@ -377,13 +379,35 @@ class rbtree_impl
    //! <b>Precondition</b>: end_iterator must be a valid end const_iterator
    //!   of rbtree.
    //! 
-   //! <b>Effects</b>: Returns a const reference to the rbtree associated to the end iterator
+   //! <b>Effects</b>: Returns a const reference to the rbtree associated to the iterator
    //! 
    //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Complexity</b>: Constant.
    static const rbtree_impl &container_from_end_iterator(const_iterator end_iterator)
    {  return priv_container_from_end_iterator(end_iterator);   }
+
+   //! <b>Precondition</b>: it must be a valid iterator
+   //!   of rbtree.
+   //! 
+   //! <b>Effects</b>: Returns a const reference to the tree associated to the iterator
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Logarithmic.
+   static rbtree_impl &container_from_iterator(iterator it)
+   {  return priv_container_from_iterator(it);   }
+
+   //! <b>Precondition</b>: it must be a valid end const_iterator
+   //!   of rbtree.
+   //! 
+   //! <b>Effects</b>: Returns a const reference to the tree associated to the end iterator
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Logarithmic.
+   static const rbtree_impl &container_from_iterator(const_iterator it)
+   {  return priv_container_from_iterator(it);   }
 
    //! <b>Effects</b>: Returns the value_compare object used by the tree.
    //! 
@@ -410,15 +434,16 @@ class rbtree_impl
    {
       if(constant_time_size)
          return this->priv_size_traits().get_size();
-      else
-         return empty() ? 0 : node_algorithms::count(node_traits::get_parent(const_node_ptr(&priv_header())));
+      else{
+         return (size_type)node_algorithms::size(const_node_ptr(&priv_header()));
+      }
    }
 
    //! <b>Effects</b>: Swaps the contents of two multisets.
    //! 
    //! <b>Complexity</b>: Constant.
    //! 
-   //! <b>Throws</b>: If the comparison functor's none swap call throws.
+   //! <b>Throws</b>: If the comparison functor's swap call throws.
    void swap(rbtree_impl& other)
    {
       //This can throw
@@ -444,7 +469,7 @@ class rbtree_impl
    //! 
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   No copy-constructors are called.
-   iterator insert_equal_upper_bound(reference value)
+   iterator insert_equal(reference value)
    {
       detail::key_nodeptr_comp<value_compare, rbtree_impl>
          key_node_comp(priv_comp(), this);
@@ -453,29 +478,6 @@ class rbtree_impl
          BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(to_insert));
       this->priv_size_traits().increment();
       return iterator(node_algorithms::insert_equal_upper_bound
-         (node_ptr(&priv_header()), to_insert, key_node_comp), this);
-   }
-
-   //! <b>Requires</b>: value must be an lvalue
-   //! 
-   //! <b>Effects</b>: Inserts value into the tree before the lower bound.
-   //! 
-   //! <b>Complexity</b>: Average complexity for insert element is at
-   //!   most logarithmic.
-   //! 
-   //! <b>Throws</b>: Nothing.
-   //! 
-   //! <b>Note</b>: Does not affect the validity of iterators and references.
-   //!   No copy-constructors are called.
-   iterator insert_equal_lower_bound(reference value)
-   {
-      detail::key_nodeptr_comp<value_compare, rbtree_impl>
-         key_node_comp(priv_comp(), this);
-      node_ptr to_insert(get_real_value_traits().to_node_ptr(value));
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(to_insert));
-      this->priv_size_traits().increment();
-      return iterator(node_algorithms::insert_equal_lower_bound
          (node_ptr(&priv_header()), to_insert, key_node_comp), this);
    }
 
@@ -522,15 +524,9 @@ class rbtree_impl
    template<class Iterator>
    void insert_equal(Iterator b, Iterator e)
    {
-      if(this->empty()){
-         iterator end(this->end());
-         for (; b != e; ++b)
-            this->insert_equal(end, *b);
-      }
-      else{
-         for (; b != e; ++b)
-            this->insert_equal_upper_bound(*b);
-      }
+      iterator end(this->end());
+      for (; b != e; ++b)
+         this->insert_equal(end, *b);
    }
 
    //! <b>Requires</b>: value must be an lvalue
@@ -1058,6 +1054,19 @@ class rbtree_impl
       return std::pair<const_iterator, const_iterator>(const_iterator(ret.first, this), const_iterator(ret.second, this));
    }
 
+   //! <b>Requires</b>: Disposer::operator()(pointer) shouldn't throw.
+   //!
+   //! <b>Effects</b>: Erases all the elements from *this
+   //!   calling Disposer::operator()(pointer), clones all the 
+   //!   elements from src calling Cloner::operator()(const_reference )
+   //!   and inserts them on *this.
+   //!
+   //!   If cloner throws, all cloned elements are unlinked and disposed
+   //!   calling Disposer::operator()(pointer).
+   //!   
+   //! <b>Complexity</b>: Linear to erased plus inserted elements.
+   //! 
+   //! <b>Throws</b>: If cloner throws.
    template <class Cloner, class Disposer>
    void clone_from(const rbtree_impl &src, Cloner cloner, Disposer disposer)
    {
@@ -1072,6 +1081,16 @@ class rbtree_impl
       }
    }
 
+   //! <b>Effects</b>: Unlinks the leftmost node from the tree.
+   //! 
+   //! <b>Complexity</b>: Average complexity is constant time.
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Notes</b>: This function breaks the tree and the tree can
+   //!   only be used for more unlink_leftmost_without_rebalance calls.
+   //!   This function is normally used to achieve a step by step
+   //!   controlled destruction of the tree.
    pointer unlink_leftmost_without_rebalance()
    {
       node_ptr to_be_disposed(node_algorithms::unlink_leftmost_without_rebalance
@@ -1131,7 +1150,7 @@ class rbtree_impl
    //! 
    //! <b>Complexity</b>: Constant.
    //! 
-   //! <b>Throws</b>: Nothing.ç
+   //! <b>Throws</b>: Nothing.
    //! 
    //! <b>Note</b>: This static function is available only if the <i>value traits</i>
    //!   is stateless.
@@ -1179,33 +1198,26 @@ class rbtree_impl
    static void init_node(reference value)
    { node_algorithms::init(value_traits::to_node_ptr(value)); }
 
-/*
-   //! <b>Effects</b>: removes x from a tree of the appropriate type. It has no effect,
-   //! if x is not in such a tree. 
+   //! <b>Effects</b>: removes "value" from the container.
    //! 
    //! <b>Throws</b>: Nothing.
    //! 
-   //! <b>Complexity</b>: Constant time.
+   //! <b>Complexity</b>: Logarithmic time.
    //! 
-   //! <b>Note</b>: This static function is only usable with the "safe mode"
-   //! hook and non-constant time size lists. Otherwise, the user must use
-   //! the non-static "erase(reference )" member. If the user calls
-   //! this function with a non "safe mode" or constant time size list
-   //! a compilation error will be issued.
-   template<class T>
-   static void remove_node(T& value)
+   //! <b>Note</b>: This static function is only usable with non-constant
+   //! time size containers that have stateless comparison functors.
+   //!
+   //! If the user calls
+   //! this function with a constant time size container or stateful comparison
+   //! functor a compilation error will be issued.
+   static void remove_node(reference value)
    {
-      //This function is only usable for safe mode hooks and non-constant
-      //time lists. 
-      //BOOST_STATIC_ASSERT((!(safemode_or_autounlink && constant_time_size)));
       BOOST_STATIC_ASSERT((!constant_time_size));
-      BOOST_STATIC_ASSERT((boost::is_convertible<T, value_type>::value));
       node_ptr to_remove(value_traits::to_node_ptr(value));
-      node_algorithms::unlink_and_rebalance(to_remove);
+      node_algorithms::unlink(to_remove);
       if(safemode_or_autounlink)
          node_algorithms::init(to_remove);
    }
-*/
 
    /// @cond
    private:
@@ -1236,6 +1248,9 @@ class rbtree_impl
       rbtree_impl *rb  = detail::parent_from_member<rbtree_impl, data_t>(d, &rbtree_impl::data_);
       return *rb;
    }
+
+   static rbtree_impl &priv_container_from_iterator(const const_iterator &it)
+   {  return priv_container_from_end_iterator(it.end_iterator_from_it());   }
 };
 
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
@@ -1265,14 +1280,14 @@ bool operator==
 {
    typedef rbtree_impl<Config> tree_type;
    typedef typename tree_type::const_iterator const_iterator;
-   const bool CS = tree_type::constant_time_size;
-   if(CS && x.size() != y.size()){
+
+   if(tree_type::constant_time_size && x.size() != y.size()){
       return false;
    }
    const_iterator end1 = x.end();
    const_iterator i1 = x.begin();
    const_iterator i2 = y.begin();
-   if(CS){
+   if(tree_type::constant_time_size){
       while (i1 != end1 && *i1 == *i2) {
          ++i1;
          ++i2;
@@ -1429,6 +1444,12 @@ class rbtree
 
    static const rbtree &container_from_end_iterator(const_iterator end_iterator)
    {  return static_cast<const rbtree &>(Base::container_from_end_iterator(end_iterator));   }
+
+   static rbtree &container_from_it(iterator it)
+   {  return static_cast<rbtree &>(Base::container_from_iterator(it));   }
+
+   static const rbtree &container_from_it(const_iterator it)
+   {  return static_cast<const rbtree &>(Base::container_from_iterator(it));   }
 };
 
 #endif

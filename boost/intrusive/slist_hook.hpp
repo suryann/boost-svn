@@ -19,6 +19,7 @@
 #include <boost/intrusive/detail/utilities.hpp>
 #include <boost/intrusive/detail/slist_node.hpp>
 #include <boost/intrusive/circular_slist_algorithms.hpp>
+#include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/options.hpp>
 #include <boost/intrusive/detail/generic_hook.hpp>
 
@@ -31,6 +32,7 @@ struct get_slist_node_algo
 {
    typedef circular_slist_algorithms<slist_node_traits<VoidPointer> > type;
 };
+
 /// @endcond
 
 //! Helper metafunction to define a \c slist_base_hook that yields to the same
@@ -60,15 +62,19 @@ struct make_slist_base_hook
 //! in an list. slist_base_hook holds the data necessary to maintain the 
 //! list and provides an appropriate value_traits class for list.
 //! 
-//! The first integer template argument defines a tag to identify the node. 
+//! The hook admits the following options: \c tag<>, \c void_pointer<> and
+//! \c link_mode<>.
+//!
+//! \c tag<> defines a tag to identify the node. 
 //! The same tag value can be used in different classes, but if a class is 
-//! derived from more than one slist_base_hook, then each slist_base_hook needs its 
+//! derived from more than one \c list_base_hook, then each \c list_base_hook needs its 
 //! unique tag.
 //!
-//! The second boolean template parameter will specify the linking mode of the hook.
+//! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
+//! \c auto_unlink or \c safe_link).
 //!
-//! The third argument is the pointer type that will be used internally in the hook
-//! and the list configured from this hook.
+//! \c void_pointer<> is the pointer type that will be used internally in the hook
+//! and the the container configured to use this hook.
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
@@ -171,10 +177,14 @@ struct make_slist_member_hook
 //! an list. slist_member_hook holds the data necessary for maintaining the list and 
 //! provides an appropriate value_traits class for list.
 //! 
-//! The first boolean template parameter will specify the linking mode of the hook.
+//! The hook admits the following options: \c void_pointer<> and
+//! \c link_mode<>.
+//! 
+//! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
+//! \c auto_unlink or \c safe_link).
 //!
-//! The second argument is the pointer type that will be used internally in the hook
-//! and the list configured from this hook.
+//! \c void_pointer<> is the pointer type that will be used internally in the hook
+//! and the the container configured to use this hook.
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else

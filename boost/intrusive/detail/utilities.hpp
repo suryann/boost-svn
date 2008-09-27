@@ -19,8 +19,13 @@
 #include <boost/intrusive/detail/ebo_functor_holder.hpp>
 #include <boost/intrusive/link_mode.hpp>
 #include <boost/intrusive/detail/mpl.hpp>
+#include <boost/intrusive/detail/assert.hpp>
+#include <boost/cstdint.hpp>
 #include <cstddef>
+#include <climits>
 #include <iterator>
+#include <boost/cstdint.hpp>
+#include <boost/static_assert.hpp>
 
 namespace boost {
 namespace intrusive {
@@ -42,14 +47,32 @@ struct internal_base_hook_bool
    template <class U> static one test(...);
    template <class U> static two_or_three<U::boost_intrusive_tags::is_base_hook>
       test (detail::bool_<U::boost_intrusive_tags::is_base_hook>* = 0);
-   static const int value = sizeof(test<T>(0));
+   static const std::size_t value = sizeof(test<T>(0));
 };
 
 template <class T>
 struct internal_base_hook_bool_is_true
 {
-   static const bool value = internal_base_hook_bool<T>::value == 3;
+   static const bool value = internal_base_hook_bool<T>::value > sizeof(one)*2;
 };
+
+template <class T>
+struct internal_any_hook_bool
+{
+   template<bool Add>
+   struct two_or_three {one _[2 + Add];};
+   template <class U> static one test(...);
+   template <class U> static two_or_three<U::is_any_hook>
+      test (detail::bool_<U::is_any_hook>* = 0);
+   static const std::size_t value = sizeof(test<T>(0));
+};
+
+template <class T>
+struct internal_any_hook_bool_is_true
+{
+   static const bool value = internal_any_hook_bool<T>::value > sizeof(one)*2;
+};
+
 
 template <class T>
 struct external_value_traits_bool
@@ -59,7 +82,7 @@ struct external_value_traits_bool
    template <class U> static one test(...);
    template <class U> static two_or_three<U::external_value_traits>
       test (detail::bool_<U::external_value_traits>* = 0);
-   static const int value = sizeof(test<T>(0));
+   static const std::size_t value = sizeof(test<T>(0));
 };
 
 template <class T>
@@ -70,13 +93,13 @@ struct external_bucket_traits_bool
    template <class U> static one test(...);
    template <class U> static two_or_three<U::external_bucket_traits>
       test (detail::bool_<U::external_bucket_traits>* = 0);
-   static const int value = sizeof(test<T>(0));
+   static const std::size_t value = sizeof(test<T>(0));
 };
 
 template <class T>
 struct external_value_traits_is_true
 {
-   static const bool value = external_value_traits_bool<T>::value == 3;
+   static const bool value = external_value_traits_bool<T>::value > sizeof(one)*2;
 };
 
 template<class Node, class Tag, link_mode_type LinkMode, int>
@@ -231,16 +254,9 @@ struct node_cloner
    node_cloner(F f, const Container *cont)
       :  base_t(f), cont_(cont)
    {}
-   
+
    node_ptr operator()(node_ptr p)
-   {
-      node_ptr n = cont_->get_real_value_traits().to_node_ptr
-         (*base_t::get()(*cont_->get_real_value_traits().to_value_ptr(p)));
-      //Cloned node must be in default mode if the linking mode requires it
-      if(safemode_or_autounlink)
-         BOOST_INTRUSIVE_SAFE_HOOK_DEFAULT_ASSERT(node_algorithms::unique(n));
-      return n;
-   }
+   {  return this->operator()(*p); }
 
    node_ptr operator()(const node &to_clone)
    {
@@ -392,16 +408,20 @@ template <link_mode_type LinkMode>
 struct link_dispatch
 {};
 
-template<class Container>
-void destructor_impl(Container &cont, detail::link_dispatch<safe_link>)
-{  (void)cont; BOOST_INTRUSIVE_SAFE_HOOK_DESTRUCTOR_ASSERT(!cont.is_linked());  }
+template<class Hook>
+void destructor_impl(Hook &hook, detail::link_dispatch<safe_link>)
+{  //If this assertion raises, you might have destroyed an object
+   //while it was still inserted in a container that is alive.
+   //If so, remove the object from the container before destroying it.
+   (void)hook; BOOST_INTRUSIVE_SAFE_HOOK_DESTRUCTOR_ASSERT(!hook.is_linked());
+}
 
-template<class Container>
-void destructor_impl(Container &cont, detail::link_dispatch<auto_unlink>)
-{  cont.unlink();  }
+template<class Hook>
+void destructor_impl(Hook &hook, detail::link_dispatch<auto_unlink>)
+{  hook.unlink();  }
 
-template<class Container>
-void destructor_impl(Container &, detail::link_dispatch<normal_link>)
+template<class Hook>
+void destructor_impl(Hook &, detail::link_dispatch<normal_link>)
 {}
 
 template<class T, class NodeTraits, link_mode_type LinkMode, class Tag, int HookType>
@@ -469,6 +489,134 @@ struct member_hook_traits
    {
       return detail::parent_from_member<T, Hook>
          (static_cast<const Hook*>(detail::get_pointer(n)), P);
+   }
+};
+
+//This function uses binary search to discover the
+//highest set bit of the integer
+inline std::size_t floor_log2 (std::size_t x)
+{
+   const std::size_t Bits = sizeof(std::size_t)*CHAR_BIT;
+   const bool Size_t_Bits_Power_2= !(Bits & (Bits-1));
+   BOOST_STATIC_ASSERT(Size_t_Bits_Power_2);
+
+   std::size_t n = x;
+   std::size_t log2 = 0;
+   
+   for(std::size_t shift = Bits >> 1; shift; shift >>= 1){
+      std::size_t tmp = n >> shift;
+      if (tmp)
+         log2 += shift, n = tmp;
+   }
+
+   return log2;
+}
+
+inline float fast_log2 (float val)
+{
+   boost::uint32_t * exp_ptr =
+      static_cast<boost::uint32_t *>(static_cast<void*>(&val));
+   boost::uint32_t x = *exp_ptr;
+   const int log_2 = (int)(((x >> 23) & 255) - 128);
+   x &= ~(255 << 23);
+   x += 127 << 23;
+   *exp_ptr = x;
+
+   val = ((-1.0f/3) * val + 2) * val - 2.0f/3;
+
+   return (val + log_2);
+}
+
+inline std::size_t ceil_log2 (std::size_t x)
+{
+   return ((x & (x-1))!= 0) + floor_log2(x);
+}
+
+template<class SizeType, std::size_t N>
+struct numbits_eq
+{
+   static const bool value = sizeof(SizeType)*CHAR_BIT == N;
+};
+
+template<class SizeType, class Enabler = void >
+struct sqrt2_pow_max;
+
+template <class SizeType>
+struct sqrt2_pow_max<SizeType, typename enable_if< numbits_eq<SizeType, 32> >::type>
+{
+   static const boost::uint32_t value = 0xb504f334;
+   static const std::size_t pow   = 31;
+};
+
+template <class SizeType>
+struct sqrt2_pow_max<SizeType, typename enable_if< numbits_eq<SizeType, 64> >::type>
+{
+   static const boost::uint64_t value = 0xb504f333f9de6484ull;
+   static const std::size_t pow   = 63;
+};
+
+// Returns floor(pow(sqrt(2), x * 2 + 1)).
+// Defined for X from 0 up to the number of bits in size_t minus 1.
+inline std::size_t sqrt2_pow_2xplus1 (std::size_t x)
+{
+   const std::size_t value = (std::size_t)sqrt2_pow_max<std::size_t>::value;
+   const std::size_t pow   = (std::size_t)sqrt2_pow_max<std::size_t>::pow;
+   return (value >> (pow - x)) + 1;
+}
+
+template<class Container, class Disposer>
+class exception_disposer
+{
+   Container *cont_;
+   Disposer  &disp_;
+
+   exception_disposer(const exception_disposer&);
+   exception_disposer &operator=(const exception_disposer&);
+
+   public:
+   exception_disposer(Container &cont, Disposer &disp)
+      :  cont_(&cont), disp_(disp)
+   {}
+
+   void release()
+   {  cont_ = 0;  }
+
+   ~exception_disposer()
+   {
+      if(cont_){
+         cont_->clear_and_dispose(disp_);
+      }
+   }
+};
+
+template<class Container, class Disposer>
+class exception_array_disposer
+{
+   Container *cont_;
+   Disposer  &disp_;
+   typename Container::size_type  &constructed_;
+
+   exception_array_disposer(const exception_array_disposer&);
+   exception_array_disposer &operator=(const exception_array_disposer&);
+
+   public:
+   typedef typename Container::size_type size_type;
+   exception_array_disposer
+      (Container &cont, Disposer &disp, size_type &constructed)
+      :  cont_(&cont), disp_(disp), constructed_(constructed)
+   {}
+
+   void release()
+   {  cont_ = 0;  }
+
+   ~exception_array_disposer()
+   {
+      size_type n = constructed_;
+      if(cont_){
+         while(n--){
+            cont_[n].clear_and_dispose(disp_);
+         }
+      }
    }
 };
 

@@ -59,20 +59,37 @@ void expected_results()
 #endif
 
    //
-   // HP-UX rates are very slightly higher:
+   // HP-UX and Solaris rates are very slightly higher:
    //
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
-      "HP-UX",                          // platform
+      "HP-UX|Sun Solaris",                          // platform
       largest_type,                // test type(s)
       ".*(Y[nv]|y).*Random.*",           // test data group
       ".*", 30000, 30000);             // test function
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
-      "HP-UX",                          // platform
+      "HP-UX|Sun Solaris",                          // platform
       largest_type,                  // test type(s)
+      ".*Y[01Nv].*",           // test data group
+      ".*", 1300, 500);               // test function
+   //
+   // Tru64:
+   //
+   add_expected_result(
+      ".*Tru64.*",                          // compiler
+      ".*",                          // stdlib
+      ".*",                          // platform
+      largest_type,                // test type(s)
+      ".*(Y[nv]|y).*Random.*",           // test data group
+      ".*", 30000, 30000);             // test function
+   add_expected_result(
+      ".*Tru64.*",                          // compiler
+      ".*",                          // stdlib
+      ".*",                          // platform
+      largest_type,                      // test type(s)
       ".*Y[01Nv].*",           // test data group
       ".*", 400, 200);               // test function
 
@@ -151,15 +168,8 @@ void expected_results()
       ".*",                          // stdlib
       "Sun.*",                          // platform
       largest_type,                  // test type(s)
-      "Y[0N] Mathworld.*",              // test data group
+      "Y[0N].*Mathworld.*",              // test data group
       ".*", 2000, 2000);         // test function
-   add_expected_result(
-      "GNU.*",                          // compiler
-      ".*",                          // stdlib
-      "Sun.*",                          // platform
-      largest_type,                  // test type(s)
-      "Y[0N].*",              // test data group
-      ".*", 200, 200);         // test function
 
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
    if((std::numeric_limits<double>::digits != std::numeric_limits<long double>::digits)
@@ -206,6 +216,19 @@ void expected_results()
       largest_type,                  // test type(s)
       ".*(Y[nv]|y).*Random.*",           // test data group
       ".*", 1500, 1000);               // test function
+   //
+   // Fallback for sun has to go after the general cases above:
+   //
+   add_expected_result(
+      "GNU.*",                          // compiler
+      ".*",                          // stdlib
+      "Sun.*",                          // platform
+      largest_type,                  // test type(s)
+      "Y[0N].*",              // test data group
+      ".*", 200, 200);         // test function
+   //
+   // General fallback:
+   //
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
@@ -228,7 +251,11 @@ void do_test_cyl_neumann_y(const T& data, const char* type_name, const char* tes
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::cyl_neumann<value_type, value_type>;
+#else
    pg funcp = boost::math::cyl_neumann;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -266,7 +293,7 @@ void do_test_cyl_neumann_y(const T& data, const char* type_name, const char* tes
 template <class T>
 T cyl_neumann_int_wrapper(T v, T x)
 {
-   return static_cast<T>(boost::math::cyl_neumann(boost::math::tools::real_cast<int>(v), x));
+   return static_cast<T>(boost::math::cyl_neumann(boost::math::itrunc(v), x));
 }
 
 template <class T>
@@ -276,7 +303,11 @@ void do_test_cyl_neumann_y_int(const T& data, const char* type_name, const char*
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = cyl_neumann_int_wrapper<value_type>;
+#else
    pg funcp = cyl_neumann_int_wrapper;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -301,7 +332,11 @@ void do_test_sph_neumann_y(const T& data, const char* type_name, const char* tes
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(unsigned, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::sph_neumann<value_type>;
+#else
    pg funcp = boost::math::sph_neumann;
+#endif
 
    typedef int (*cast_t)(value_type);
 

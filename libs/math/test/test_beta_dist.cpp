@@ -21,7 +21,7 @@
 // provided 40 decimal digits accuracy incomplete beta aka beta regularized == cdf
 
 // http://www.ausvet.com.au/pprev/content.php?page=PPscript
-// mode 0.75 	5/95% 0.9 	alpha 7.39 	beta 3.13
+// mode 0.75    5/95% 0.9    alpha 7.39    beta 3.13
 // http://www.epi.ucdavis.edu/diagnostictests/betabuster.html
 // Beta Buster also calculates alpha and beta from mode & percentile estimates.
 // This is NOT (yet) implemented.
@@ -30,12 +30,12 @@
 #  pragma warning(disable: 4127) // conditional expression is constant.
 #endif
 
+#include <boost/math/concepts/real_concept.hpp> // for real_concept
+using ::boost::math::concepts::real_concept;
+
 #include <boost/math/distributions/beta.hpp> // for beta_distribution
 using boost::math::beta_distribution;
 using boost::math::beta;
-
-#include <boost/math/concepts/real_concept.hpp> // for real_concept
-using ::boost::math::concepts::real_concept;
 
 #include <boost/test/included/test_exec_monitor.hpp> // for test_main
 #include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE_FRACTION

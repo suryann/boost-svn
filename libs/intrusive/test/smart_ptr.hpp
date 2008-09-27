@@ -12,6 +12,7 @@
 #define BOOST_INTRUSIVE_SMART_PTR_HPP
 
 #include <boost/iterator.hpp>
+#include <boost/intrusive/pointer_plus_bits.hpp>
 
 #if (defined _MSC_VER) && (_MSC_VER >= 1200)
 #  pragma once
@@ -107,7 +108,7 @@ class smart_ptr
    public:   //Public Functions
 
    //!Constructor from raw pointer (allows "0" pointer conversion). Never throws.
-   smart_ptr(pointer ptr = 0)
+   explicit smart_ptr(pointer ptr = 0)
       :  m_ptr(ptr)
    {}
 
@@ -342,5 +343,46 @@ inline smart_ptr<T>
 
 }  //namespace intrusive {
 }  //namespace boost {
+
+namespace boost{
+
+//This is to support embedding a bit in the pointer
+//for intrusive containers, saving space
+namespace intrusive {
+
+template<std::size_t Alignment>
+struct max_pointer_plus_bits<smart_ptr<void>, Alignment>
+{
+   static const std::size_t value = max_pointer_plus_bits<void*, Alignment>::value;
+};
+
+template<class T, std::size_t NumBits>
+struct pointer_plus_bits<smart_ptr<T>, NumBits>
+{
+   typedef smart_ptr<T>         pointer;
+
+   static pointer get_pointer(const pointer &n)
+   {  return pointer_plus_bits<T*, NumBits>::get_pointer(n.get());  }
+
+   static void set_pointer(pointer &n, pointer p)
+   {
+      T *raw_n = n.get();
+      pointer_plus_bits<T*, NumBits>::set_pointer(raw_n, p.get());
+      n = raw_n;
+   }
+
+   static std::size_t get_bits(const pointer &n)
+   {  return pointer_plus_bits<T*, NumBits>::get_bits(n.get());  }
+
+   static void set_bits(pointer &n, std::size_t c)
+   {
+      T *raw_n = n.get();
+      pointer_plus_bits<T*, NumBits>::set_bits(raw_n, c);
+      n = raw_n;
+   }
+};
+
+}  //namespace intrusive
+}  //namespace boost{
 
 #endif //#ifndef BOOST_INTRUSIVE_SMART_PTR_HPP

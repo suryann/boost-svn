@@ -23,11 +23,11 @@
 #  pragma warning(disable: 4127) // conditional expression is constant.
 #endif
 
-#include <boost/math/distributions/binomial.hpp> // for binomial_distribution
-using boost::math::binomial_distribution;
-
 #include <boost/math/concepts/real_concept.hpp> // for real_concept
 using ::boost::math::concepts::real_concept;
+
+#include <boost/math/distributions/binomial.hpp> // for binomial_distribution
+using boost::math::binomial_distribution;
 
 #include <boost/test/included/test_exec_monitor.hpp> // for test_main
 #include <boost/test/floating_point_comparison.hpp> // for BOOST_CHECK_CLOSE
@@ -218,7 +218,8 @@ void test_spots(RealType)
   RealType tolerance = (std::max)
       (boost::math::tools::epsilon<RealType>(),
       static_cast<RealType>(std::numeric_limits<double>::epsilon()));
-   tolerance *= 100 * 1000;
+  tolerance *= 100 * 1000;
+  RealType tol2 = boost::math::tools::epsilon<RealType>() * 5 * 100;  // 5 eps as a persent
 
   cout << "Tolerance = " << tolerance << "%." << endl;
 
@@ -234,6 +235,7 @@ void test_spots(RealType)
   using  ::boost::math::cdf;
   using  ::boost::math::pdf;
 
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 0)
   // Test binomial using cdf spot values from MathCAD.
   // These test quantiles and complements as well.
   test_spot(
@@ -354,27 +356,27 @@ void test_spots(RealType)
   // so useful for testing 64-bit double accuracy.
   // P = 0.25, n = 20, k = 0 to 20
 
-  //0	C(20,0) * 0.25^0 * 0.75^20	0.00317121193893399322405457496643
-  //1	C(20,1) * 0.25^1 * 0.75^19	0.02114141292622662149369716644287
-  //2	C(20,2) * 0.25^2 * 0.75^18	0.06694780759971763473004102706909
-  //3	C(20,3) * 0.25^3 * 0.75^17	0.13389561519943526946008205413818
-  //4	C(20,4) * 0.25^4 * 0.75^16	0.18968545486586663173511624336242
-  //5	C(20,5) * 0.25^5 * 0.75^15	0.20233115185692440718412399291992
-  //6	C(20,6) * 0.25^6 * 0.75^14	0.16860929321410367265343666076660
-  //7	C(20,7) * 0.25^7 * 0.75^13	0.11240619547606911510229110717773
-  //8	C(20,8) * 0.25^8 * 0.75^12	0.06088668921620410401374101638793
-  //9	C(20,9) * 0.25^9 * 0.75^11	0.02706075076275737956166267395019
-  //10	C(20,10) * 0.25^10 * 0.75^10	0.00992227527967770583927631378173
-  //11	C(20,11) * 0.25^11 * 0.75^9	0.00300675008475081995129585266113
-  //12	C(20,12) * 0.25^12 * 0.75^8	0.00075168752118770498782396316528
-  //13	C(20,13) * 0.25^13 * 0.75^7	0.00015419231203850358724594116210
-  //14	C(20,14) * 0.25^14 * 0.75^6	0.00002569871867308393120765686035
-  //15	C(20,15) * 0.25^15 * 0.75^5	0.00000342649582307785749435424804
-  //16	C(20,16) * 0.25^16 * 0.75^4	0.00000035692664823727682232856750
-  //17	C(20,17) * 0.25^17 * 0.75^3	0.00000002799424692057073116302490
-  //18	C(20,18) * 0.25^18 * 0.75^2	0.00000000155523594003170728683471
-  //19	C(20,19) * 0.25^19 * 0.75^1	0.00000000005456968210637569427490
-  //20	C(20,20) * 0.25^20 * 0.75^0	0.00000000000090949470177292823791
+  //0   C(20,0) * 0.25^0 * 0.75^20   0.00317121193893399322405457496643
+  //1   C(20,1) * 0.25^1 * 0.75^19   0.02114141292622662149369716644287
+  //2   C(20,2) * 0.25^2 * 0.75^18   0.06694780759971763473004102706909
+  //3   C(20,3) * 0.25^3 * 0.75^17   0.13389561519943526946008205413818
+  //4   C(20,4) * 0.25^4 * 0.75^16   0.18968545486586663173511624336242
+  //5   C(20,5) * 0.25^5 * 0.75^15   0.20233115185692440718412399291992
+  //6   C(20,6) * 0.25^6 * 0.75^14   0.16860929321410367265343666076660
+  //7   C(20,7) * 0.25^7 * 0.75^13   0.11240619547606911510229110717773
+  //8   C(20,8) * 0.25^8 * 0.75^12   0.06088668921620410401374101638793
+  //9   C(20,9) * 0.25^9 * 0.75^11   0.02706075076275737956166267395019
+  //10   C(20,10) * 0.25^10 * 0.75^10   0.00992227527967770583927631378173
+  //11   C(20,11) * 0.25^11 * 0.75^9   0.00300675008475081995129585266113
+  //12   C(20,12) * 0.25^12 * 0.75^8   0.00075168752118770498782396316528
+  //13   C(20,13) * 0.25^13 * 0.75^7   0.00015419231203850358724594116210
+  //14   C(20,14) * 0.25^14 * 0.75^6   0.00002569871867308393120765686035
+  //15   C(20,15) * 0.25^15 * 0.75^5   0.00000342649582307785749435424804
+  //16   C(20,16) * 0.25^16 * 0.75^4   0.00000035692664823727682232856750
+  //17   C(20,17) * 0.25^17 * 0.75^3   0.00000002799424692057073116302490
+  //18   C(20,18) * 0.25^18 * 0.75^2   0.00000000155523594003170728683471
+  //19   C(20,19) * 0.25^19 * 0.75^1   0.00000000005456968210637569427490
+  //20   C(20,20) * 0.25^20 * 0.75^0   0.00000000000090949470177292823791
 
 
     BOOST_CHECK_CLOSE(
@@ -438,7 +440,6 @@ void test_spots(RealType)
     static_cast<RealType>(0.00001525878906250000000000000000), // k=8  p = 0.25
     tolerance);
 
-    RealType tol2 = boost::math::tools::epsilon<RealType>() * 5 * 100;  // 5 eps as a persent
     binomial_distribution<RealType> dist(static_cast<RealType>(8), static_cast<RealType>(0.25));
     RealType x = static_cast<RealType>(0.125);
     using namespace std; // ADL of std names.
@@ -483,7 +484,7 @@ void test_spots(RealType)
        kurtosis_excess(dist)
        , static_cast<RealType>(-0.08333333333333333333333333333333333333L), tol2);
     // Check kurtosis_excess == kurtosis -3;
-		BOOST_CHECK_EQUAL(kurtosis(dist), static_cast<RealType>(3) + kurtosis_excess(dist));
+      BOOST_CHECK_EQUAL(kurtosis(dist), static_cast<RealType>(3) + kurtosis_excess(dist));
 
     // special cases for PDF:
     BOOST_CHECK_EQUAL(
@@ -590,6 +591,8 @@ void test_spots(RealType)
           static_cast<RealType>(7)), static_cast<RealType>(0)
        );
 
+#endif
+
   {
     // This is a visual sanity check that everything is OK:
     binomial_distribution<RealType> my8dist(8., 0.25); // Note: double values (matching the distribution definition) avoid the need for any casting.
@@ -623,7 +626,13 @@ void test_spots(RealType)
     //7 0.00036621093749999984 0.9999847412109375
     //8 1.52587890625e-005 1 1 0
   }
+#if !defined(TEST_REAL_CONCEPT)
 #define T RealType
+#else
+  // This reduces compile time and compiler memory usage by storing test data
+  // as an array of long double's rather than an array of real_concept's:
+#define T long double
+#endif
 #include "binomial_quantile.ipp"
 
   for(unsigned i = 0; i < binomial_quantile_data.size(); ++i)
@@ -638,54 +647,67 @@ void test_spots(RealType)
      RealType tol = boost::math::tools::epsilon<RealType>() * 500;
      if(!boost::is_floating_point<RealType>::value)
         tol *= 10;  // no lanczos approximation implies less accuracy
+     RealType x;
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 1)
      //
      // Check full real value first:
      //
      binomial_distribution<RealType, P1> p1(binomial_quantile_data[i][0], binomial_quantile_data[i][1]);
-     RealType x = quantile(p1, binomial_quantile_data[i][2]);
-     BOOST_CHECK_CLOSE_FRACTION(x, binomial_quantile_data[i][3], tol);
-     x = quantile(complement(p1, binomial_quantile_data[i][2]));
-     BOOST_CHECK_CLOSE_FRACTION(x, binomial_quantile_data[i][4], tol);
+     x = quantile(p1, binomial_quantile_data[i][2]);
+     BOOST_CHECK_CLOSE_FRACTION(x, (RealType)binomial_quantile_data[i][3], tol);
+     x = quantile(complement(p1, (RealType)binomial_quantile_data[i][2]));
+     BOOST_CHECK_CLOSE_FRACTION(x, (RealType)binomial_quantile_data[i][4], tol);
+#endif
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 2)
      //
      // Now with round down to integer:
      //
      binomial_distribution<RealType, P2> p2(binomial_quantile_data[i][0], binomial_quantile_data[i][1]);
      x = quantile(p2, binomial_quantile_data[i][2]);
-     BOOST_CHECK_EQUAL(x, floor(binomial_quantile_data[i][3]));
+     BOOST_CHECK_EQUAL(x, (RealType)floor(binomial_quantile_data[i][3]));
      x = quantile(complement(p2, binomial_quantile_data[i][2]));
-     BOOST_CHECK_EQUAL(x, floor(binomial_quantile_data[i][4]));
+     BOOST_CHECK_EQUAL(x, (RealType)floor(binomial_quantile_data[i][4]));
+#endif
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 3)
      //
      // Now with round up to integer:
      //
      binomial_distribution<RealType, P3> p3(binomial_quantile_data[i][0], binomial_quantile_data[i][1]);
      x = quantile(p3, binomial_quantile_data[i][2]);
-     BOOST_CHECK_EQUAL(x, ceil(binomial_quantile_data[i][3]));
+     BOOST_CHECK_EQUAL(x, (RealType)ceil(binomial_quantile_data[i][3]));
      x = quantile(complement(p3, binomial_quantile_data[i][2]));
-     BOOST_CHECK_EQUAL(x, ceil(binomial_quantile_data[i][4]));
+     BOOST_CHECK_EQUAL(x, (RealType)ceil(binomial_quantile_data[i][4]));
+#endif
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 4)
      //
      // Now with round to integer "outside":
      //
      binomial_distribution<RealType, P4> p4(binomial_quantile_data[i][0], binomial_quantile_data[i][1]);
      x = quantile(p4, binomial_quantile_data[i][2]);
-     BOOST_CHECK_EQUAL(x, binomial_quantile_data[i][2] < 0.5f ? floor(binomial_quantile_data[i][3]) : ceil(binomial_quantile_data[i][3]));
+     BOOST_CHECK_EQUAL(x, (RealType)(binomial_quantile_data[i][2] < 0.5f ? floor(binomial_quantile_data[i][3]) : ceil(binomial_quantile_data[i][3])));
      x = quantile(complement(p4, binomial_quantile_data[i][2]));
-     BOOST_CHECK_EQUAL(x, binomial_quantile_data[i][2] < 0.5f ? ceil(binomial_quantile_data[i][4]) : floor(binomial_quantile_data[i][4]));
+     BOOST_CHECK_EQUAL(x, (RealType)(binomial_quantile_data[i][2] < 0.5f ? ceil(binomial_quantile_data[i][4]) : floor(binomial_quantile_data[i][4])));
+#endif
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 5)
      //
      // Now with round to integer "inside":
      //
      binomial_distribution<RealType, P5> p5(binomial_quantile_data[i][0], binomial_quantile_data[i][1]);
      x = quantile(p5, binomial_quantile_data[i][2]);
-     BOOST_CHECK_EQUAL(x, binomial_quantile_data[i][2] < 0.5f ? ceil(binomial_quantile_data[i][3]) : floor(binomial_quantile_data[i][3]));
+     BOOST_CHECK_EQUAL(x, (RealType)(binomial_quantile_data[i][2] < 0.5f ? ceil(binomial_quantile_data[i][3]) : floor(binomial_quantile_data[i][3])));
      x = quantile(complement(p5, binomial_quantile_data[i][2]));
-     BOOST_CHECK_EQUAL(x, binomial_quantile_data[i][2] < 0.5f ? floor(binomial_quantile_data[i][4]) : ceil(binomial_quantile_data[i][4]));
+     BOOST_CHECK_EQUAL(x, (RealType)(binomial_quantile_data[i][2] < 0.5f ? floor(binomial_quantile_data[i][4]) : ceil(binomial_quantile_data[i][4])));
+#endif
+#if !defined(TEST_ROUNDING) || (TEST_ROUNDING == 6)
      //
      // Now with round to nearest integer:
      //
      binomial_distribution<RealType, P6> p6(binomial_quantile_data[i][0], binomial_quantile_data[i][1]);
      x = quantile(p6, binomial_quantile_data[i][2]);
-     BOOST_CHECK_EQUAL(x, floor(binomial_quantile_data[i][3] + 0.5f));
+     BOOST_CHECK_EQUAL(x, (RealType)(floor(binomial_quantile_data[i][3] + 0.5f)));
      x = quantile(complement(p6, binomial_quantile_data[i][2]));
-     BOOST_CHECK_EQUAL(x, floor(binomial_quantile_data[i][4] + 0.5f));
+     BOOST_CHECK_EQUAL(x, (RealType)(floor(binomial_quantile_data[i][4] + 0.5f)));
+#endif
   }
 
 } // template <class RealType>void test_spots(RealType)
@@ -693,10 +715,10 @@ void test_spots(RealType)
 int test_main(int, char* [])
 {
    BOOST_MATH_CONTROL_FP;
-	// Check that can generate binomial distribution using one convenience methods:
-	binomial_distribution<> mybn2(1., 0.5); // Using default RealType double.
+   // Check that can generate binomial distribution using one convenience methods:
+   binomial_distribution<> mybn2(1., 0.5); // Using default RealType double.
   // but that
-	// boost::math::binomial mybn1(1., 0.5); // Using typedef fails
+   // boost::math::binomial mybn1(1., 0.5); // Using typedef fails
   // error C2039: 'binomial' : is not a member of 'boost::math'
 
   // Basic sanity-check spot values.

@@ -12,7 +12,7 @@
 #include <boost/math/special_functions/expm1.hpp>
 #include <boost/math/distributions/complement.hpp>
 #include <boost/math/distributions/detail/common_error_handling.hpp>
-#include <cmath>
+#include <boost/config/no_tr1/cmath.hpp>
 
 #ifdef BOOST_MSVC
 # pragma warning(push)
@@ -80,16 +80,16 @@ typedef rayleigh_distribution<double> rayleigh;
 template <class RealType, class Policy>
 inline const std::pair<RealType, RealType> range(const rayleigh_distribution<RealType, Policy>& /*dist*/)
 { // Range of permissible values for random variable x.
-	using boost::math::tools::max_value;
-	return std::pair<RealType, RealType>(static_cast<RealType>(1), max_value<RealType>());
+   using boost::math::tools::max_value;
+   return std::pair<RealType, RealType>(static_cast<RealType>(1), max_value<RealType>());
 }
 
 template <class RealType, class Policy>
 inline const std::pair<RealType, RealType> support(const rayleigh_distribution<RealType, Policy>& /*dist*/)
 { // Range of supported values for random variable x.
-	// This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
-	using boost::math::tools::max_value;
-	return std::pair<RealType, RealType>((1),  max_value<RealType>());
+   // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
+   using boost::math::tools::max_value;
+   return std::pair<RealType, RealType>((1),  max_value<RealType>());
 }
 
 template <class RealType, class Policy>

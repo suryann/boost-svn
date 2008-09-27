@@ -21,6 +21,10 @@ as defined above, and has member functions "scale" and "location".
 #ifndef BOOST_STATS_IS_DISTRIBUTION_HPP
 #define BOOST_STATS_IS_DISTRIBUTION_HPP
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <boost/mpl/has_xxx.hpp>
 // should be the last #include
 #include <boost/type_traits/detail/bool_trait_def.hpp>
@@ -29,8 +33,8 @@ namespace boost{ namespace math{ namespace tools{
 
 namespace detail{
 
-BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_value_type, value_type, true);
-BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_policy_type, policy_type, true);
+BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_value_type, value_type, true)
+BOOST_MPL_HAS_XXX_TRAIT_NAMED_DEF(has_policy_type, policy_type, true)
 
 template<class D>
 char cdf(const D& ...);
@@ -103,4 +107,5 @@ BOOST_TT_AUX_BOOL_TRAIT_DEF1(is_scaled_distribution,T,::boost::math::tools::deta
 }}}
 
 #endif
+
 

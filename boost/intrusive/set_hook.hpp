@@ -26,10 +26,10 @@ namespace boost {
 namespace intrusive {
 
 /// @cond
-template<class VoidPointer>
+template<class VoidPointer, bool OptimizeSize = false>
 struct get_set_node_algo
 {
-   typedef rbtree_algorithms<rbtree_node_traits<VoidPointer> > type;
+   typedef rbtree_algorithms<rbtree_node_traits<VoidPointer, OptimizeSize> > type;
 };
 /// @endcond
 
@@ -38,16 +38,17 @@ struct get_set_node_algo
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1 = none, class O2 = none, class O3 = none>
+template<class O1 = none, class O2 = none, class O3 = none, class O4 = none>
 #endif
 struct make_set_base_hook
 {
    /// @cond
    typedef typename pack_options
-      < hook_defaults, O1, O2, O3>::type packed_options;
+      < hook_defaults, O1, O2, O3, O4>::type packed_options;
 
    typedef detail::generic_hook
-   < get_set_node_algo<typename packed_options::void_pointer>
+   < get_set_node_algo<typename packed_options::void_pointer
+                      ,packed_options::optimize_size>
    , typename packed_options::tag
    , packed_options::link_mode
    , detail::SetBaseHook
@@ -57,25 +58,32 @@ struct make_set_base_hook
 };
 
 //! Derive a class from set_base_hook in order to store objects in 
-//! in an set/multiset. set_base_hook holds the data necessary to maintain 
+//! in a set/multiset. set_base_hook holds the data necessary to maintain 
 //! the set/multiset and provides an appropriate value_traits class for set/multiset.
 //! 
-//! The first integer template argument defines a tag to identify the node. 
+//! The hook admits the following options: \c tag<>, \c void_pointer<>,
+//! \c link_mode<> and \c optimize_size<>.
+//!
+//! \c tag<> defines a tag to identify the node. 
 //! The same tag value can be used in different classes, but if a class is 
-//! derived from more than one set_base_hook, then each set_base_hook needs its 
+//! derived from more than one \c list_base_hook, then each \c list_base_hook needs its 
 //! unique tag.
 //!
-//! The second boolean template parameter will specify the linking mode of the hook.
+//! \c void_pointer<> is the pointer type that will be used internally in the hook
+//! and the the container configured to use this hook.
 //!
-//! The third argument is the pointer type that will be used internally in the hook
-//! and the set/multiset configured from this hook.
+//! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
+//! \c auto_unlink or \c safe_link).
+//!
+//! \c optimize_size<> will tell the hook to optimize the hook for size instead
+//! of speed.
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1, class O2, class O3>
+template<class O1, class O2, class O3, class O4>
 #endif
 class set_base_hook
-   :  public make_set_base_hook<O1, O2, O3>::type
+   :  public make_set_base_hook<O1, O2, O3, O4>::type
 {
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
@@ -107,7 +115,7 @@ class set_base_hook
 
    //! <b>Effects</b>: If link_mode is \c normal_link, the destructor does
    //!   nothing (ie. no code is generated). If link_mode is \c safe_link and the
-   //!   object is stored in an set an assertion is raised. If link_mode is
+   //!   object is stored in a set an assertion is raised. If link_mode is
    //!   \c auto_unlink and \c is_linked() is true, the node is unlinked.
    //! 
    //! <b>Throws</b>: Nothing. 
@@ -149,16 +157,17 @@ class set_base_hook
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1 = none, class O2 = none, class O3 = none>
+template<class O1 = none, class O2 = none, class O3 = none, class O4 = none>
 #endif
 struct make_set_member_hook
 {
    /// @cond
    typedef typename pack_options
-      < hook_defaults, O1, O2, O3>::type packed_options;
+      < hook_defaults, O1, O2, O3, O4>::type packed_options;
 
    typedef detail::generic_hook
-   < get_set_node_algo<typename packed_options::void_pointer>
+   < get_set_node_algo<typename packed_options::void_pointer
+                      ,packed_options::optimize_size>
    , member_tag
    , packed_options::link_mode
    , detail::NoBaseHook
@@ -168,20 +177,27 @@ struct make_set_member_hook
 };
 
 //! Put a public data member set_member_hook in order to store objects of this class in
-//! an set/multiset. set_member_hook holds the data necessary for maintaining the
+//! a set/multiset. set_member_hook holds the data necessary for maintaining the
 //! set/multiset and provides an appropriate value_traits class for set/multiset.
 //! 
-//! The first boolean template parameter will specify the linking mode of the hook.
+//! The hook admits the following options: \c void_pointer<>,
+//! \c link_mode<> and \c optimize_size<>.
 //!
-//! The second argument is the pointer type that will be used internally in the hook
-//! and the set/multiset configured from this hook.
+//! \c void_pointer<> is the pointer type that will be used internally in the hook
+//! and the the container configured to use this hook.
+//!
+//! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
+//! \c auto_unlink or \c safe_link).
+//!
+//! \c optimize_size<> will tell the hook to optimize the hook for size instead
+//! of speed.
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1, class O2, class O3>
+template<class O1, class O2, class O3, class O4>
 #endif
 class set_member_hook
-   :  public make_set_member_hook<O1, O2, O3>::type
+   :  public make_set_member_hook<O1, O2, O3, O4>::type
 {
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
@@ -213,7 +229,7 @@ class set_member_hook
 
    //! <b>Effects</b>: If link_mode is \c normal_link, the destructor does
    //!   nothing (ie. no code is generated). If link_mode is \c safe_link and the
-   //!   object is stored in an set an assertion is raised. If link_mode is
+   //!   object is stored in a set an assertion is raised. If link_mode is
    //!   \c auto_unlink and \c is_linked() is true, the node is unlinked.
    //! 
    //! <b>Throws</b>: Nothing. 

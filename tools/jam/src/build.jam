@@ -10,10 +10,10 @@ else if $(MAC) { rule .path { return ":$(<:J=\:)" ; } }
 else { rule .path { return "$(<:J=/)" ; } }
 if $(VMS) { . = "_" ; }
 else { . = "." ; }
-./ ?= "" ; 
+./ ?= "" ;
 
 # Info about what we are building.
-_VERSION_ = 3 1 16 ;
+_VERSION_ = 3 1 17 ;
 NAME = boost-jam ;
 VERSION = $(_VERSION_:J=$(.)) ;
 RELEASE = 1 ;
@@ -25,6 +25,11 @@ if --debug in $(ARGV)
     debug = true ;
 }
 
+if --profile in $(ARGV)
+{
+    profile = true ;
+}
+
 # Attempt to generate and/or build the grammar?
 if --grammar in $(ARGV)
 {
@@ -33,7 +38,8 @@ if --grammar in $(ARGV)
 
 # Do we need to add a default build type argument?
 if ! ( --release in $(ARGV) ) &&
-   ! ( --debug in $(ARGV) )
+   ! ( --debug in $(ARGV) ) &&
+   ! ( --profile in $(ARGV) )
 {
     ARGV += --release ;
 }
@@ -55,13 +61,15 @@ if $(with-python)
         {
             --python-lib ?=
                 [ GLOB [ .path $(python-location) libs ] : "python$(v).lib" ]
-                [ GLOB $(python-location) $(Path) $(PATH) $(path) : "python$(v).dll" ]
+                [ GLOB $(python-location) [ .path $(python-location) libs ]
+                    $(Path) $(PATH) $(path) : "python$(v).dll" ]
                 ;
             if ! $(--python-lib[2])
             {
                 --python-lib = ;
             }
         }
+        --python-lib = $(--python-lib[1]) ;
     }
     else if $(OS) = MACOSX
     {
@@ -169,11 +177,12 @@ toolset darwin cc :  "-o " : -D
     :
     [ opt --release : -Wl,-x -O3 -finline-functions ]
     [ opt --debug : -g -O0 -fno-inline -pg ]
+    [ opt --profile : -Wl,-x -O3 -finline-functions -g -pg ]
     -I$(--python-include) -I$(--extra-include)
     : -L$(--python-lib[1]) -l$(--python-lib[2]) ;
 ## GCC 2.x, 3.x, 4.x
 toolset gcc gcc : "-o " : -D
-    : -pedantic
+    : -pedantic -fno-strict-aliasing
     [ opt --release : [ opt --symbols : -g : -s ] -O3 ]
     [ opt --debug : -g -O0 -fno-inline ]
     -I$(--python-include) -I$(--extra-include) -Wno-long-long
@@ -195,8 +204,8 @@ toolset intel-linux icc : "-o " : -D
 ## Intel C/C++ for Win32
 toolset intel-win32 icl : /Fe : -D
     : /nologo
-    [ opt --release : /ML /O2 /Ob2 /Gy /GF /GA /GB ]
-    [ opt --debug : /MLd /DEBUG /Z7 /Od /Ob0 ]
+    [ opt --release : /MT /O2 /Ob2 /Gy /GF /GA /GB ]
+    [ opt --debug : /MTd /DEBUG /Z7 /Od /Ob0 ]
     -I$(--python-include) -I$(--extra-include)
     : kernel32.lib advapi32.lib user32.lib $(--python-lib[1]) ;
 ## KCC ?
@@ -276,7 +285,6 @@ toolset sun cc : "-o " : -D
     :
     [ opt --release : -s -fast -xO4 ]
     [ opt --debug : -g ]
-    -xarch=generic
     -I$(--python-include) -I$(--extra-include)
     : -L$(--python-lib[1]) -l$(--python-lib[2]) ;
 ## Sun Workshop 6 C++ (old alias)
@@ -284,7 +292,6 @@ toolset sunpro cc : "-o " : -D
     :
     [ opt --release : -s -fast -xO4 ]
     [ opt --debug : -g ]
-    -xarch=generic
     -I$(--python-include) -I$(--extra-include)
     : -L$(--python-lib[1]) -l$(--python-lib[2]) ;
 ## Compaq Alpha CXX
@@ -315,6 +322,13 @@ toolset vc8 cl : /Fe /Fe /Fd /Fo : -D
     [ opt --debug : /MTd /DEBUG /Z7 /Od /Ob0 /wd4996 ]
     -I$(--python-include) -I$(--extra-include)
     : kernel32.lib advapi32.lib user32.lib $(--python-lib[1]) ;
+## Microsoft Visual C++ 2008
+toolset vc9 cl : /Fe /Fe /Fd /Fo : -D
+    : /nologo
+    [ opt --release : /MT /O2 /Ob2 /Gy /GF /GA /wd4996 ]
+    [ opt --debug : /MTd /DEBUG /Z7 /Od /Ob0 /wd4996 ]
+    -I$(--python-include) -I$(--extra-include)
+    : kernel32.lib advapi32.lib user32.lib $(--python-lib[1]) ;
 ## VMS/OpenVMS DEC C
 toolset vmsdecc cc : /OBJECT= : "/DEFINES=(" "," ")"
     : /STANDARD=VAXC /PREFIX_LIBRARY_ENTRIES=ALL_ENTRIES
@@ -332,13 +346,12 @@ toolset vmsdecc link .link : /EXECUTABLE= :
 toolset = [ MATCH --toolset=(.*) : $(ARGV) ] ;
 if ! $(toolset)
 {
-    # For some reason, the following test does not catch 
-    # empty toolset.
+    # For some reason, the following test does not catch empty toolset.
     ECHO "###" ;
     ECHO "###" No toolset specified. Please use --toolset option. ;
     ECHO "###" ;
     ECHO "###" Known toolsets are: $(toolsets:J=", ") ;
-    EXIT "###" ;    
+    EXIT "###" ;
 }
 if ! $(toolset) in $(toolsets)
 {
@@ -422,6 +435,10 @@ if $(debug)
 {
     locate-target = [ .path $(locate-target)$(.)debug ] ;
 }
+if $(profile)
+{
+    locate-target = [ .path $(locate-target)$(.)profile ] ;
+}
 else
 {
     locate-target = [ .path $(locate-target) ] ;
@@ -440,8 +457,8 @@ jam.source =
     lists.c make.c make1.c mem.c newstr.c
     option.c output.c parse.c regexp.c rules.c
     scan.c search.c subst.c w32_getreg.c
-    timestamp.c variable.c modules.c strings.c filesys.c 
-    builtins.c pwd.c class.c native.c modules/set.c 
+    timestamp.c variable.c modules.c strings.c filesys.c
+    builtins.c pwd.c class.c native.c modules/set.c
     modules/path.c modules/regex.c modules/property-set.c
     modules/sequence.c modules/order.c
     ;
@@ -452,7 +469,7 @@ if $(NT)
 else if $(OS2)
 {
     jam.source += execunix.c fileos2.c pathunix.c ;
-} 
+}
 else if $(VMS)
 {
     jam.source += execvms.c filevms.c pathvms.c ;
@@ -761,7 +778,7 @@ rule .jam
 {
     $(>).exe = [ .exe $(>) : $(jam.source) ] ;
     DEPENDS all : $($(>).exe) ;
-    
+
     if $(debug)
     {
         $(<).exe = $(<:S=$($(>).exe:S)) ;
@@ -920,14 +937,14 @@ rule .package ( dst-dir : src-files + )
             src-files-actual += $(src-path) ;
         }
     }
-    
+
     local pack = ;
     if $(NT) { pack = $(dst-dir).zip ; }
     if $(UNIX) { pack = $(dst-dir).tgz ; }
-    
+
     DEPENDS dist : $(pack) ;
     DEPENDS $(pack) : $(dst-files) ;
-    
+
     local dst-files-queue = $(dst-files) ;
     for local src-path in $(src-files-actual)
     {
@@ -935,11 +952,11 @@ rule .package ( dst-dir : src-files + )
         dst-files-queue = $(dst-files-queue[2-]) ;
         DEPENDS $(dst-file) : $(src-path) $(dst-file:D) ;
         .mkdir $(dst-file:D) ;
-        
+
         [COPY] $(dst-file) : $(src-path) ;
         .clean $(dst-file) ;
     }
-    
+
     [PACK] $(pack) : $(dst-files) ;
     .clean $(pack) ;
 }

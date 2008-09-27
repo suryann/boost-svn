@@ -40,11 +40,11 @@ or real and imaginary components may have absolute values that are Rayleigh dist
 
 The following graph illustrates how the Probability density Function(pdf) varies with the shape parameter [sigma]:
 
-[$../graphs/rayleigh_pdf.png]
+[graph rayleigh_pdf]
 
 and the Cumulative Distribution Function (cdf)
 
-[$../graphs/rayleigh_cdf.png]
+[graph rayleigh_cdf]
 
 [h4 Related distributions]
 
@@ -109,4 +109,11 @@ In the following table [sigma][space] is the sigma parameter of the distribution
 * [@http://mathworld.wolfram.com/RayleighDistribution.html Weisstein, Eric W. "Rayleigh Distribution." From MathWorld--A Wolfram Web Resource.]
 
 [endsect][/section:Rayleigh Rayleigh]
+
+[/ 
+  Copyright 2006 John Maddock and Paul A. Bristow.
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]
 

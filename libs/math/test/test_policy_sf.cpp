@@ -21,12 +21,21 @@ namespace test{
 
    typedef boost::math::policies::policy<> policy;
 
-   BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS(policy);
+   BOOST_MATH_DECLARE_SPECIAL_FUNCTIONS(policy)
 
 }
 
 #define TEST_POLICY_SF(call)\
    BOOST_CHECK_EQUAL(boost::math::call , test::call)
+
+//
+// Prevent some macro conflicts just in case:
+//
+#undef fpclassify
+#undef isnormal
+#undef isinf
+#undef isfinite
+#undef isnan
 
 int test_main(int, char* [])
 {

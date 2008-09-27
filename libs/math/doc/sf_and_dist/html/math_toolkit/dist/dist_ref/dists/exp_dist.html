@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -30,12 +30,10 @@
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">exponential</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">exponential</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
 <p>
           </p>
-<pre class="programlisting">
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span> 
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span> 
           <span class="keyword">class</span> <a href="../../../policy.html" title="Policies">Policy</a>   <span class="special">=</span> <a href="../../../policy/pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
 <span class="keyword">class</span> <span class="identifier">exponential_distribution</span><span class="special">;</span>
 
@@ -70,15 +68,14 @@
             values of the rate parameter lambda:
           </p>
 <p>
-            <span class="inlinemediaobject"><img src="../../../../../graphs/exponential_dist.png" alt="exponential_dist"></span>
+            <span class="inlinemediaobject"><img src="../../../../../graphs/exponential_pdf.png" align="middle"></span>
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.exp_dist.member_functions"></a><h5>
-<a name="id590540"></a>
+<a name="id615458"></a>
             <a href="exp_dist.html#math_toolkit.dist.dist_ref.dists.exp_dist.member_functions">Member
             Functions</a>
           </h5>
-<pre class="programlisting">
-<span class="identifier">exponential_distribution</span><span class="special">(</span><span class="identifier">RealType</span> <span class="identifier">lambda</span> <span class="special">=</span> <span class="number">1</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">exponential_distribution</span><span class="special">(</span><span class="identifier">RealType</span> <span class="identifier">lambda</span> <span class="special">=</span> <span class="number">1</span><span class="special">);</span>
 </pre>
 <p>
             Constructs an <a href="http://en.wikipedia.org/wiki/Exponential_distribution" target="_top">Exponential
@@ -88,14 +85,13 @@
 <p>
             Requires lambda &gt; 0, otherwise calls <a href="../../../main_overview/error_handling.html#domain_error">domain_error</a>.
           </p>
-<pre class="programlisting">
-<span class="identifier">RealType</span> <span class="identifier">lambda</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">RealType</span> <span class="identifier">lambda</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 </pre>
 <p>
             Accessor function returns the lambda parameter of the distribution.
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.exp_dist.non_member_accessors"></a><h5>
-<a name="id590684"></a>
+<a name="id615600"></a>
             <a href="exp_dist.html#math_toolkit.dist.dist_ref.dists.exp_dist.non_member_accessors">Non-member
             Accessors</a>
           </h5>
@@ -115,7 +111,7 @@
             The domain of the random variable is [0, +&#8734;].
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.exp_dist.accuracy"></a><h5>
-<a name="id590856"></a>
+<a name="id615771"></a>
             <a href="exp_dist.html#math_toolkit.dist.dist_ref.dists.exp_dist.accuracy">Accuracy</a>
           </h5>
 <p>
@@ -126,7 +122,7 @@
             should have very low error rates.
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.exp_dist.implementation"></a><h5>
-<a name="id590933"></a>
+<a name="id615849"></a>
             <a href="exp_dist.html#math_toolkit.dist.dist_ref.dists.exp_dist.implementation">Implementation</a>
           </h5>
 <p>
@@ -287,7 +283,7 @@
 </tbody>
 </table></div>
 <a name="math_toolkit.dist.dist_ref.dists.exp_dist.references"></a><h5>
-<a name="id591235"></a>
+<a name="id616151"></a>
             <a href="exp_dist.html#math_toolkit.dist.dist_ref.dists.exp_dist.references">references</a>
           </h5>
 <div class="itemizedlist"><ul type="disc">
@@ -301,11 +297,25 @@
 <li><a href="http://en.wikipedia.org/wiki/Exponential_distribution" target="_top">Wikipedia
               Exponential distribution</a></li>
 </ul></div>
+<p>
+            (See also the reference documentation for the related <a href="extreme_dist.html" title="Extreme Value Distribution">Extreme
+            Distributions</a>.)
+          </p>
+<div class="itemizedlist"><ul type="disc"><li>
+<a href="http://www.worldscibooks.com/mathematics/p191.html" target="_top">Extreme
+              Value Distributions, Theory and Applications Samuel Kotz &amp; Saralees
+              Nadarajah</a> discuss the relationship of the types of extreme
+              value distributions.
+            </li></ul></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

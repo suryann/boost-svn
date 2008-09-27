@@ -6,6 +6,10 @@
 #ifndef BOOST_MATH_TOOLS_PRECISION_INCLUDED
 #define BOOST_MATH_TOOLS_PRECISION_INCLUDED
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <boost/limits.hpp>
 #include <boost/assert.hpp>
 #include <boost/static_assert.hpp>
@@ -37,7 +41,7 @@ namespace tools
 // See  Conceptual Requirements for Real Number Types.
 
 template <class T>
-inline int digits(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline int digits(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    BOOST_STATIC_ASSERT( ::std::numeric_limits<T>::is_specialized);
@@ -48,7 +52,7 @@ inline int digits(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 }
 
 template <class T>
-inline T max_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline T max_value(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    BOOST_STATIC_ASSERT( ::std::numeric_limits<T>::is_specialized);
@@ -60,7 +64,7 @@ inline T max_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 // -max_value<double> = -1.79769e+308, max_value<double> = 1.79769e+308.
 
 template <class T>
-inline T min_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline T min_value(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    BOOST_STATIC_ASSERT( ::std::numeric_limits<T>::is_specialized);
@@ -80,13 +84,13 @@ namespace detail{
 // For type float first:
 //
 template <class T>
-inline T log_max_value(const mpl::int_<128>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_max_value(const mpl::int_<128>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return 88.0f;
 }
 
 template <class T>
-inline T log_min_value(const mpl::int_<128>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_min_value(const mpl::int_<128>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return -87.0f;
 }
@@ -94,13 +98,13 @@ inline T log_min_value(const mpl::int_<128>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE
 // Now double:
 //
 template <class T>
-inline T log_max_value(const mpl::int_<1024>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_max_value(const mpl::int_<1024>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return 709.0;
 }
 
 template <class T>
-inline T log_min_value(const mpl::int_<1024>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_min_value(const mpl::int_<1024>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return -708.0;
 }
@@ -108,19 +112,19 @@ inline T log_min_value(const mpl::int_<1024>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYP
 // 80 and 128-bit long doubles:
 //
 template <class T>
-inline T log_max_value(const mpl::int_<16384>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_max_value(const mpl::int_<16384>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return 11356.0L;
 }
 
 template <class T>
-inline T log_min_value(const mpl::int_<16384>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_min_value(const mpl::int_<16384>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return -11355.0L;
 }
 
 template <class T>
-inline T log_max_value(const mpl::int_<0>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_max_value(const mpl::int_<0>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    BOOST_STATIC_ASSERT( ::std::numeric_limits<T>::is_specialized);
@@ -133,7 +137,7 @@ inline T log_max_value(const mpl::int_<0>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T
 }
 
 template <class T>
-inline T log_min_value(const mpl::int_<0>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_min_value(const mpl::int_<0>& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    BOOST_STATIC_ASSERT( ::std::numeric_limits<T>::is_specialized);
@@ -146,14 +150,14 @@ inline T log_min_value(const mpl::int_<0>& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T
 }
 
 template <class T>
-inline T epsilon(const mpl::true_& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T epsilon(const mpl::true_& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    return std::numeric_limits<T>::epsilon();
 }
 
 #if (defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)) && ((LDBL_MANT_DIG == 106) || (__LDBL_MANT_DIG__ == 106))
 template <>
-inline long double epsilon<long double>(const mpl::true_& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(long double))
+inline long double epsilon<long double>(const mpl::true_& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(long double))
 {
    // numeric_limits on Darwin tells lies here.
    // This static assert fails for some unknown reason, so
@@ -164,7 +168,7 @@ inline long double epsilon<long double>(const mpl::true_& BOOST_APPEND_EXPLICIT_
 #endif
 
 template <class T>
-inline T epsilon(const mpl::false_& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
+inline T epsilon(const mpl::false_& BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 {
    BOOST_MATH_STD_USING  // for ADL of std names
    static const T eps = ldexp(static_cast<T>(1), 1-policies::digits<T, policies::policy<> >());
@@ -174,7 +178,7 @@ inline T epsilon(const mpl::false_& BOOST_APPEND_EXPLICIT_TEMPLATE_TYPE(T))
 } // namespace detail
 
 template <class T>
-inline T log_max_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_max_value(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    typedef typename mpl::if_c<
@@ -195,7 +199,7 @@ inline T log_max_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 }
 
 template <class T>
-inline T log_min_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline T log_min_value(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    typedef typename mpl::if_c<
@@ -217,7 +221,7 @@ inline T log_min_value(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 }
 
 template <class T>
-inline T epsilon(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
+inline T epsilon(BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(T))
 {
 #ifndef BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
    return detail::epsilon<T>(mpl::bool_< ::std::numeric_limits<T>::is_specialized>());
@@ -228,8 +232,91 @@ inline T epsilon(BOOST_EXPLICIT_TEMPLATE_TYPE(T))
 #endif
 }
 
+namespace detail{
+
+template <class T>
+inline T root_epsilon_imp(const mpl::int_<24>&)
+{
+   return static_cast<T>(0.00034526698300124390839884978618400831996329879769945L);
+}
+
+template <class T>
+inline T root_epsilon_imp(const T*, const mpl::int_<53>&)
+{
+   return static_cast<T>(0.1490116119384765625e-7L);
+}
+
+template <class T>
+inline T root_epsilon_imp(const T*, const mpl::int_<64>&)
+{
+   return static_cast<T>(0.32927225399135962333569506281281311031656150598474e-9L);
+}
+
+template <class T>
+inline T root_epsilon_imp(const T*, const mpl::int_<113>&)
+{
+   return static_cast<T>(0.1387778780781445675529539585113525390625e-16L);
+}
+
+template <class T, class Tag>
+inline T root_epsilon_imp(const T*, const Tag&)
+{
+   BOOST_MATH_STD_USING
+   static const T r_eps = sqrt(tools::epsilon<T>());
+   return r_eps;
+}
+
+template <class T>
+inline T forth_root_epsilon_imp(const T*, const mpl::int_<24>&)
+{
+   return static_cast<T>(0.018581361171917516667460937040007436176452688944747L);
+}
+
+template <class T>
+inline T forth_root_epsilon_imp(const T*, const mpl::int_<53>&)
+{
+   return static_cast<T>(0.0001220703125L);
+}
+
+template <class T>
+inline T forth_root_epsilon_imp(const T*, const mpl::int_<64>&)
+{
+   return static_cast<T>(0.18145860519450699870567321328132261891067079047605e-4L);
+}
+
+template <class T>
+inline T forth_root_epsilon_imp(const T*, const mpl::int_<113>&)
+{
+   return static_cast<T>(0.37252902984619140625e-8L);
+}
+
+template <class T, class Tag>
+inline T forth_root_epsilon_imp(const T*, const Tag&)
+{
+   BOOST_MATH_STD_USING
+   static const T r_eps = sqrt(sqrt(tools::epsilon<T>()));
+   return r_eps;
+}
+
+}
+
+template <class T>
+inline T root_epsilon()
+{
+   typedef mpl::int_<std::numeric_limits<T>::digits> tag_type;
+   return detail::root_epsilon_imp(static_cast<T const*>(0), tag_type());
+}
+
+template <class T>
+inline T forth_root_epsilon()
+{
+   typedef mpl::int_<std::numeric_limits<T>::digits> tag_type;
+   return detail::forth_root_epsilon_imp(static_cast<T const*>(0), tag_type());
+}
+
 } // namespace tools
 } // namespace math
 } // namespace boost
 
 #endif // BOOST_MATH_TOOLS_PRECISION_INCLUDED
+

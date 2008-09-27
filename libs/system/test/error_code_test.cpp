@@ -9,17 +9,13 @@
 
 //----------------------------------------------------------------------------// 
 
-//  VC++ 8.0 warns on usage of certain Standard Library and API functions that
-//  can cause buffer overruns or other possible security issues if misused.
-//  See http://msdn.microsoft.com/msdnmag/issues/05/05/SafeCandC/default.aspx
-//  But the wording of the warning is misleading and unsettling, there are no
-//  portable alternative functions, and VC++ 8.0's own libraries use the
-//  functions in question. So turn off the warnings.
-#define _CRT_SECURE_NO_DEPRECATE
-#define _SCL_SECURE_NO_DEPRECATE
+#include <boost/config/warning_disable.hpp>
 
 #include <boost/test/minimal.hpp>
 #include <boost/system/error_code.hpp>
+#include <boost/system/cygwin_error.hpp>
+#include <boost/system/linux_error.hpp>
+#include <boost/system/windows_error.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -144,6 +140,48 @@ int test_main( int, char ** )
   BOOST_CHECK( system_category == native_ecat );
   BOOST_CHECK( posix_category == errno_ecat );
 
+  // test error_code and error_condition message();
+  // see Boost.Filesystem operations_test for code specific message() tests
+  ec = error_code( -1, system_category );
+  std::cout << "error_code message for -1 is \"" << ec.message() << "\"\n";
+#if defined(BOOST_WINDOWS_API)
+  // Borland appends newline, so just check text
+  BOOST_CHECK( ec.message().substr(0,13) == "Unknown error" );
+#elif  defined(linux) || defined(__linux) || defined(__linux__)
+  // Linux appends value to message as unsigned, so it varies with # of bits
+  BOOST_CHECK( ec.message().substr(0,13) == "Unknown error" );
+#elif defined(__hpux)
+  BOOST_CHECK( ec.message() == "" );
+#elif defined(__osf__)
+  BOOST_CHECK( ec.message() == "Error -1 occurred." );
+#elif defined(__vms)
+  BOOST_CHECK( ec.message() == "error -1" );
+#endif
+
+  ec = error_code( BOOST_ACCESS_ERROR_MACRO, system_category );
+  BOOST_CHECK( ec.message() != "" );
+  BOOST_CHECK( ec.message().substr( 0, 13) != "Unknown error" );
+
+  dec = error_condition( -1, posix_category );
+  std::cout << "error_condition message for -1 is \"" << dec.message() << "\"\n";
+#if defined(BOOST_WINDOWS_API)
+  // Borland appends newline, so just check text
+  BOOST_CHECK( dec.message().substr(0,13) == "Unknown error" );
+#elif  defined(linux) || defined(__linux) || defined(__linux__)
+  // Linux appends value to message as unsigned, so it varies with # of bits
+  BOOST_CHECK( dec.message().substr(0,13) == "Unknown error" );
+#elif defined(__hpux)
+  BOOST_CHECK( dec.message() == "" );
+#elif defined(__osf__)
+  BOOST_CHECK( dec.message() == "Error -1 occurred." );
+#elif defined(__vms)
+  BOOST_CHECK( dec.message() == "error -1" );
+#endif
+
+  dec = error_condition( BOOST_ACCESS_ERROR_MACRO, posix_category );
+  BOOST_CHECK( dec.message() != "" );
+  BOOST_CHECK( dec.message().substr( 0, 13) != "Unknown error" );
+
 #ifdef BOOST_WINDOWS_API
   std::cout << "Windows tests...\n";
   // these tests probe the Windows posix decoder
@@ -202,19 +240,19 @@ int test_main( int, char ** )
 # ifdef __CYGWIN__
 
   std::cout << "Cygwin tests...\n";
-  ec = cygwin::no_package;
-  BOOST_CHECK( ec == cygwin::no_package );
+  ec = cygwin_error::no_package;
+  BOOST_CHECK( ec == cygwin_error::no_package );
   BOOST_CHECK( ec == error_code( ENOPKG, system_category ) );
-  BOOST_CHECK( ec == error_code( cygwin::no_package, system_category ) );
+  BOOST_CHECK( ec == error_code( cygwin_error::no_package, system_category ) );
   BOOST_CHECK( ec.default_error_condition().category() == system_category );
 
 # elif defined(linux) || defined(__linux) || defined(__linux__)
 
   std::cout << "Linux tests...\n";
-  ec = Linux::dot_dot_error;
-  BOOST_CHECK( ec == Linux::dot_dot_error );
+  ec = linux_error::dot_dot_error;
+  BOOST_CHECK( ec == linux_error::dot_dot_error );
   BOOST_CHECK( ec == error_code( EDOTDOT, system_category ) );
-  BOOST_CHECK( ec == error_code( Linux::dot_dot_error, system_category ) );
+  BOOST_CHECK( ec == error_code( linux_error::dot_dot_error, system_category ) );
   BOOST_CHECK( ec.default_error_condition().category() == system_category );
 
 # endif

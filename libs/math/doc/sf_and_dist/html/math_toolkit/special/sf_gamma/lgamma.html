@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -27,19 +27,17 @@
 <a name="math_toolkit.special.sf_gamma.lgamma"></a><a href="lgamma.html" title="Log Gamma"> Log Gamma</a>
 </h4></div></div></div>
 <a name="math_toolkit.special.sf_gamma.lgamma.synopsis"></a><h5>
-<a name="id620019"></a>
+<a name="id653833"></a>
           <a href="lgamma.html#math_toolkit.special.sf_gamma.lgamma.synopsis">Synopsis</a>
         </h5>
 <p>
           
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">/</span><span class="identifier">gamma</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">/</span><span class="identifier">gamma</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 </pre>
 <p>
         </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">T</span> <span class="identifier">z</span><span class="special">);</span>
@@ -56,7 +54,7 @@
 <span class="special">}}</span> <span class="comment">// namespaces
 </span></pre>
 <a name="math_toolkit.special.sf_gamma.lgamma.description"></a><h5>
-<a name="id620556"></a>
+<a name="id654368"></a>
           <a href="lgamma.html#math_toolkit.special.sf_gamma.lgamma.description">Description</a>
         </h5>
 <p>
@@ -81,7 +79,7 @@
 <p>
         </p>
 <p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/lgamma.png" alt="lgamma"></span>
+          <span class="inlinemediaobject"><img src="../../../../graphs/lgamma.png" align="middle"></span>
         </p>
 <p>
           There are effectively two versions of this function internally: a fully
@@ -100,7 +98,7 @@
           T otherwise.
         </p>
 <a name="math_toolkit.special.sf_gamma.lgamma.accuracy"></a><h5>
-<a name="id620744"></a>
+<a name="id654570"></a>
           <a href="lgamma.html#math_toolkit.special.sf_gamma.lgamma.accuracy">Accuracy</a>
         </h5>
 <p>
@@ -351,7 +349,7 @@
 </tbody>
 </table></div>
 <a name="math_toolkit.special.sf_gamma.lgamma.testing"></a><h5>
-<a name="id621267"></a>
+<a name="id655093"></a>
           <a href="lgamma.html#math_toolkit.special.sf_gamma.lgamma.testing">Testing</a>
         </h5>
 <p>
@@ -362,7 +360,7 @@
           Random tests in key problem areas are also used.
         </p>
 <a name="math_toolkit.special.sf_gamma.lgamma.implementation"></a><h5>
-<a name="id621303"></a>
+<a name="id655129"></a>
           <a href="lgamma.html#math_toolkit.special.sf_gamma.lgamma.implementation">Implementation</a>
         </h5>
 <p>
@@ -409,8 +407,7 @@
           by JM</a> are used over the intervals [1,2] and [2,3]. Over the interval
           [2,3] the approximation form used is:
         </p>
-<pre class="programlisting">
-<span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">2</span><span class="special">)(</span><span class="identifier">z</span><span class="special">+</span><span class="number">1</span><span class="special">)(</span><span class="identifier">Y</span> <span class="special">+</span> <span class="identifier">R</span><span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">2</span><span class="special">));</span>
+<pre class="programlisting"><span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">2</span><span class="special">)(</span><span class="identifier">z</span><span class="special">+</span><span class="number">1</span><span class="special">)(</span><span class="identifier">Y</span> <span class="special">+</span> <span class="identifier">R</span><span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">2</span><span class="special">));</span>
 </pre>
 <p>
           Where Y is a constant, and R(z-2) is the rational approximation: optimised
@@ -418,30 +415,26 @@
           of z greater than 3 can handled by argument reduction using the recurrence
           relation:
         </p>
-<pre class="programlisting">
-<span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">+</span><span class="number">1</span><span class="special">)</span> <span class="special">=</span> <span class="identifier">log</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">+</span><span class="number">1</span><span class="special">)</span> <span class="special">=</span> <span class="identifier">log</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">+</span> <span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">);</span>
 </pre>
 <p>
           Over the interval [1,2] two approximations have to be used, one for small
           z uses:
         </p>
-<pre class="programlisting">
-<span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">1</span><span class="special">)(</span><span class="identifier">z</span><span class="special">-</span><span class="number">2</span><span class="special">)(</span><span class="identifier">Y</span> <span class="special">+</span> <span class="identifier">R</span><span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">1</span><span class="special">));</span>
+<pre class="programlisting"><span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">1</span><span class="special">)(</span><span class="identifier">z</span><span class="special">-</span><span class="number">2</span><span class="special">)(</span><span class="identifier">Y</span> <span class="special">+</span> <span class="identifier">R</span><span class="special">(</span><span class="identifier">z</span><span class="special">-</span><span class="number">1</span><span class="special">));</span>
 </pre>
 <p>
           Once again Y is a constant, and R(z-1) is optimised for low absolute error
           compared to Y. For z &gt; 1.5 the above form wouldn't converge to a minimax
           solution but this similar form does:
         </p>
-<pre class="programlisting">
-<span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="special">(</span><span class="number">2</span><span class="special">-</span><span class="identifier">z</span><span class="special">)(</span><span class="number">1</span><span class="special">-</span><span class="identifier">z</span><span class="special">)(</span><span class="identifier">Y</span> <span class="special">+</span> <span class="identifier">R</span><span class="special">(</span><span class="number">2</span><span class="special">-</span><span class="identifier">z</span><span class="special">));</span>
+<pre class="programlisting"><span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="special">(</span><span class="number">2</span><span class="special">-</span><span class="identifier">z</span><span class="special">)(</span><span class="number">1</span><span class="special">-</span><span class="identifier">z</span><span class="special">)(</span><span class="identifier">Y</span> <span class="special">+</span> <span class="identifier">R</span><span class="special">(</span><span class="number">2</span><span class="special">-</span><span class="identifier">z</span><span class="special">));</span>
 </pre>
 <p>
           Finally for z &lt; 1 the recurrence relation can be used to move to z &gt;
           1:
         </p>
-<pre class="programlisting">
-<span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">+</span><span class="number">1</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">log</span><span class="special">(</span><span class="identifier">z</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">)</span> <span class="special">=</span> <span class="identifier">lgamma</span><span class="special">(</span><span class="identifier">z</span><span class="special">+</span><span class="number">1</span><span class="special">)</span> <span class="special">-</span> <span class="identifier">log</span><span class="special">(</span><span class="identifier">z</span><span class="special">);</span>
 </pre>
 <p>
           Note that while this involves a subtraction, it appears not to suffer from
@@ -479,8 +472,12 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

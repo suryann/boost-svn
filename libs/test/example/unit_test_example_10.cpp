@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2001-2006.
+//  (C) Copyright Gennadiy Rozental 2001-2008.
 //  (C) Copyright Gennadiy Rozental & Ullrich Koethe 2001.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at 
@@ -66,7 +66,7 @@ struct account_test {
         BOOST_CHECK_MESSAGE( m_account.balance() > 1.0,
                              "Initial balance should be more then 1, was " << m_account.balance() );
 
-        // equality assertion (not very wise idea use equlality check on floating point values)
+        // equality assertion (not very wise idea use equality check on floating point values)
         // reports 'error in "account_test::test_init": test m_account.balance() == 5.0 failed [actual_value != 5]' on error
         BOOST_CHECK_EQUAL( m_account.balance(), 5.0 );
 

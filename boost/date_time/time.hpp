@@ -4,7 +4,7 @@
 /* Copyright (c) 2002,2003,2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the 
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
+ * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
  * Author: Jeff Garland, Bart Garst
  * $Date$
  */
@@ -77,14 +77,14 @@ namespace date_time {
     /*! Optional bool parameter will return time zone as an offset 
      * (ie "+07:00"). Empty string is returned for classes that do 
      * not use a time_zone */
-    std::string zone_name(bool as_offset=false) const
+    std::string zone_name(bool /*as_offset*/=false) const
     {
       return time_system::zone_name(time_);
     }
     /*! Optional bool parameter will return time zone as an offset 
      * (ie "+07:00"). Empty string is returned for classes that do 
      * not use a time_zone */
-    std::string zone_abbrev(bool as_offset=false) const
+    std::string zone_abbrev(bool /*as_offset*/=false) const
     {
       return time_system::zone_name(time_);
     }

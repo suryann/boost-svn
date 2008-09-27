@@ -8,6 +8,7 @@
 #include <boost/test/included/test_exec_monitor.hpp>
 #include <boost/test/floating_point_comparison.hpp>
 #include <boost/math/special_functions/bessel.hpp>
+#include <boost/math/special_functions/trunc.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
 #include "functor.hpp"
@@ -103,7 +104,7 @@ T cyl_bessel_i_int_wrapper(T v, T x)
 {
    return static_cast<T>(
       boost::math::cyl_bessel_i(
-      boost::math::tools::real_cast<int>(v), x));
+      boost::math::itrunc(v), x));
 }
 
 template <class T>
@@ -113,7 +114,11 @@ void do_test_cyl_bessel_i(const T& data, const char* type_name, const char* test
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::cyl_bessel_i<value_type, value_type>;
+#else
    pg funcp = boost::math::cyl_bessel_i;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -157,7 +162,11 @@ void do_test_cyl_bessel_i_int(const T& data, const char* type_name, const char* 
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = cyl_bessel_i_int_wrapper<value_type>;
+#else
    pg funcp = cyl_bessel_i_int_wrapper;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 

@@ -1,3 +1,8 @@
+//  (C) Copyright John Maddock 2006-7.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
+
 
 #include <boost/detail/workaround.hpp>
 #if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
@@ -6,6 +11,6 @@
 #include <boost/math/concepts/real_concept.hpp>
 
 #ifdef BOOST_HAS_LONG_LONG
-template void do_test_spots<boost::math::concepts::real_concept, unsigned long long>(boost::math::concepts::real_concept, unsigned long long);
+template void do_test_spots<boost::math::concepts::real_concept, boost::ulong_long_type>(boost::math::concepts::real_concept, boost::ulong_long_type);
 #endif
 #endif

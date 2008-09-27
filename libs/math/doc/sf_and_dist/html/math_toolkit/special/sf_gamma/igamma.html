@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -28,19 +28,17 @@
         Functions</a>
 </h4></div></div></div>
 <a name="math_toolkit.special.sf_gamma.igamma.synopsis"></a><h5>
-<a name="id625775"></a>
+<a name="id659637"></a>
           <a href="igamma.html#math_toolkit.special.sf_gamma.igamma.synopsis">Synopsis</a>
         </h5>
 <p>
           
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">/</span><span class="identifier">gamma</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">special_functions</span><span class="special">/</span><span class="identifier">gamma</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span>
 </pre>
 <p>
         </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">gamma_p</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">a</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">z</span><span class="special">);</span>
@@ -69,7 +67,7 @@
 <span class="special">}}</span> <span class="comment">// namespaces
 </span></pre>
 <a name="math_toolkit.special.sf_gamma.igamma.description"></a><h5>
-<a name="id626884"></a>
+<a name="id660743"></a>
           <a href="igamma.html#math_toolkit.special.sf_gamma.igamma.description">Description</a>
         </h5>
 <p>
@@ -99,8 +97,7 @@
           type calculation rules</em></span></a> when T1 and T2 are different types,
           otherwise the return type is simply T1.
         </p>
-<pre class="programlisting">
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">gamma_p</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">a</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">z</span><span class="special">);</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">Policy</span><span class="special">&gt;</span>
@@ -116,10 +113,9 @@
           This function changes rapidly from 0 to 1 around the point z == a:
         </p>
 <p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/gamma_p.png" alt="gamma_p"></span>
+          <span class="inlinemediaobject"><img src="../../../../graphs/gamma_p.png" align="middle"></span>
         </p>
-<pre class="programlisting">
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">gamma_q</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">a</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">z</span><span class="special">);</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">,</span> <span class="keyword">class</span> <a href="../../policy.html" title="Policies">Policy</a><span class="special">&gt;</span>
@@ -135,10 +131,9 @@
           This function changes rapidly from 1 to 0 around the point z == a:
         </p>
 <p>
-          <span class="inlinemediaobject"><img src="../../../../graphs/gamma_q.png" alt="gamma_q"></span>
+          <span class="inlinemediaobject"><img src="../../../../graphs/gamma_q.png" align="middle"></span>
         </p>
-<pre class="programlisting">
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">tgamma_lower</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">a</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">z</span><span class="special">);</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">,</span> <span class="keyword">class</span> <a href="../../policy.html" title="Policies">Policy</a><span class="special">&gt;</span>
@@ -151,8 +146,7 @@
 <p>
           <span class="inlinemediaobject"><img src="../../../../equations/igamma2.png"></span>
         </p>
-<pre class="programlisting">
-<span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
+<pre class="programlisting"><span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">&gt;</span>
 <a href="../../main_overview/result_type.html" title="Calculation of the Type of the Result"><span class="emphasis"><em>calculated-result-type</em></span></a> <span class="identifier">tgamma</span><span class="special">(</span><span class="identifier">T1</span> <span class="identifier">a</span><span class="special">,</span> <span class="identifier">T2</span> <span class="identifier">z</span><span class="special">);</span>
 
 <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">T1</span><span class="special">,</span> <span class="keyword">class</span> <span class="identifier">T2</span><span class="special">,</span> <span class="keyword">class</span> <a href="../../policy.html" title="Policies">Policy</a><span class="special">&gt;</span>
@@ -166,7 +160,7 @@
           <span class="inlinemediaobject"><img src="../../../../equations/igamma1.png"></span>
         </p>
 <a name="math_toolkit.special.sf_gamma.igamma.accuracy"></a><h5>
-<a name="id628184"></a>
+<a name="id662067"></a>
           <a href="igamma.html#math_toolkit.special.sf_gamma.igamma.accuracy">Accuracy</a>
         </h5>
 <p>
@@ -191,7 +185,7 @@
           All values are in units of epsilon.
         </p>
 <div class="table">
-<a name="id628253"></a><p class="title"><b>Table 11. Errors In the Function gamma_p(a,z)</b></p>
+<a name="id662136"></a><p class="title"><b>Table 18. Errors In the Function gamma_p(a,z)</b></p>
 <div class="table-contents"><table class="table" summary="Errors In the Function gamma_p(a,z)">
 <colgroup>
 <col>
@@ -378,7 +372,7 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="id628572"></a><p class="title"><b>Table 12. Errors In the Function gamma_q(a,z)</b></p>
+<a name="id662455"></a><p class="title"><b>Table 19. Errors In the Function gamma_q(a,z)</b></p>
 <div class="table-contents"><table class="table" summary="Errors In the Function gamma_q(a,z)">
 <colgroup>
 <col>
@@ -564,7 +558,7 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="id628910"></a><p class="title"><b>Table 13. Errors In the Function tgamma_lower(a,z)</b></p>
+<a name="id662793"></a><p class="title"><b>Table 20. Errors In the Function tgamma_lower(a,z)</b></p>
 <div class="table-contents"><table class="table" summary="Errors In the Function tgamma_lower(a,z)">
 <colgroup>
 <col>
@@ -699,7 +693,7 @@
 </table></div>
 </div>
 <br class="table-break"><div class="table">
-<a name="id629123"></a><p class="title"><b>Table 14. Errors In the Function tgamma(a,z)</b></p>
+<a name="id663006"></a><p class="title"><b>Table 21. Errors In the Function tgamma(a,z)</b></p>
 <div class="table-contents"><table class="table" summary="Errors In the Function tgamma(a,z)">
 <colgroup>
 <col>
@@ -834,7 +828,7 @@
 </table></div>
 </div>
 <br class="table-break"><a name="math_toolkit.special.sf_gamma.igamma.testing"></a><h5>
-<a name="id629344"></a>
+<a name="id663227"></a>
           <a href="igamma.html#math_toolkit.special.sf_gamma.igamma.testing">Testing</a>
         </h5>
 <p>
@@ -850,7 +844,7 @@
           fraction (see below) is unstable for small a and z.
         </p>
 <a name="math_toolkit.special.sf_gamma.igamma.implementation"></a><h5>
-<a name="id629402"></a>
+<a name="id663286"></a>
           <a href="igamma.html#math_toolkit.special.sf_gamma.igamma.implementation">Implementation</a>
         </h5>
 <p>
@@ -966,14 +960,12 @@
           computed in advance using the recurrence relations given by Temme. The
           zone where these expansions are used is
         </p>
-<pre class="programlisting">
-<span class="special">(</span><span class="identifier">a</span> <span class="special">&gt;</span> <span class="number">20</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="special">(</span><span class="identifier">a</span> <span class="special">&lt;</span> <span class="number">200</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="identifier">fabs</span><span class="special">(</span><span class="identifier">x</span><span class="special">-</span><span class="identifier">a</span><span class="special">)/</span><span class="identifier">a</span> <span class="special">&lt;</span> <span class="number">0.4</span>
+<pre class="programlisting"><span class="special">(</span><span class="identifier">a</span> <span class="special">&gt;</span> <span class="number">20</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="special">(</span><span class="identifier">a</span> <span class="special">&lt;</span> <span class="number">200</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="identifier">fabs</span><span class="special">(</span><span class="identifier">x</span><span class="special">-</span><span class="identifier">a</span><span class="special">)/</span><span class="identifier">a</span> <span class="special">&lt;</span> <span class="number">0.4</span>
 </pre>
 <p>
           And:
         </p>
-<pre class="programlisting">
-<span class="special">(</span><span class="identifier">a</span> <span class="special">&gt;</span> <span class="number">200</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="special">(</span><span class="identifier">fabs</span><span class="special">(</span><span class="identifier">x</span><span class="special">-</span><span class="identifier">a</span><span class="special">)/</span><span class="identifier">a</span> <span class="special">&lt;</span> <span class="number">4.5</span><span class="special">/</span><span class="identifier">sqrt</span><span class="special">(</span><span class="identifier">a</span><span class="special">))</span>
+<pre class="programlisting"><span class="special">(</span><span class="identifier">a</span> <span class="special">&gt;</span> <span class="number">200</span><span class="special">)</span> <span class="special">&amp;&amp;</span> <span class="special">(</span><span class="identifier">fabs</span><span class="special">(</span><span class="identifier">x</span><span class="special">-</span><span class="identifier">a</span><span class="special">)/</span><span class="identifier">a</span> <span class="special">&lt;</span> <span class="number">4.5</span><span class="special">/</span><span class="identifier">sqrt</span><span class="special">(</span><span class="identifier">a</span><span class="special">))</span>
 </pre>
 <p>
           The latter range is valid for all types up to 128-bit long doubles, and
@@ -1021,7 +1013,7 @@
           by Temme (see references below).
         </p>
 <a name="math_toolkit.special.sf_gamma.igamma.references"></a><h5>
-<a name="id630444"></a>
+<a name="id664312"></a>
           <a href="igamma.html#math_toolkit.special.sf_gamma.igamma.references">References</a>
         </h5>
 <div class="itemizedlist"><ul type="disc">
@@ -1047,8 +1039,12 @@
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

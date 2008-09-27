@@ -5,7 +5,7 @@
     Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
     http://www.boost.org/LICENSE_1_0.txt).
 
-    See http://opensource.adobe.com/gil for most recent version including documentation.
+    See http://stlab.adobe.com/gil for most recent version including documentation.
 */
 
 /*************************************************************************************************/
@@ -253,6 +253,20 @@ private:
 };
 
 namespace detail {
+
+template <std::size_t K>
+struct static_copy_bytes {
+	void operator()(const unsigned char* from, unsigned char* to) const {
+		*to = *from;
+		static_copy_bytes<K-1>()(++from,++to);
+	}
+};
+
+template <>
+struct static_copy_bytes<0> {
+	void operator()(const unsigned char* , unsigned char*) const {}
+};
+
 template <typename Derived, typename BitField, int NumBits, bool Mutable>
 class packed_channel_reference_base {
 protected:
@@ -292,8 +306,21 @@ public:
     data_ptr_t operator &() const {return _data_ptr;}
 protected:
     static const integer_t max_val    = (1<<NumBits) - 1;
-    const bitfield_t& const_data() const { return *static_cast<const bitfield_t*>(_data_ptr); }
-          bitfield_t& data()       const { return *static_cast<      bitfield_t*>(_data_ptr); }
+
+#ifdef GIL_NONWORD_POINTER_ALIGNMENT_SUPPORTED
+	const bitfield_t& get_data()                      const { return *static_cast<const bitfield_t*>(_data_ptr); }
+	void              set_data(const bitfield_t& val) const {        *static_cast<      bitfield_t*>(_data_ptr) = val; }
+#else
+	bitfield_t get_data() const {
+		bitfield_t ret;
+		static_copy_bytes<sizeof(bitfield_t) >()(gil_reinterpret_cast_c<const unsigned char*>(_data_ptr),gil_reinterpret_cast<unsigned char*>(&ret));
+		return ret;
+	}
+	void set_data(const bitfield_t& val) const {
+		static_copy_bytes<sizeof(bitfield_t) >()(gil_reinterpret_cast_c<const unsigned char*>(&val),gil_reinterpret_cast<unsigned char*>(_data_ptr));
+	}
+#endif
+
 private:
     void set(integer_t value) const {     // can this be done faster??
         const integer_t num_values = max_val+1;
@@ -351,7 +378,7 @@ public:
 
     unsigned first_bit() const { return FirstBit; }
 
-    integer_t get() const { return integer_t((this->const_data()&channel_mask) >> FirstBit); }
+    integer_t get() const { return integer_t((this->get_data()&channel_mask) >> FirstBit); }
 };
 
 /// \ingroup PackedChannelReferenceModel
@@ -372,18 +399,18 @@ public:
     packed_channel_reference(const packed_channel_reference& ref) : parent_t(ref._data_ptr) {}
 
     const packed_channel_reference& operator=(integer_t value) const { assert(value<=parent_t::max_val); set_unsafe(value); return *this; }
-    const packed_channel_reference& operator=(const mutable_reference& ref) const { set_from_reference(ref.data()); return *this; }
-    const packed_channel_reference& operator=(const const_reference&   ref) const { set_from_reference(ref.const_data()); return *this; }
+    const packed_channel_reference& operator=(const mutable_reference& ref) const { set_from_reference(ref.get_data()); return *this; }
+    const packed_channel_reference& operator=(const const_reference&   ref) const { set_from_reference(ref.get_data()); return *this; }
 
     template <bool Mutable1>
     const packed_channel_reference& operator=(const packed_dynamic_channel_reference<BitField,NumBits,Mutable1>& ref) const { set_unsafe(ref.get()); return *this; }
 
     unsigned first_bit() const { return FirstBit; }
 
-    integer_t get()                               const { return integer_t((this->const_data()&channel_mask) >> FirstBit); }
-    void set_unsafe(integer_t value)              const { this->data() = (this->const_data() & ~channel_mask) | (value<<FirstBit); }
+    integer_t get()                               const { return integer_t((this->get_data()&channel_mask) >> FirstBit); }
+    void set_unsafe(integer_t value)              const { this->set_data((this->get_data() & ~channel_mask) | (value<<FirstBit)); }
 private:
-    void set_from_reference(const BitField& other_bits) const { this->data() = (this->const_data() & ~channel_mask) | (other_bits & channel_mask); }
+    void set_from_reference(const BitField& other_bits) const { this->set_data((this->get_data() & ~channel_mask) | (other_bits & channel_mask)); }
 };
 
 } }  // namespace boost::gil
@@ -398,7 +425,7 @@ namespace std {
 /// \ingroup PackedChannelReferenceModel
 /// \brief swap for packed_channel_reference
 template <typename BF, int FB, int NB, bool M, typename R> inline
-void swap(boost::gil::packed_channel_reference<BF,FB,NB,M> x, R& y) { 
+void swap(const boost::gil::packed_channel_reference<BF,FB,NB,M> x, R& y) { 
     boost::gil::swap_proxy<typename boost::gil::packed_channel_reference<BF,FB,NB,M>::value_type>(x,y); 
 }
 
@@ -406,7 +433,7 @@ void swap(boost::gil::packed_channel_reference<BF,FB,NB,M> x, R& y) {
 /// \ingroup PackedChannelReferenceModel
 /// \brief swap for packed_channel_reference
 template <typename BF, int FB, int NB, bool M> inline
-void swap(typename boost::gil::packed_channel_reference<BF,FB,NB,M>::value_type& x, boost::gil::packed_channel_reference<BF,FB,NB,M> y) { 
+void swap(typename boost::gil::packed_channel_reference<BF,FB,NB,M>::value_type& x, const boost::gil::packed_channel_reference<BF,FB,NB,M> y) { 
     boost::gil::swap_proxy<typename boost::gil::packed_channel_reference<BF,FB,NB,M>::value_type>(x,y); 
 }
 
@@ -414,7 +441,7 @@ void swap(typename boost::gil::packed_channel_reference<BF,FB,NB,M>::value_type&
 /// \ingroup PackedChannelReferenceModel
 /// \brief swap for packed_channel_reference
 template <typename BF, int FB, int NB, bool M> inline
-void swap(boost::gil::packed_channel_reference<BF,FB,NB,M> x, boost::gil::packed_channel_reference<BF,FB,NB,M> y) { 
+void swap(const boost::gil::packed_channel_reference<BF,FB,NB,M> x, const boost::gil::packed_channel_reference<BF,FB,NB,M> y) { 
     boost::gil::swap_proxy<typename boost::gil::packed_channel_reference<BF,FB,NB,M>::value_type>(x,y); 
 }
 }   // namespace std
@@ -463,7 +490,7 @@ public:
 
     integer_t get() const { 
         const BitField channel_mask = parent_t::max_val<<_first_bit;
-        return (this->const_data()&channel_mask) >> _first_bit; 
+        return (this->get_data()&channel_mask) >> _first_bit; 
     }
 };
 
@@ -498,11 +525,11 @@ public:
 
     integer_t get() const { 
         const BitField channel_mask = parent_t::max_val<<_first_bit;
-        return (this->const_data()&channel_mask) >> _first_bit; 
+        return (this->get_data()&channel_mask) >> _first_bit; 
     }
     void set_unsafe(integer_t value) const { 
         const BitField channel_mask = parent_t::max_val<<_first_bit;
-        this->data() = (this->const_data() & ~channel_mask) | value<<_first_bit; 
+        this->set_data((this->get_data() & ~channel_mask) | value<<_first_bit); 
     }
 };
 } }  // namespace boost::gil
@@ -518,7 +545,7 @@ namespace std {
 /// \ingroup PackedChannelDynamicReferenceModel
 /// \brief swap for packed_dynamic_channel_reference
 template <typename BF, int NB, bool M, typename R> inline
-void swap(boost::gil::packed_dynamic_channel_reference<BF,NB,M> x, R& y) { 
+void swap(const boost::gil::packed_dynamic_channel_reference<BF,NB,M> x, R& y) { 
     boost::gil::swap_proxy<typename boost::gil::packed_dynamic_channel_reference<BF,NB,M>::value_type>(x,y); 
 }
 
@@ -526,7 +553,7 @@ void swap(boost::gil::packed_dynamic_channel_reference<BF,NB,M> x, R& y) {
 /// \ingroup PackedChannelDynamicReferenceModel
 /// \brief swap for packed_dynamic_channel_reference
 template <typename BF, int NB, bool M> inline
-void swap(typename boost::gil::packed_dynamic_channel_reference<BF,NB,M>::value_type& x, boost::gil::packed_dynamic_channel_reference<BF,NB,M> y) { 
+void swap(typename boost::gil::packed_dynamic_channel_reference<BF,NB,M>::value_type& x, const boost::gil::packed_dynamic_channel_reference<BF,NB,M> y) { 
     boost::gil::swap_proxy<typename boost::gil::packed_dynamic_channel_reference<BF,NB,M>::value_type>(x,y); 
 }
 
@@ -534,7 +561,7 @@ void swap(typename boost::gil::packed_dynamic_channel_reference<BF,NB,M>::value_
 /// \ingroup PackedChannelDynamicReferenceModel
 /// \brief swap for packed_dynamic_channel_reference
 template <typename BF, int NB, bool M> inline
-void swap(boost::gil::packed_dynamic_channel_reference<BF,NB,M> x, boost::gil::packed_dynamic_channel_reference<BF,NB,M> y) { 
+void swap(const boost::gil::packed_dynamic_channel_reference<BF,NB,M> x, const boost::gil::packed_dynamic_channel_reference<BF,NB,M> y) { 
     boost::gil::swap_proxy<typename boost::gil::packed_dynamic_channel_reference<BF,NB,M>::value_type>(x,y); 
 }
 }   // namespace std

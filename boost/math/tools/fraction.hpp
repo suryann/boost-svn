@@ -6,7 +6,11 @@
 #ifndef BOOST_MATH_TOOLS_FRACTION_INCLUDED
 #define BOOST_MATH_TOOLS_FRACTION_INCLUDED
 
-#include <cmath>
+#ifdef _MSC_VER
+#pragma once
+#endif
+
+#include <boost/config/no_tr1/cmath.hpp>
 #include <boost/cstdint.hpp>
 #include <boost/type_traits/integral_constant.hpp>
 #include <boost/mpl/if.hpp>
@@ -17,52 +21,52 @@ namespace boost{ namespace math{ namespace tools{
 namespace detail
 {
 
-	template <class T>
-	struct is_pair : public boost::false_type{};
+   template <class T>
+   struct is_pair : public boost::false_type{};
 
-	template <class T, class U>
-	struct is_pair<std::pair<T,U> > : public boost::true_type{};
+   template <class T, class U>
+   struct is_pair<std::pair<T,U> > : public boost::true_type{};
 
-	template <class Gen>
-	struct fraction_traits_simple
-	{
-		 typedef typename Gen::result_type result_type;
-		 typedef typename Gen::result_type value_type;
+   template <class Gen>
+   struct fraction_traits_simple
+   {
+       typedef typename Gen::result_type result_type;
+       typedef typename Gen::result_type value_type;
 
-		 static result_type a(const value_type& v)
-		 {
-				return 1;
-		 }
-		 static result_type b(const value_type& v)
-		 {
-				return v;
-		 }
-	};
+       static result_type a(const value_type& v)
+       {
+          return 1;
+       }
+       static result_type b(const value_type& v)
+       {
+          return v;
+       }
+   };
 
-	template <class Gen>
-	struct fraction_traits_pair
-	{
-		 typedef typename Gen::result_type value_type;
-		 typedef typename value_type::first_type result_type;
+   template <class Gen>
+   struct fraction_traits_pair
+   {
+       typedef typename Gen::result_type value_type;
+       typedef typename value_type::first_type result_type;
 
-		 static result_type a(const value_type& v)
-		 {
-				return v.first;
-		 }
-		 static result_type b(const value_type& v)
-		 {
-				return v.second;
-		 }
-	};
+       static result_type a(const value_type& v)
+       {
+          return v.first;
+       }
+       static result_type b(const value_type& v)
+       {
+          return v.second;
+       }
+   };
 
-	template <class Gen>
-	struct fraction_traits
-		 : public boost::mpl::if_c<
-				is_pair<typename Gen::result_type>::value,
-				fraction_traits_pair<Gen>,
-				fraction_traits_simple<Gen> >::type
-	{
-	};
+   template <class Gen>
+   struct fraction_traits
+       : public boost::mpl::if_c<
+         is_pair<typename Gen::result_type>::value,
+         fraction_traits_pair<Gen>,
+         fraction_traits_simple<Gen> >::type
+   {
+   };
 
 } // namespace detail
 
@@ -257,3 +261,4 @@ typename detail::fraction_traits<Gen>::result_type continued_fraction_a(Gen& g, 
 } // namespace boost
 
 #endif // BOOST_MATH_TOOLS_FRACTION_INCLUDED
+

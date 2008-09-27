@@ -6,19 +6,25 @@
 #ifndef BOOST_MATH_TOOLS_CONFIG_HPP
 #define BOOST_MATH_TOOLS_CONFIG_HPP
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <boost/cstdint.hpp> // for boost::uintmax_t
 #include <boost/config.hpp>
 #include <boost/detail/workaround.hpp>
 #include <algorithm>  // for min and max
-#include <cmath>
+#include <boost/config/no_tr1/cmath.hpp>
 #include <climits>
 #if (defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__))
 #  include <math.h>
 #endif
 
 #include <boost/math/tools/user.hpp>
+#include <boost/math/special_functions/detail/round_fwd.hpp>
 
-#if defined(__CYGWIN__) || defined(__FreeBSD__)
+#if defined(__CYGWIN__) || defined(__FreeBSD__) || defined(__NetBSD__) \
+   || defined(__hppa) || defined(__NO_LONG_DOUBLE_MATH)
 #  define BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
 #endif
 #if BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
@@ -39,6 +45,75 @@
 //
 #  define BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
 #endif
+#if defined(unix) && defined(__INTEL_COMPILER) && (__INTEL_COMPILER <= 1000)
+//
+// Intel compiler prior to version 10 has sporadic problems
+// calling the long double overloads of the std lib math functions:
+// calling ::powl is OK, but std::pow(long double, long double) 
+// may segfault depending upon the value of the arguments passed 
+// and the specific Linux distribution.
+//
+// We'll be conservative and disable long double support for this compiler.
+//
+// Comment out this #define and try building the tests to determine whether
+// your Intel compiler version has this issue or not.
+//
+#  define BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+#endif
+
+#if defined(BOOST_MSVC) && !defined(_WIN32_WCE)
+   // Better safe than sorry, our tests don't support hardware exceptions:
+#  define BOOST_MATH_CONTROL_FP _control87(MCW_EM,MCW_EM)
+#endif
+
+#ifdef __IBMCPP__
+#  define BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS
+#endif
+
+#if defined(BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS) || BOOST_WORKAROUND(__SUNPRO_CC, <= 0x590)
+
+#  include "boost/type.hpp"
+#  include "boost/non_type.hpp"
+
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(t)         boost::type<t>* = 0
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(t)    boost::type<t>*
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_NON_TYPE(t, v)  boost::non_type<t, v>* = 0
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)  boost::non_type<t, v>*
+
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(t)         \
+             , BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(t)
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(t)    \
+             , BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(t)
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(t, v)  \
+             , BOOST_MATH_EXPLICIT_TEMPLATE_NON_TYPE(t, v)
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)  \
+             , BOOST_MATH_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)
+
+#else
+
+// no workaround needed: expand to nothing
+
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_TYPE(t)
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_TYPE_SPEC(t)
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_NON_TYPE(t, v)
+#  define BOOST_MATH_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)
+
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE(t)
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_TYPE_SPEC(t)
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_NON_TYPE(t, v)
+#  define BOOST_MATH_APPEND_EXPLICIT_TEMPLATE_NON_TYPE_SPEC(t, v)
+
+
+#endif // defined BOOST_NO_EXPLICIT_FUNCTION_TEMPLATE_ARGUMENTS
+
+#if BOOST_WORKAROUND(__SUNPRO_CC, <= 0x590) || defined(__hppa)
+// Sun's compiler emits a hard error if a constant underflows,
+// as does aCC on PA-RISC:
+#  define BOOST_MATH_SMALL_CONSTANT(x) 0
+#else
+#  define BOOST_MATH_SMALL_CONSTANT(x) x
+#endif
+
 
 #if BOOST_WORKAROUND(BOOST_MSVC, < 1400)
 //
@@ -116,7 +191,14 @@
    using std::ceil;\
    using std::floor;\
    using std::log10;\
-   using std::sqrt;
+   using std::sqrt;\
+   using boost::math::round;\
+   using boost::math::iround;\
+   using boost::math::lround;\
+   using boost::math::trunc;\
+   using boost::math::itrunc;\
+   using boost::math::ltrunc;\
+   using boost::math::modf;
 
 
 namespace boost{ namespace math{
@@ -139,30 +221,30 @@ inline T max BOOST_PREVENT_MACRO_SUBSTITUTION(T a, T b, T c, T d)
 
 #ifdef __linux__
 
-	#include <fenv.h>
+   #include <fenv.h>
 
-	namespace boost{ namespace math{
-	namespace detail
-	{
-	struct fpu_guard
-	{
-		fpu_guard()
-		{
-			fegetexceptflag(&m_flags, FE_ALL_EXCEPT);
-			feclearexcept(FE_ALL_EXCEPT);
-		}
-		~fpu_guard()
-		{
-			fesetexceptflag(&m_flags, FE_ALL_EXCEPT);
-		}
-	private:
-		fexcept_t m_flags;
-	};
+   namespace boost{ namespace math{
+   namespace detail
+   {
+   struct fpu_guard
+   {
+      fpu_guard()
+      {
+         fegetexceptflag(&m_flags, FE_ALL_EXCEPT);
+         feclearexcept(FE_ALL_EXCEPT);
+      }
+      ~fpu_guard()
+      {
+         fesetexceptflag(&m_flags, FE_ALL_EXCEPT);
+      }
+   private:
+      fexcept_t m_flags;
+   };
 
-	} // namespace detail
-	}} // namespaces
+   } // namespace detail
+   }} // namespaces
 
-	#define BOOST_FPU_EXCEPTION_GUARD boost::math::detail::fpu_guard local_guard_object;
+   #define BOOST_FPU_EXCEPTION_GUARD boost::math::detail::fpu_guard local_guard_object;
 #else // All other platforms.
   #define BOOST_FPU_EXCEPTION_GUARD
 #endif
@@ -177,6 +259,8 @@ inline T max BOOST_PREVENT_MACRO_SUBSTITUTION(T a, T b, T c, T d)
 #endif
 
 #endif // BOOST_MATH_TOOLS_CONFIG_HPP
+
+
 
 
 

@@ -12,7 +12,7 @@
 #include <iomanip>
 #include <string>
 #include <cerrno>
-#include <cmath>
+#include <boost/config/no_tr1/cmath.hpp>
 #include <stdexcept>
 #include <boost/math/tools/config.hpp>
 #include <boost/math/policies/policy.hpp>
@@ -37,6 +37,12 @@ public:
    evaluation_error(const std::string& s) : std::runtime_error(s){}
 };
 
+class rounding_error : public std::runtime_error
+{
+public:
+   rounding_error(const std::string& s) : std::runtime_error(s){}
+};
+
 namespace policies{
 //
 // Forward declarations of user error handlers, 
@@ -54,17 +60,30 @@ template <class T>
 T user_denorm_error(const char* function, const char* message, const T& val);
 template <class T>
 T user_evaluation_error(const char* function, const char* message, const T& val);
+template <class T>
+T user_rounding_error(const char* function, const char* message, const T& val);
+template <class T>
+T user_indeterminate_result_error(const char* function, const char* message, const T& val);
 
 namespace detail
 {
+//
+// Helper function to avoid binding rvalue to non-const-reference,
+// in other words a warning suppression mechansim:
+//
+template <class Formatter, class Group>
+inline std::string do_format(Formatter f, const Group& g)
+{
+   return (f % g).str();
+}
 
 template <class E, class T>
 void raise_error(const char* function, const char* message)
 {
   if(function == 0)
-	    function = "Unknown function";
+       function = "Unknown function operating on type %1%";
   if(message == 0)
-	    message = "Cause unknown";
+       message = "Cause unknown";
 
   std::string msg("Error in function ");
   msg += (boost::format(function) % typeid(T).name()).str();
@@ -79,9 +98,9 @@ template <class E, class T>
 void raise_error(const char* function, const char* message, const T& val)
 {
   if(function == 0)
-	    function = "Unknown function";
+     function = "Unknown function operating on type %1%";
   if(message == 0)
-	    message = "Cause unknown";
+     message = "Cause unknown: error caused by bad argument with value %1%";
 
   std::string msg("Error in function ");
   msg += (boost::format(function) % typeid(T).name()).str();
@@ -89,7 +108,7 @@ void raise_error(const char* function, const char* message, const T& val)
   msg += message;
 
   int prec = 2 + (boost::math::policies::digits<T, boost::math::policies::policy<> >() * 30103UL) / 100000UL;
-  msg = (boost::format(msg) % boost::io::group(std::setprecision(prec), val)).str();
+  msg = do_format(boost::format(msg), boost::io::group(std::setprecision(prec), val));
 
   E e(msg);
   boost::throw_exception(e);
@@ -362,6 +381,104 @@ inline T raise_evaluation_error(
    return user_evaluation_error(function, message, val);
 }
 
+template <class T>
+inline T raise_rounding_error(
+           const char* function, 
+           const char* message, 
+           const T& val, 
+           const  ::boost::math::policies::rounding_error< ::boost::math::policies::throw_on_error>&)
+{
+   raise_error<boost::math::rounding_error, T>(function, message, val);
+   // we never get here:
+   return T(0);
+}
+
+template <class T>
+inline T raise_rounding_error(
+           const char* , 
+           const char* , 
+           const T& val, 
+           const  ::boost::math::policies::rounding_error< ::boost::math::policies::ignore_error>&)
+{
+   // This may or may not do the right thing, but the user asked for the error
+   // to be ignored so here we go anyway:
+   return val;
+}
+
+template <class T>
+inline T raise_rounding_error(
+           const char* , 
+           const char* , 
+           const T& val, 
+           const  ::boost::math::policies::rounding_error< ::boost::math::policies::errno_on_error>&)
+{
+   errno = ERANGE;
+   // This may or may not do the right thing, but the user asked for the error
+   // to be silent so here we go anyway:
+   return val;
+}
+
+template <class T>
+inline T raise_rounding_error(
+           const char* function, 
+           const char* message, 
+           const T& val, 
+           const  ::boost::math::policies::rounding_error< ::boost::math::policies::user_error>&)
+{
+   return user_rounding_error(function, message, val);
+}
+
+template <class T, class R>
+inline T raise_indeterminate_result_error(
+           const char* function, 
+           const char* message, 
+           const T& val, 
+           const R& ,
+           const ::boost::math::policies::indeterminate_result_error< ::boost::math::policies::throw_on_error>&)
+{
+   raise_error<std::domain_error, T>(function, message, val);
+   // we never get here:
+   return std::numeric_limits<T>::quiet_NaN();
+}
+
+template <class T, class R>
+inline T raise_indeterminate_result_error(
+           const char* , 
+           const char* , 
+           const T& , 
+           const R& result, 
+           const ::boost::math::policies::indeterminate_result_error< ::boost::math::policies::ignore_error>&)
+{
+   // This may or may not do the right thing, but the user asked for the error
+   // to be ignored so here we go anyway:
+   return result;
+}
+
+template <class T, class R>
+inline T raise_indeterminate_result_error(
+           const char* , 
+           const char* , 
+           const T& , 
+           const R& result, 
+           const ::boost::math::policies::indeterminate_result_error< ::boost::math::policies::errno_on_error>&)
+{
+   errno = EDOM;
+   // This may or may not do the right thing, but the user asked for the error
+   // to be silent so here we go anyway:
+   return result;
+}
+
+template <class T, class R>
+inline T raise_indeterminate_result_error(
+           const char* function, 
+           const char* message, 
+           const T& val, 
+           const R& , 
+           const ::boost::math::policies::indeterminate_result_error< ::boost::math::policies::user_error>&)
+{
+   return user_indeterminate_result_error(function, message, val);
+}
+
 }  // namespace detail
 
 template <class T, class Policy>
@@ -417,6 +534,24 @@ inline T raise_evaluation_error(const char* function, const char* message, const
    return detail::raise_evaluation_error(
       function, message ? message : "Internal Evaluation Error, best value so far was %1%", 
       val, policy_type());
+}
+
+template <class T, class Policy>
+inline T raise_rounding_error(const char* function, const char* message, const T& val, const Policy&)
+{
+   typedef typename Policy::rounding_error_type policy_type;
+   return detail::raise_rounding_error(
+      function, message ? message : "Value %1% can not be represented in the target integer type.", 
+      val, policy_type());
+}
+
+template <class T, class R, class Policy>
+inline T raise_indeterminate_result_error(const char* function, const char* message, const T& val, const R& result, const Policy&)
+{
+   typedef typename Policy::indeterminate_result_error_type policy_type;
+   return detail::raise_indeterminate_result_error(
+      function, message ? message : "Indeterminate result with value %1%",
+      val, result, policy_type());
 }
 
 //

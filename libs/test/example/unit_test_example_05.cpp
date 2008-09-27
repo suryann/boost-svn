@@ -1,4 +1,4 @@
-//  (C) Copyright Gennadiy Rozental 2005-2006.
+//  (C) Copyright Gennadiy Rozental 2005-2008.
 //  Distributed under the Boost Software License, Version 1.0.
 //  (See accompanying file LICENSE_1_0.txt or copy at 
 //  http://www.boost.org/LICENSE_1_0.txt)
@@ -11,7 +11,7 @@
 
 //____________________________________________________________________________//
 
-BOOST_AUTO_TEST_SUITE( my_suite );
+BOOST_AUTO_TEST_SUITE( my_suite )
 
 struct F {
     F() : i( 0 ) { BOOST_TEST_MESSAGE( "setup fixture" ); }

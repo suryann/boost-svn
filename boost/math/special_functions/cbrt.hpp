@@ -6,6 +6,10 @@
 #ifndef BOOST_MATH_SF_CBRT_HPP
 #define BOOST_MATH_SF_CBRT_HPP
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <boost/math/tools/roots.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
 
@@ -14,18 +18,18 @@ namespace boost{ namespace math{
 namespace detail
 {
 
-	template <class T>
-	struct cbrt_functor
-	{
-		 cbrt_functor(T const& target) : a(target){}
-		 std::tr1::tuple<T, T, T> operator()(T const& z)
-		 {
-				T sqr = z * z;
-				return std::tr1::make_tuple(sqr * z - a, 3 * sqr, 6 * z);
-		 }
-	private:
-		 T a;
-	};
+   template <class T>
+   struct cbrt_functor
+   {
+       cbrt_functor(T const& target) : a(target){}
+       std::tr1::tuple<T, T, T> operator()(T const& z)
+       {
+         T sqr = z * z;
+         return std::tr1::make_tuple(sqr * z - a, 3 * sqr, 6 * z);
+       }
+   private:
+       T a;
+   };
 
 template <class T, class Policy>
 T cbrt_imp(T z, const Policy&)
@@ -67,6 +71,7 @@ inline typename tools::promote_args<T>::type cbrt(T z)
 } // namespace boost
 
 #endif // BOOST_MATH_SF_CBRT_HPP
+
 
 
 

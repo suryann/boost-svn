@@ -17,6 +17,7 @@
 #include <boost/intrusive/detail/config_begin.hpp>
 #include <boost/intrusive/intrusive_fwd.hpp>
 #include <boost/intrusive/detail/utilities.hpp>
+#include <boost/intrusive/detail/pointer_to_other.hpp>
 #include <boost/intrusive/slist_hook.hpp>
 #include <boost/intrusive/options.hpp>
 #include <boost/intrusive/detail/generic_hook.hpp>
@@ -25,10 +26,128 @@ namespace boost {
 namespace intrusive {
 
 /// @cond
+
+template<class VoidPointer, bool StoreHash, bool OptimizeMultiKey>
+struct unordered_node
+   :  public slist_node<VoidPointer>
+{
+   typedef typename boost::pointer_to_other
+      < VoidPointer
+      , unordered_node<VoidPointer, StoreHash, OptimizeMultiKey>
+      >::type   node_ptr;
+   node_ptr    prev_in_group_;
+   std::size_t hash_;
+};
+
 template<class VoidPointer>
+struct unordered_node<VoidPointer, false, true>
+   :  public slist_node<VoidPointer>
+{
+   typedef typename boost::pointer_to_other
+      < VoidPointer
+      , unordered_node<VoidPointer, false, true>
+      >::type   node_ptr;
+   node_ptr    prev_in_group_;
+};
+
+template<class VoidPointer>
+struct unordered_node<VoidPointer, true, false>
+   :  public slist_node<VoidPointer>
+{
+   typedef typename boost::pointer_to_other
+      < VoidPointer
+      , unordered_node<VoidPointer, true, false>
+      >::type   node_ptr;
+   std::size_t hash_;
+};
+
+template<class VoidPointer, bool StoreHash, bool OptimizeMultiKey>
+struct unordered_node_traits
+   :  public slist_node_traits<VoidPointer>
+{
+   typedef slist_node_traits<VoidPointer> reduced_slist_node_traits;
+   typedef unordered_node<VoidPointer, StoreHash, OptimizeMultiKey> node;
+   typedef typename boost::pointer_to_other
+      <VoidPointer, node>::type          node_ptr;
+   typedef typename boost::pointer_to_other
+      <VoidPointer, const node>::type    const_node_ptr;
+
+   static const bool store_hash        = StoreHash;
+   static const bool optimize_multikey = OptimizeMultiKey;
+
+   static node_ptr get_next(const_node_ptr n)
+   {  return node_ptr(&static_cast<node &>(*n->next_));  }
+
+   static void set_next(node_ptr n, node_ptr next)
+   {  n->next_ = next;  }
+
+   static node_ptr get_prev_in_group(const_node_ptr n)
+   {  return n->prev_in_group_;  }
+
+   static void set_prev_in_group(node_ptr n, node_ptr prev)
+   {  n->prev_in_group_ = prev;  }
+
+   static std::size_t get_hash(const_node_ptr n)
+   {  return n->hash_;  }  
+
+   static void set_hash(node_ptr n, std::size_t h)
+   {  n->hash_ = h;  }  
+};
+
+template<class NodeTraits>
+struct unordered_group_adapter
+{
+   typedef typename NodeTraits::node            node;
+   typedef typename NodeTraits::node_ptr        node_ptr;
+   typedef typename NodeTraits::const_node_ptr  const_node_ptr;
+
+   static node_ptr get_next(const_node_ptr n)
+   {  return NodeTraits::get_prev_in_group(n);  }
+
+   static void set_next(node_ptr n, node_ptr next)
+   {  NodeTraits::set_prev_in_group(n, next);   }
+};
+
+template<class NodeTraits>
+struct unordered_algorithms
+   : public circular_slist_algorithms<NodeTraits>
+{
+   typedef circular_slist_algorithms<NodeTraits>   base_type;
+   typedef unordered_group_adapter<NodeTraits> group_traits;
+   typedef circular_slist_algorithms<group_traits> group_algorithms;
+
+   static void init(typename base_type::node_ptr n)
+   {
+      base_type::init(n);
+      group_algorithms::init(n);
+   }
+
+   static void init_header(typename base_type::node_ptr n)
+   {
+      base_type::init_header(n);
+      group_algorithms::init_header(n);
+   }
+
+   static void unlink(typename base_type::node_ptr n)
+   {
+      base_type::unlink(n);
+      group_algorithms::unlink(n);
+   }
+};
+
+template<class VoidPointer, bool StoreHash, bool OptimizeMultiKey>
 struct get_uset_node_algo
 {
-   typedef circular_slist_algorithms<slist_node_traits<VoidPointer> > type;
+   typedef typename detail::if_c
+      < (StoreHash || OptimizeMultiKey)
+      , unordered_node_traits<VoidPointer, StoreHash, OptimizeMultiKey> 
+      , slist_node_traits<VoidPointer> 
+      >::type node_traits_type;
+   typedef typename detail::if_c
+      < OptimizeMultiKey
+      , unordered_algorithms<node_traits_type> 
+      , circular_slist_algorithms<node_traits_type>
+      >::type type;
 };
 /// @endcond
 
@@ -37,16 +156,19 @@ struct get_uset_node_algo
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1 = none, class O2 = none, class O3 = none>
+template<class O1 = none, class O2 = none, class O3 = none, class O4 = none>
 #endif
 struct make_unordered_set_base_hook
 {
    /// @cond
    typedef typename pack_options
-      < hook_defaults, O1, O2, O3>::type packed_options;
+      < hook_defaults, O1, O2, O3, O4>::type packed_options;
 
    typedef detail::generic_hook
-   < get_slist_node_algo<typename packed_options::void_pointer>
+   < get_uset_node_algo<typename packed_options::void_pointer
+                       , packed_options::store_hash
+                       , packed_options::optimize_multikey
+                       >
    , typename packed_options::tag
    , packed_options::link_mode
    , detail::UsetBaseHook
@@ -59,22 +181,33 @@ struct make_unordered_set_base_hook
 //! in an unordered_set/unordered_multi_set. unordered_set_base_hook holds the data necessary to maintain 
 //! the unordered_set/unordered_multi_set and provides an appropriate value_traits class for unordered_set/unordered_multi_set.
 //! 
-//! The first integer template argument defines a tag to identify the node. 
+//! The hook admits the following options: \c tag<>, \c void_pointer<>,
+//! \c link_mode<>, \c store_hash<> and \c optimize_multikey<>.
+//!
+//! \c tag<> defines a tag to identify the node. 
 //! The same tag value can be used in different classes, but if a class is 
-//! derived from more than one unordered_set_base_hook, then each unordered_set_base_hook needs its 
+//! derived from more than one \c list_base_hook, then each \c list_base_hook needs its 
 //! unique tag.
 //!
-//! The second boolean template parameter will specify the linking mode of the hook.
+//! \c void_pointer<> is the pointer type that will be used internally in the hook
+//! and the the container configured to use this hook.
 //!
-//! The third argument is the pointer type that will be used internally in the hook
-//! and the unordered_set/unordered_multi_set configured from this hook.
+//! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
+//! \c auto_unlink or \c safe_link).
+//!
+//! \c store_hash<> will tell the hook to store the hash of the value
+//! to speed up rehashings.
+//!
+//! \c optimize_multikey<> will tell the hook to store a link to form a group
+//! with other value with the same value to speed up searches and insertions
+//! in unordered_multisets with a great number of with equivalent keys.
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1, class O2, class O3>
+template<class O1, class O2, class O3, class O4>
 #endif
 class unordered_set_base_hook
-   :  public make_unordered_set_base_hook<O1, O2, O3>::type
+   :  public make_unordered_set_base_hook<O1, O2, O3, O4>::type
 {
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link
@@ -149,16 +282,19 @@ class unordered_set_base_hook
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1 = none, class O2 = none, class O3 = none>
+template<class O1 = none, class O2 = none, class O3 = none, class O4 = none>
 #endif
 struct make_unordered_set_member_hook
 {
    /// @cond
    typedef typename pack_options
-      < hook_defaults, O1, O2, O3>::type packed_options;
+      < hook_defaults, O1, O2, O3, O4>::type packed_options;
 
    typedef detail::generic_hook
-   < get_uset_node_algo<typename packed_options::void_pointer>
+   < get_uset_node_algo< typename packed_options::void_pointer
+                       , packed_options::store_hash
+                       , packed_options::optimize_multikey
+                       >
    , member_tag
    , packed_options::link_mode
    , detail::NoBaseHook
@@ -171,17 +307,24 @@ struct make_unordered_set_member_hook
 //! an unordered_set/unordered_multi_set. unordered_set_member_hook holds the data necessary for maintaining the
 //! unordered_set/unordered_multi_set and provides an appropriate value_traits class for unordered_set/unordered_multi_set.
 //! 
-//! The first boolean template parameter will specify the linking mode of the hook.
+//! The hook admits the following options: \c void_pointer<>,
+//! \c link_mode<> and \c store_hash<>.
 //!
-//! The second argument is the pointer type that will be used internally in the hook
-//! and the unordered_set/unordered_multi_set configured from this hook.
+//! \c void_pointer<> is the pointer type that will be used internally in the hook
+//! and the the container configured to use this hook.
+//!
+//! \c link_mode<> will specify the linking mode of the hook (\c normal_link,
+//! \c auto_unlink or \c safe_link).
+//!
+//! \c store_hash<> will tell the hook to store the hash of the value
+//! to speed up rehashings.
 #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
 template<class ...Options>
 #else
-template<class O1, class O2, class O3>
+template<class O1, class O2, class O3, class O4>
 #endif
 class unordered_set_member_hook
-   :  public make_unordered_set_member_hook<O1, O2, O3>::type
+   :  public make_unordered_set_member_hook<O1, O2, O3, O4>::type
 {
    #ifdef BOOST_INTRUSIVE_DOXYGEN_INVOKED
    //! <b>Effects</b>: If link_mode is \c auto_unlink or \c safe_link

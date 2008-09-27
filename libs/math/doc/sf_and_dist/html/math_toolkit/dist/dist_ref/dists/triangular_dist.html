@@ -12,10 +12,10 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
 <table cellpadding="2" width="100%"><tr>
 <td valign="top"><img alt="Boost C++ Libraries" width="277" height="86" src="../../../../../../../../../boost.png"></td>
-<td align="center"><a href="../../../../../../../../../index.htm">Home</a></td>
+<td align="center"><a href="../../../../../../../../../index.html">Home</a></td>
 <td align="center"><a href="../../../../../../../../../libs/libraries.htm">Libraries</a></td>
-<td align="center"><a href="../../../../../../../../../people/people.htm">People</a></td>
-<td align="center"><a href="../../../../../../../../../more/faq.htm">FAQ</a></td>
+<td align="center"><a href="http://www.boost.org/users/people.html">People</a></td>
+<td align="center"><a href="http://www.boost.org/users/faq.html">FAQ</a></td>
 <td align="center"><a href="../../../../../../../../../more/index.htm">More</a></td>
 </tr></table>
 <hr>
@@ -30,12 +30,10 @@
 <p>
             
 </p>
-<pre class="programlisting">
-<span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">triangular</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
+<pre class="programlisting"><span class="preprocessor">#include</span> <span class="special">&lt;</span><span class="identifier">boost</span><span class="special">/</span><span class="identifier">math</span><span class="special">/</span><span class="identifier">distributions</span><span class="special">/</span><span class="identifier">triangular</span><span class="special">.</span><span class="identifier">hpp</span><span class="special">&gt;</span></pre>
 <p>
           </p>
-<pre class="programlisting">
-<span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
+<pre class="programlisting"><span class="keyword">namespace</span> <span class="identifier">boost</span><span class="special">{</span> <span class="keyword">namespace</span> <span class="identifier">math</span><span class="special">{</span>
  <span class="keyword">template</span> <span class="special">&lt;</span><span class="keyword">class</span> <span class="identifier">RealType</span> <span class="special">=</span> <span class="keyword">double</span><span class="special">,</span> 
            <span class="keyword">class</span> <a href="../../../policy.html" title="Policies">Policy</a>   <span class="special">=</span> <a href="../../../policy/pol_ref/pol_ref_ref.html" title="Policy Class Reference">policies::policy&lt;&gt;</a> <span class="special">&gt;</span>
  <span class="keyword">class</span> <span class="identifier">triangular_distribution</span><span class="special">;</span>
@@ -121,21 +119,20 @@
             density function PDF</a> varies with the various parameters:
           </p>
 <p>
-            <span class="inlinemediaobject"><img src="../../../../../graphs/triangular_pdf.png" alt="triangular_pdf"></span>
+            <span class="inlinemediaobject"><img src="../../../../../graphs/triangular_pdf.png" align="middle"></span>
           </p>
 <p>
             and cumulative distribution function
           </p>
 <p>
-            <span class="inlinemediaobject"><img src="../../../../../graphs/triangular_cdf.png" alt="triangular_cdf"></span>
+            <span class="inlinemediaobject"><img src="../../../../../graphs/triangular_cdf.png" align="middle"></span>
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.triangular_dist.member_functions"></a><h5>
-<a name="id610788"></a>
+<a name="id644549"></a>
             <a href="triangular_dist.html#math_toolkit.dist.dist_ref.dists.triangular_dist.member_functions">Member
             Functions</a>
           </h5>
-<pre class="programlisting">
-<span class="identifier">triangular_distribution</span><span class="special">(</span><span class="identifier">RealType</span> <span class="identifier">lower</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="identifier">RealType</span> <span class="identifier">mode</span> <span class="special">=</span> <span class="number">0</span> <span class="identifier">RealType</span> <span class="identifier">upper</span> <span class="special">=</span> <span class="number">1</span><span class="special">);</span>
+<pre class="programlisting"><span class="identifier">triangular_distribution</span><span class="special">(</span><span class="identifier">RealType</span> <span class="identifier">lower</span> <span class="special">=</span> <span class="number">0</span><span class="special">,</span> <span class="identifier">RealType</span> <span class="identifier">mode</span> <span class="special">=</span> <span class="number">0</span> <span class="identifier">RealType</span> <span class="identifier">upper</span> <span class="special">=</span> <span class="number">1</span><span class="special">);</span>
 </pre>
 <p>
             Constructs a <a href="http://en.wikipedia.org/wiki/triangular_distribution" target="_top">triangular
@@ -147,29 +144,26 @@
             and <span class="emphasis"><em>upper</em></span> parameters are all finite, otherwise calls
             <a href="../../../main_overview/error_handling.html#domain_error">domain_error</a>.
           </p>
-<pre class="programlisting">
-<span class="identifier">RealType</span> <span class="identifier">lower</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">RealType</span> <span class="identifier">lower</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 </pre>
 <p>
             Returns the <span class="emphasis"><em>lower</em></span> parameter of this distribution
             (default -1).
           </p>
-<pre class="programlisting">
-<span class="identifier">RealType</span> <span class="identifier">mode</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">RealType</span> <span class="identifier">mode</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 </pre>
 <p>
             Returns the <span class="emphasis"><em>mode</em></span> parameter of this distribution
             (default 0).
           </p>
-<pre class="programlisting">
-<span class="identifier">RealType</span> <span class="identifier">upper</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
+<pre class="programlisting"><span class="identifier">RealType</span> <span class="identifier">upper</span><span class="special">()</span><span class="keyword">const</span><span class="special">;</span>
 </pre>
 <p>
             Returns the <span class="emphasis"><em>upper</em></span> parameter of this distribution
             (default+1).
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.triangular_dist.non_member_accessors"></a><h5>
-<a name="id611097"></a>
+<a name="id644853"></a>
             <a href="triangular_dist.html#math_toolkit.dist.dist_ref.dists.triangular_dist.non_member_accessors">Non-member
             Accessors</a>
           </h5>
@@ -190,7 +184,7 @@
             range is lower &lt;= x &lt;= upper.
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.triangular_dist.accuracy"></a><h5>
-<a name="id611271"></a>
+<a name="id645025"></a>
             <a href="triangular_dist.html#math_toolkit.dist.dist_ref.dists.triangular_dist.accuracy">Accuracy</a>
           </h5>
 <p>
@@ -199,7 +193,7 @@
             with arguments nearing the extremes of zero and unity.
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.triangular_dist.implementation"></a><h5>
-<a name="id611303"></a>
+<a name="id645057"></a>
             <a href="triangular_dist.html#math_toolkit.dist.dist_ref.dists.triangular_dist.implementation">Implementation</a>
           </h5>
 <p>
@@ -384,7 +378,7 @@
             Calculate and plot probability distributions</a>
           </p>
 <a name="math_toolkit.dist.dist_ref.dists.triangular_dist.references"></a><h5>
-<a name="id611693"></a>
+<a name="id645447"></a>
             <a href="triangular_dist.html#math_toolkit.dist.dist_ref.dists.triangular_dist.references">References</a>
           </h5>
 <div class="itemizedlist"><ul type="disc">
@@ -402,16 +396,20 @@
               Webs Ltd. BW D-Calc 1.0 Distribution Calculator</a></li>
 <li><a href="http://www.worldscibooks.com/mathematics/etextbook/5720/5720_chap1.pdf" target="_top">The
               Triangular Distribution including its history.</a></li>
-<li><a href="../../../../www.measurement.sk/2002/S1/Wimmer2.pdf" target="_top">Gejza Wimmer, Viktor
-              Witkovsky and Tomas Duby, Measurement Science Review, Volume 2, Section
-              1, 2002, Proper Rounding Of The Measurement Results Under The Assumption
-              Of Triangular Distribution.</a></li>
+<li><a href="http://www.measurement.sk/2002/S1/Wimmer2.pdf" target="_top">Gejza Wimmer,
+              Viktor Witkovsky and Tomas Duby, Measurement Science Review, Volume
+              2, Section 1, 2002, Proper Rounding Of The Measurement Results Under
+              The Assumption Of Triangular Distribution.</a></li>
 </ul></div>
 </div>
 <table xmlns:rev="http://www.cs.rpi.edu/~gregod/boost/tools/doc/revision" width="100%"><tr>
 <td align="left"></td>
-<td align="right"><small>Copyright © 2006 -2007 John Maddock, Paul A. Bristow, Hubert Holin
-      and Xiaogang Zhang</small></td>
+<td align="right"><div class="copyright-footer">Copyright © 2006 , 2007, 2008 John Maddock, Paul A. Bristow, Hubert
+      Holin, Xiaogang Zhang and Bruno Lalande<p>
+        Distributed under the Boost Software License, Version 1.0. (See accompanying
+        file LICENSE_1_0.txt or copy at <a href="http://www.boost.org/LICENSE_1_0.txt" target="_top">http://www.boost.org/LICENSE_1_0.txt</a>)
+      </p>
+</div></td>
 </tr></table>
 <hr>
 <div class="spirit-nav">

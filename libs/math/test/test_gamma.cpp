@@ -14,10 +14,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#endif
+#include "functor.hpp"
 
 #include "test_gamma_hooks.hpp"
 #include "handle_test_result.hpp"
@@ -178,6 +175,16 @@ void expected_results()
       "tgamma1pm1.*",                // test data group
       "boost::math::tgamma1pm1", 200, 80);  // test function
    //
+   // Tru64:
+   //
+   add_expected_result(
+      ".*Tru64.*",                          // compiler
+      ".*",                          // stdlib
+      ".*",                          // platform
+      "real_concept",                // test type(s)
+      "factorials",                  // test data group
+      "boost::math::lgamma", 50, 20);  // test function
+   //
    // Sun OS:
    //
    add_expected_result(
@@ -254,7 +261,7 @@ void expected_results()
       ".*",                          // platform
       "real_concept",                // test type(s)
       "factorials",                  // test data group
-      "boost::math::lgamma", 30, 4);  // test function
+      "boost::math::lgamma", 40, 4);  // test function
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
@@ -288,12 +295,15 @@ void expected_results()
 template <class T>
 void do_test_gamma(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::tgamma<value_type>;
+#else
    pg funcp = boost::math::tgamma;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -305,52 +315,58 @@ void do_test_gamma(const T& data, const char* type_name, const char* test_name)
    //
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp, boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+      bind_func(funcp, 0),
+      extract_result(1));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::tgamma", test_name);
 #ifdef TEST_OTHER
    if(::boost::is_floating_point<value_type>::value){
       funcp = other::tgamma;
       result = boost::math::tools::test(
          data,
-         boost::lambda::bind(funcp, boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-         boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+         bind_func(funcp, 0),
+         extract_result(1));
       print_test_result(result, data[result.worst()], result.worst(), type_name, "other::tgamma");
    }
 #endif
    //
    // test lgamma against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::lgamma<value_type>;
+#else
    funcp = boost::math::lgamma;
+#endif
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp, boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[2]));
+      bind_func(funcp, 0),
+      extract_result(2));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::lgamma", test_name);
 #ifdef TEST_OTHER
    if(::boost::is_floating_point<value_type>::value){
       funcp = other::lgamma;
       result = boost::math::tools::test(
          data,
-         boost::lambda::bind(funcp, boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-         boost::lambda::ret<value_type>(boost::lambda::_1[2]));
+         bind_func(funcp, 0),
+         extract_result(2));
       print_test_result(result, data[result.worst()], result.worst(), type_name, "other::lgamma");
    }
 #endif
 
    std::cout << std::endl;
-#endif
 }
 
 template <class T>
 void do_test_gammap1m1(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::tgamma1pm1<value_type>;
+#else
    pg funcp = boost::math::tgamma1pm1;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -362,11 +378,10 @@ void do_test_gammap1m1(const T& data, const char* type_name, const char* test_na
    //
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp, boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+      bind_func(funcp, 0),
+      extract_result(1));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::tgamma1pm1", test_name);
    std::cout << std::endl;
-#endif
 }
 
 template <class T>
@@ -447,6 +462,7 @@ void test_spots(T)
 int test_main(int, char* [])
 {
    expected_results();
+   BOOST_MATH_CONTROL_FP;
 
 #ifndef BOOST_MATH_BUGGY_LARGE_FLOAT_CONSTANTS
    test_spots(0.0F);

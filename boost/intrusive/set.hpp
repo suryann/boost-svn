@@ -109,13 +109,13 @@ class set_impl
            , const value_compare &cmp = value_compare()
            , const value_traits &v_traits = value_traits())
       : tree_(true, b, e, cmp, v_traits)
-   {  insert(b, e);  }
+   {}
 
    //! <b>Effects</b>: Detaches all elements from this. The objects in the set 
    //!   are not deleted (i.e. no destructors are called).
    //! 
-   //! <b>Complexity</b>: O(log(size()) + size()) if it's a safe-mode or auto-unlink
-   //!   value. Otherwise constant.
+   //! <b>Complexity</b>: Linear to the number of elements on the container.
+   //!   if it's a safe-mode or auto-unlink value_type. Constant time otherwise.
    //! 
    //! <b>Throws</b>: Nothing.
    ~set_impl() 
@@ -226,7 +226,7 @@ class set_impl
    //! <b>Precondition</b>: end_iterator must be a valid end iterator
    //!   of set.
    //! 
-   //! <b>Effects</b>: Returns a const reference to the set associated to the end iterator
+   //! <b>Effects</b>: Returns a reference to the set associated to the end iterator
    //! 
    //! <b>Throws</b>: Nothing.
    //! 
@@ -250,6 +250,34 @@ class set_impl
    {
       return *detail::parent_from_member<set_impl, tree_type>
          ( &tree_type::container_from_end_iterator(end_iterator)
+         , &set_impl::tree_);
+   }
+
+   //! <b>Precondition</b>: it must be a valid iterator of set.
+   //! 
+   //! <b>Effects</b>: Returns a reference to the set associated to the iterator
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Logarithmic.
+   static set_impl &container_from_iterator(iterator it)
+   {
+      return *detail::parent_from_member<set_impl, tree_type>
+         ( &tree_type::container_from_iterator(it)
+         , &set_impl::tree_);
+   }
+
+   //! <b>Precondition</b>: it must be a valid const_iterator of set.
+   //! 
+   //! <b>Effects</b>: Returns a const reference to the set associated to the iterator
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Logarithmic.
+   static const set_impl &container_from_iterator(const_iterator it)
+   {
+      return *detail::parent_from_member<set_impl, tree_type>
+         ( &tree_type::container_from_iterator(it)
          , &set_impl::tree_);
    }
 
@@ -930,6 +958,19 @@ class set_impl
    static void init_node(reference value)
    { tree_type::init_node(value);   }
 
+   //! <b>Effects</b>: Unlinks the leftmost node from the tree.
+   //! 
+   //! <b>Complexity</b>: Average complexity is constant time.
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Notes</b>: This function breaks the tree and the tree can
+   //!   only be used for more unlink_leftmost_without_rebalance calls.
+   //!   This function is normally used to achieve a step by step
+   //!   controlled destruction of the tree.
+   pointer unlink_leftmost_without_rebalance()
+   {  return tree_.unlink_leftmost_without_rebalance();  }
+
    //! <b>Requires</b>: replace_this must be a valid iterator of *this
    //!   and with_this must not be inserted in any tree.
    //! 
@@ -1073,6 +1114,12 @@ class set
 
    static const set &container_from_end_iterator(const_iterator end_iterator)
    {  return static_cast<const set &>(Base::container_from_end_iterator(end_iterator));   }
+
+   static set &container_from_iterator(iterator it)
+   {  return static_cast<set &>(Base::container_from_iterator(it));   }
+
+   static const set &container_from_iterator(const_iterator it)
+   {  return static_cast<const set &>(Base::container_from_iterator(it));   }
 };
 
 #endif
@@ -1151,7 +1198,7 @@ class multiset_impl
    //!   [b, e).
    //! 
    //! <b>Complexity</b>: Linear in N if [b, e) is already sorted using
-   //!   comp and otherwise N * log N, where N is last ­ first.
+   //!   comp and otherwise N * log N, where N is the distance between first and last
    //! 
    //! <b>Throws</b>: If value_traits::node_traits::node
    //!   constructor throws (this does not happen with predefined Boost.Intrusive hooks)
@@ -1166,8 +1213,8 @@ class multiset_impl
    //! <b>Effects</b>: Detaches all elements from this. The objects in the set 
    //!   are not deleted (i.e. no destructors are called).
    //! 
-   //! <b>Complexity</b>: O(log(size()) + size()) if it's a safe-mode or
-   //!   auto-unlink value. Otherwise constant.
+   //! <b>Complexity</b>: Linear to the number of elements on the container.
+   //!   if it's a safe-mode or auto-unlink value_type. Constant time otherwise.
    //! 
    //! <b>Throws</b>: Nothing.
    ~multiset_impl() 
@@ -1305,6 +1352,34 @@ class multiset_impl
          , &multiset_impl::tree_);
    }
 
+   //! <b>Precondition</b>: it must be a valid iterator of multiset.
+   //! 
+   //! <b>Effects</b>: Returns a const reference to the multiset associated to the iterator
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Constant.
+   static multiset_impl &container_from_iterator(iterator it)
+   {
+      return *detail::parent_from_member<multiset_impl, tree_type>
+         ( &tree_type::container_from_iterator(it)
+         , &multiset_impl::tree_);
+   }
+
+   //! <b>Precondition</b>: it must be a valid const_iterator of multiset.
+   //! 
+   //! <b>Effects</b>: Returns a const reference to the multiset associated to the iterator
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Constant.
+   static const multiset_impl &container_from_iterator(const_iterator it)
+   {
+      return *detail::parent_from_member<multiset_impl, tree_type>
+         ( &tree_type::container_from_iterator(it)
+         , &multiset_impl::tree_);
+   }
+
    //! <b>Effects</b>: Returns the key_compare object used by the multiset.
    //! 
    //! <b>Complexity</b>: Constant.
@@ -1379,7 +1454,7 @@ class multiset_impl
    //! <b>Note</b>: Does not affect the validity of iterators and references.
    //!   No copy-constructors are called.
    iterator insert(reference value)
-   {  return tree_.insert_equal_upper_bound(value);  }
+   {  return tree_.insert_equal(value);  }
 
    //! <b>Requires</b>: value must be an lvalue
    //! 
@@ -1889,6 +1964,19 @@ class multiset_impl
    static void init_node(reference value)
    { tree_type::init_node(value);   }
 
+   //! <b>Effects</b>: Unlinks the leftmost node from the tree.
+   //! 
+   //! <b>Complexity</b>: Average complexity is constant time.
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Notes</b>: This function breaks the tree and the tree can
+   //!   only be used for more unlink_leftmost_without_rebalance calls.
+   //!   This function is normally used to achieve a step by step
+   //!   controlled destruction of the tree.
+   pointer unlink_leftmost_without_rebalance()
+   {  return tree_.unlink_leftmost_without_rebalance();  }
+
    //! <b>Requires</b>: replace_this must be a valid iterator of *this
    //!   and with_this must not be inserted in any tree.
    //! 
@@ -1905,6 +1993,21 @@ class multiset_impl
    //!   the node, since no rebalancing or comparison is needed.
    void replace_node(iterator replace_this, reference with_this)
    {  tree_.replace_node(replace_this, with_this);   }
+
+   //! <b>Effects</b>: removes "value" from the container.
+   //! 
+   //! <b>Throws</b>: Nothing.
+   //! 
+   //! <b>Complexity</b>: Logarithmic time.
+   //! 
+   //! <b>Note</b>: This static function is only usable with non-constant
+   //! time size containers that have stateless comparison functors.
+   //!
+   //! If the user calls
+   //! this function with a constant time size container or stateful comparison
+   //! functor a compilation error will be issued.
+   static void remove_node(reference value)
+   {  tree_type::remove_node(value);   }
 
    /// @cond
    friend bool operator==(const multiset_impl &x, const multiset_impl &y)
@@ -2032,6 +2135,12 @@ class multiset
 
    static const multiset &container_from_end_iterator(const_iterator end_iterator)
    {  return static_cast<const multiset &>(Base::container_from_end_iterator(end_iterator));   }
+
+   static multiset &container_from_iterator(iterator it)
+   {  return static_cast<multiset &>(Base::container_from_iterator(it));   }
+
+   static const multiset &container_from_iterator(const_iterator it)
+   {  return static_cast<const multiset &>(Base::container_from_iterator(it));   }
 };
 
 #endif

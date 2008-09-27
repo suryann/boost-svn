@@ -39,12 +39,12 @@ undefined or complex: this occurs when `x < 0`.
 The j[sub v][space] function is cyclic like J[sub v][space] but differs
 in its behaviour at the origin:
 
-[$../graphs/sph_bessel_j.png]
+[graph sph_bessel]
 
 Likewise y[sub v][space] is also cyclic for large x, but tends to -[infin][space]
 for small /x/:
 
-[$../graphs/sph_bessel_y.png]
+[graph sph_neumann]
 
 [h4 Testing]
 
@@ -79,3 +79,9 @@ main definition as x [rarr] 0.
 
 [endsect]
 
+[/ 
+  Copyright 2006 John Maddock, Paul A. Bristow and Xiaogang Zhang.
+  Distributed under the Boost Software License, Version 1.0.
+  (See accompanying file LICENSE_1_0.txt or copy at
+  http://www.boost.org/LICENSE_1_0.txt).
+]

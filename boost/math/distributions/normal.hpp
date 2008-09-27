@@ -74,17 +74,17 @@ typedef normal_distribution<double> normal;
 template <class RealType, class Policy>
 inline const std::pair<RealType, RealType> range(const normal_distribution<RealType, Policy>& /*dist*/)
 { // Range of permissible values for random variable x.
-	using boost::math::tools::max_value;
-	return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>()); // - to + max value.
+   using boost::math::tools::max_value;
+   return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>()); // - to + max value.
 }
 
 template <class RealType, class Policy>
 inline const std::pair<RealType, RealType> support(const normal_distribution<RealType, Policy>& /*dist*/)
 { // Range of supported values for random variable x.
-	// This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
+   // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
 
-	using boost::math::tools::max_value;
-	return std::pair<RealType, RealType>(-max_value<RealType>(),  max_value<RealType>()); // - to + max value.
+   using boost::math::tools::max_value;
+   return std::pair<RealType, RealType>(-max_value<RealType>(),  max_value<RealType>()); // - to + max value.
 }
 
 template <class RealType, class Policy>
@@ -100,7 +100,7 @@ inline RealType pdf(const normal_distribution<RealType, Policy>& dist, const Rea
    {
      return 0; // pdf + and - infinity is zero.
    }
-   // Theis produces MSVC 4127 warnings, so the above used instead.
+   // Below produces MSVC 4127 warnings, so the above used instead.
    //if(std::numeric_limits<RealType>::has_infinity && abs(x) == std::numeric_limits<RealType>::infinity())
    //{ // pdf + and - infinity is zero.
    //  return 0;

@@ -5,7 +5,7 @@
     Version 1.0. (See accompanying file LICENSE_1_0.txt or copy at
     http://www.boost.org/LICENSE_1_0.txt).
 
-    See http://opensource.adobe.com/gil for most recent version including documentation.
+    See http://stlab.adobe.com/gil for most recent version including documentation.
 */
 
 /*************************************************************************************************/
@@ -34,6 +34,9 @@
 #include "gil_concept.hpp"
 
 namespace boost { namespace gil {
+
+// Forward-declare
+template <typename P> P* memunit_advanced(const P* p, std::ptrdiff_t diff);
 
 // Forward-declare semantic_at_c
 template <int K, typename ColorBase>
@@ -126,7 +129,7 @@ public:
           _v1(*memunit_advanced(semantic_at_c<1>(ptr),diff)) {}
 
     // Support for planar_pixel_reference operator[]
-    Element at_c_dynamic(size_t i) const {
+    Element at_c_dynamic(std::size_t i) const {
         if (i==0) return _v0;
         return _v1;
     }
@@ -179,7 +182,7 @@ public:
           _v2(*memunit_advanced(semantic_at_c<2>(ptr),diff)) {}
 
     // Support for planar_pixel_reference operator[]
-    Element at_c_dynamic(size_t i) const {
+	Element at_c_dynamic(std::size_t i) const {
         switch (i) {
             case 0: return _v0;
             case 1: return _v1;
@@ -242,7 +245,7 @@ public:
           _v3(*memunit_advanced(semantic_at_c<3>(ptr),diff)) {}
 
     // Support for planar_pixel_reference operator[]
-    Element at_c_dynamic(size_t i) const {
+    Element at_c_dynamic(std::size_t i) const {
         switch (i) {
             case 0: return _v0;
             case 1: return _v1;
@@ -313,7 +316,7 @@ public:
           _v4(*memunit_advanced(semantic_at_c<4>(ptr),diff)) {}
 
     // Support for planar_pixel_reference operator[]
-    Element at_c_dynamic(size_t i) const {
+    Element at_c_dynamic(std::size_t i) const {
         switch (i) {
             case 0: return _v0;
             case 1: return _v1;

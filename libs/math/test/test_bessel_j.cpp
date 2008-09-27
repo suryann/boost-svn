@@ -59,14 +59,9 @@ void expected_results()
    //
    // HP-UX specific rates:
    //
-   // Does this need more investigation or is test data limited????
-   add_expected_result(
-      ".*",                          // compiler
-      ".*",                          // stdlib
-      "HP-UX",                          // platform
-      "double",                      // test type(s)
-      ".*Tricky.*",              // test data group
-      ".*", 100000, 100000);         // test function
+   // Error rate for double precision are limited by the accuracy of
+   // the approximations use, which bracket rather than preserve the root.
+   //
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
@@ -85,13 +80,77 @@ void expected_results()
       ".*",                          // compiler
       ".*",                          // stdlib
       "HP-UX",                          // platform
+      "double",                      // test type(s)
+      ".*Tricky.*",              // test data group
+      ".*", 100000, 100000);         // test function
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "HP-UX",                          // platform
       largest_type,                      // test type(s)
       ".*J.*Tricky.*",              // test data group
       ".*", 3000, 500);         // test function
-
+   //
+   // HP Tru64:
+   //
+   add_expected_result(
+      ".*Tru64.*",                          // compiler
+      ".*",                          // stdlib
+      ".*",                          // platform
+      "double",                      // test type(s)
+      ".*Tricky.*",              // test data group
+      ".*", 100000, 100000);         // test function
+   add_expected_result(
+      ".*Tru64.*",                          // compiler
+      ".*",                          // stdlib
+      ".*",                          // platform
+      largest_type,                      // test type(s)
+      ".*Tricky large.*",              // test data group
+      ".*", 3000, 1000);         // test function
+   //
+   // Solaris specific rates:
+   //
+   // Error rate for double precision are limited by the accuracy of
+   // the approximations use, which bracket rather than preserve the root.
+   //
+   add_expected_result(
+      ".*",                              // compiler
+      ".*",                              // stdlib
+      "Sun Solaris",                     // platform
+      largest_type,                      // test type(s)
+      "Bessel J: Random Data.*Tricky.*", // test data group
+      ".*", 3000, 500);                  // test function
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Sun Solaris",                 // platform
+      "double",                      // test type(s)
+      ".*Tricky.*",                  // test data group
+      ".*", 200000, 100000);         // test function
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Sun Solaris",                 // platform
+      largest_type,                  // test type(s)
+      ".*J.*tricky.*",               // test data group
+      ".*", 400000000, 200000000);    // test function
    //
    // Mac OS X:
    //
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Mac OS",                          // platform
+      largest_type,                  // test type(s)
+      ".*J0.*Tricky.*",              // test data group
+      ".*", 400000000, 400000000);   // test function
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Mac OS",                          // platform
+      largest_type,                  // test type(s)
+      ".*J1.*Tricky.*",              // test data group
+      ".*", 3000000, 2000000);       // test function
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
@@ -107,15 +166,6 @@ void expected_results()
       "Bessel J:.*",              // test data group
       ".*", 50000, 20000);         // test function
 
-   // This shouldn't be required, could be limited test data precision
-   // i.e. not enough bits in double input to get double result.
-   add_expected_result(
-      ".*",                          // compiler
-      ".*",                          // stdlib
-      "Mac OS",                      // platform
-      "double",                      // test type(s)
-      ".*Tricky.*",                  // test data group
-      ".*", 200000, 200000);         // test function
 
 
    //
@@ -242,7 +292,11 @@ void do_test_cyl_bessel_j(const T& data, const char* type_name, const char* test
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::cyl_bessel_j<value_type, value_type>;
+#else
    pg funcp = boost::math::cyl_bessel_j;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -280,7 +334,7 @@ void do_test_cyl_bessel_j(const T& data, const char* type_name, const char* test
 template <class T>
 T cyl_bessel_j_int_wrapper(T v, T x)
 {
-   return static_cast<T>(boost::math::cyl_bessel_j(boost::math::tools::real_cast<int>(v), x));
+   return static_cast<T>(boost::math::cyl_bessel_j(boost::math::itrunc(v), x));
 }
 
 
@@ -291,7 +345,11 @@ void do_test_cyl_bessel_j_int(const T& data, const char* type_name, const char* 
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = cyl_bessel_j_int_wrapper<value_type>;
+#else
    pg funcp = cyl_bessel_j_int_wrapper;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -316,7 +374,11 @@ void do_test_sph_bessel_j(const T& data, const char* type_name, const char* test
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(unsigned, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::sph_bessel<value_type>;
+#else
    pg funcp = boost::math::sph_bessel;
+#endif
 
    typedef int (*cast_t)(value_type);
 

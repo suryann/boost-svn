@@ -3,6 +3,8 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
+#define BOOST_MATH_OVERFLOW_ERROR_POLICY ignore_error
+
 #include <boost/math/concepts/real_concept.hpp>
 #include <boost/math/special_functions/gamma.hpp>
 #include <boost/test/included/test_exec_monitor.hpp>
@@ -12,10 +14,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#endif
+#include "functor.hpp"
 
 #include "handle_test_result.hpp"
 
@@ -114,6 +113,19 @@ void expected_results()
       << BOOST_STDLIB << ", " << BOOST_PLATFORM << std::endl;
 }
 
+#define BOOST_CHECK_CLOSE_EX(a, b, prec, i) \
+   {\
+      unsigned int failures = boost::unit_test::results_collector.results( boost::unit_test::framework::current_test_case().p_id ).p_assertions_failed;\
+      BOOST_CHECK_CLOSE(a, b, prec); \
+      if(failures != boost::unit_test::results_collector.results( boost::unit_test::framework::current_test_case().p_id ).p_assertions_failed)\
+      {\
+         std::cerr << "Failure was at row " << i << std::endl;\
+         std::cerr << std::setprecision(35); \
+         std::cerr << "{ " << data[i][0] << " , " << data[i][1] << " , " << data[i][2];\
+         std::cerr << " , " << data[i][3] << " , " << data[i][4] << " , " << data[i][5] << " } " << std::endl;\
+      }\
+   }
+
 template <class T>
 void do_test_gamma_2(const T& data, const char* type_name, const char* test_name)
 {
@@ -151,36 +163,38 @@ void do_test_gamma_2(const T& data, const char* type_name, const char* test_name
       //
       if(data[i][5] == 0)
          BOOST_CHECK_EQUAL(boost::math::gamma_p_inva(data[i][1], data[i][5]), boost::math::tools::max_value<value_type>());
-      else if((1 - data[i][5] > 0.001) && (fabs(data[i][5]) >= boost::math::tools::min_value<value_type>()))
+      else if((1 - data[i][5] > 0.001) && (fabs(data[i][5]) > 2 * boost::math::tools::min_value<value_type>()))
       {
          value_type inv = boost::math::gamma_p_inva(data[i][1], data[i][5]);
-         BOOST_CHECK_CLOSE(data[i][0], inv, precision);
+         BOOST_CHECK_CLOSE_EX(data[i][0], inv, precision, i);
       }
       else if(1 == data[i][5])
          BOOST_CHECK_EQUAL(boost::math::gamma_p_inva(data[i][1], data[i][5]), boost::math::tools::min_value<value_type>());
-      else
+      else if(data[i][5] > 2 * boost::math::tools::min_value<value_type>())
       {
          // not enough bits in our input to get back to x, but we should be in
          // the same ball park:
          value_type inv = boost::math::gamma_p_inva(data[i][1], data[i][5]);
-         BOOST_CHECK_CLOSE(data[i][0], inv, 100);
+         BOOST_CHECK_CLOSE_EX(data[i][0], inv, 100, i);
       }
 
       if(data[i][3] == 0)
          BOOST_CHECK_EQUAL(boost::math::gamma_q_inva(data[i][1], data[i][3]), boost::math::tools::min_value<value_type>());
-      else if((1 - data[i][3] > 0.001) && (fabs(data[i][3]) >= boost::math::tools::min_value<value_type>()))
+      else if((1 - data[i][3] > 0.001) 
+         && (fabs(data[i][3]) > 2 * boost::math::tools::min_value<value_type>()) 
+         && (fabs(data[i][3]) > 2 * boost::math::tools::min_value<double>()))
       {
          value_type inv = boost::math::gamma_q_inva(data[i][1], data[i][3]);
-         BOOST_CHECK_CLOSE(data[i][0], inv, precision);
+         BOOST_CHECK_CLOSE_EX(data[i][0], inv, precision, i);
       }
       else if(1 == data[i][3])
          BOOST_CHECK_EQUAL(boost::math::gamma_q_inva(data[i][1], data[i][3]), boost::math::tools::max_value<value_type>());
-      else
+      else if(data[i][3] > 2 * boost::math::tools::min_value<value_type>()) 
       {
          // not enough bits in our input to get back to x, but we should be in
          // the same ball park:
          value_type inv = boost::math::gamma_q_inva(data[i][1], data[i][3]);
-         BOOST_CHECK_CLOSE(data[i][0], inv, 100);
+         BOOST_CHECK_CLOSE_EX(data[i][0], inv, 100, i);
       }
    }
    std::cout << std::endl;
@@ -189,14 +203,15 @@ void do_test_gamma_2(const T& data, const char* type_name, const char* test_name
 template <class T>
 void do_test_gamma_inva(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type, value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::gamma_p_inva<value_type, value_type>;
+#else
    pg funcp = boost::math::gamma_p_inva;
-
-   using namespace boost::lambda;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -208,19 +223,22 @@ void do_test_gamma_inva(const T& data, const char* type_name, const char* test_n
    //
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1])),
-      ret<value_type>(_1[2]));
+      bind_func(funcp, 0, 1),
+      extract_result(2));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::gamma_p_inva", test_name);
    //
    // test gamma_q_inva(T, T) against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::gamma_q_inva<value_type, value_type>;
+#else
    funcp = boost::math::gamma_q_inva;
+#endif
    result = boost::math::tools::test(
       data,
-      bind(funcp, ret<value_type>(_1[0]), ret<value_type>(_1[1])),
-      ret<value_type>(_1[3]));
+      bind_func(funcp, 0, 1),
+      extract_result(3));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::gamma_q_inva", test_name);
-#endif
 }
 
 template <class T>
@@ -255,6 +273,7 @@ void test_gamma(T, const char* name)
 int test_main(int, char* [])
 {
    expected_results();
+   BOOST_MATH_CONTROL_FP;
 
 #ifndef BOOST_MATH_BUGGY_LARGE_FLOAT_CONSTANTS
 #ifdef TEST_FLOAT
@@ -283,6 +302,7 @@ int test_main(int, char* [])
 #endif
    return 0;
 }
+
 
 
 

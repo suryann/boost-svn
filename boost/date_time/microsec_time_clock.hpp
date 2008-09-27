@@ -4,7 +4,7 @@
 /* Copyright (c) 2002,2003,2005 CrystalClear Software, Inc.
  * Use, modification and distribution is subject to the
  * Boost Software License, Version 1.0. (See accompanying
- * file LICENSE-1.0 or http://www.boost.org/LICENSE-1.0)
+ * file LICENSE_1_0.txt or http://www.boost.org/LICENSE_1_0.txt)
  * Author: Jeff Garland, Bart Garst
  * $Date$
  */
@@ -120,6 +120,10 @@ namespace date_time {
       FILETIME ft_utc;
       GetSystemTimeAsFileTime(&ft_utc);
       FileTimeToLocalFileTime(&ft_utc,&ft);
+      #elif defined(BOOST_NO_GETSYSTEMTIMEASFILETIME)
+      SYSTEMTIME st;
+      GetSystemTime( &st );
+      SystemTimeToFileTime( &st, &ft );
       #else
       GetSystemTimeAsFileTime(&ft);
       #endif
@@ -134,6 +138,10 @@ namespace date_time {
       FILETIME ft_utc;
       GetSystemTimeAsFileTime(&ft_utc);
       FileTimeToLocalFileTime(&ft_utc,&ft);
+      #elif defined(BOOST_NO_GETSYSTEMTIMEASFILETIME)
+      SYSTEMTIME st;
+      GetSystemTime( &st );
+      SystemTimeToFileTime( &st, &ft );
       #else
       GetSystemTimeAsFileTime(&ft);
       #endif

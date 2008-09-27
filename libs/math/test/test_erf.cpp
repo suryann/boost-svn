@@ -11,10 +11,7 @@
 #include <boost/math/constants/constants.hpp>
 #include <boost/type_traits/is_floating_point.hpp>
 #include <boost/array.hpp>
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
-#include <boost/lambda/lambda.hpp>
-#include <boost/lambda/bind.hpp>
-#endif
+#include "functor.hpp"
 
 #include "test_erf_hooks.hpp"
 #include "handle_test_result.hpp"
@@ -49,6 +46,42 @@ void expected_results()
    // Define the max and mean errors expected for
    // various compilers and platforms.
    //
+   const char* largest_type;
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
+   if(boost::math::policies::digits<double, boost::math::policies::policy<> >() == boost::math::policies::digits<long double, boost::math::policies::policy<> >())
+   {
+      largest_type = "(long\\s+)?double|real_concept";
+   }
+   else
+   {
+      largest_type = "long double|real_concept";
+   }
+#else
+   largest_type = "(long\\s+)?double";
+#endif
+   //
+   // On MacOS X erfc has much higher error levels than
+   // expected: given that the implementation is basically
+   // just a rational function evaluation combined with
+   // exponentiation, we conclude that exp and pow are less
+   // accurate on this platform, especially when the result 
+   // is outside the range of a double.
+   //
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Mac OS",                      // platform
+      largest_type,                  // test type(s)
+      "Erf Function:.*Large.*",      // test data group
+      "boost::math::erfc", 4300, 1300);  // test function
+   add_expected_result(
+      ".*",                          // compiler
+      ".*",                          // stdlib
+      "Mac OS",                      // platform
+      largest_type,                  // test type(s)
+      "Erf Function:.*",             // test data group
+      "boost::math::erfc", 40, 10);  // test function
+
    add_expected_result(
       ".*",                          // compiler
       ".*",                          // stdlib
@@ -101,12 +134,15 @@ void expected_results()
 template <class T>
 void do_test_erf(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::erf<value_type>;
+#else
    pg funcp = boost::math::erf;
+#endif
 
    boost::math::tools::test_result<value_type> result;
 
@@ -118,55 +154,52 @@ void do_test_erf(const T& data, const char* type_name, const char* test_name)
    //
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp,
-         boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+      bind_func(funcp, 0),
+      extract_result(1));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::erf", test_name);
 #ifdef TEST_OTHER
    if(::boost::is_floating_point<value_type>::value){
       funcp = other::erf;
       result = boost::math::tools::test(
          data,
-         boost::lambda::bind(funcp,
-            boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-         boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+         bind_func(funcp, 0),
+         extract_result(1));
       print_test_result(result, data[result.worst()], result.worst(), type_name, "other::erf");
    }
 #endif
    //
    // test erfc against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::erfc<value_type>;
+#else
    funcp = boost::math::erfc;
+#endif
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp,
-         boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[2]));
+      bind_func(funcp, 0),
+      extract_result(2));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::erfc", test_name);
 #ifdef TEST_OTHER
    if(::boost::is_floating_point<value_type>::value){
       funcp = other::erfc;
       result = boost::math::tools::test(
          data,
-         boost::lambda::bind(funcp,
-            boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-         boost::lambda::ret<value_type>(boost::lambda::_1[2]));
+         bind(funcp, 0),
+         extract_result(2));
       print_test_result(result, data[result.worst()], result.worst(), type_name, "other::erfc");
    }
 #endif
    std::cout << std::endl;
-#endif
 }
 
 template <class T>
 void do_test_erf_inv(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type);
-   pg funcp = boost::math::erf;
 
    boost::math::tools::test_result<value_type> result;
    std::cout << "Testing " << test_name << " with type " << type_name
@@ -174,26 +207,31 @@ void do_test_erf_inv(const T& data, const char* type_name, const char* test_name
    //
    // test erf_inv against data:
    //
-   funcp = boost::math::erf_inv;
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::erf_inv<value_type>;
+#else
+   pg funcp = boost::math::erf_inv;
+#endif
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp,
-         boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+      bind_func(funcp, 0),
+      extract_result(1));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::erf_inv", test_name);
    std::cout << std::endl;
-#endif
 }
 
 template <class T>
 void do_test_erfc_inv(const T& data, const char* type_name, const char* test_name)
 {
-#if !BOOST_WORKAROUND(__BORLANDC__, BOOST_TESTED_AT(0x582))
    typedef typename T::value_type row_type;
    typedef typename row_type::value_type value_type;
 
    typedef value_type (*pg)(value_type);
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   pg funcp = boost::math::erf<value_type>;
+#else
    pg funcp = boost::math::erf;
+#endif
 
    boost::math::tools::test_result<value_type> result;
    std::cout << "Testing " << test_name << " with type " << type_name
@@ -201,15 +239,17 @@ void do_test_erfc_inv(const T& data, const char* type_name, const char* test_nam
    //
    // test erfc_inv against data:
    //
+#if defined(BOOST_MATH_NO_DEDUCED_FUNCTION_POINTERS)
+   funcp = boost::math::erfc_inv<value_type>;
+#else
    funcp = boost::math::erfc_inv;
+#endif
    result = boost::math::tools::test(
       data,
-      boost::lambda::bind(funcp,
-         boost::lambda::ret<value_type>(boost::lambda::_1[0])),
-      boost::lambda::ret<value_type>(boost::lambda::_1[1]));
+      bind_func(funcp, 0),
+      extract_result(1));
    handle_test_result(result, data[result.worst()], result.worst(), type_name, "boost::math::erfc_inv", test_name);
    std::cout << std::endl;
-#endif
 }
 
 template <class T>
@@ -296,6 +336,7 @@ void test_spots(T, const char* t)
 
 int test_main(int, char* [])
 {
+   BOOST_MATH_CONTROL_FP;
    test_spots(0.0F, "float");
    test_spots(0.0, "double");
 #ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS

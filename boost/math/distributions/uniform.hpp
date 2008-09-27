@@ -89,18 +89,21 @@ namespace boost{ namespace math
       RealType upper,
       RealType* result, const Policy& pol)
     {
-      if(check_uniform_lower(function, lower, result, pol)
-        && check_uniform_upper(function, upper, result, pol)
-        && (lower < upper)) // If lower == upper then 1 / (upper-lower) = 1/0 = +infinity!
+      if((check_uniform_lower(function, lower, result, pol) == false)
+        || (check_uniform_upper(function, upper, result, pol) == false))
       {
-        return true;
+        return false;
       }
-      else
+      else if (lower >= upper) // If lower == upper then 1 / (upper-lower) = 1/0 = +infinity!
       { // upper and lower have been checked before, so must be lower >= upper.
         *result = policies::raise_domain_error<RealType>(
           function,
           "lower parameter is %1%, but must be less than upper!", lower, pol);
         return false;
+      }
+      else
+      { // All OK,
+        return true;
       }
     } // bool check_uniform(
 
@@ -140,16 +143,17 @@ namespace boost{ namespace math
   template <class RealType, class Policy>
   inline const std::pair<RealType, RealType> range(const uniform_distribution<RealType, Policy>& /* dist */)
   { // Range of permissible values for random variable x.
-	  using boost::math::tools::max_value;
-	  return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>()); // - to + infinity
+     using boost::math::tools::max_value;
+     return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>()); // - to + 'infinity'.
+     // Note RealType infinity is NOT permitted, only max_value.
   }
 
   template <class RealType, class Policy>
   inline const std::pair<RealType, RealType> support(const uniform_distribution<RealType, Policy>& dist)
   { // Range of supported values for random variable x.
-	  // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
-	  using boost::math::tools::max_value;
-	  return std::pair<RealType, RealType>(dist.lower(),  dist.upper());
+     // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
+     using boost::math::tools::max_value;
+     return std::pair<RealType, RealType>(dist.lower(),  dist.upper());
   }
 
   template <class RealType, class Policy>

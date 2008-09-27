@@ -1,4 +1,7 @@
-
+//  (C) Copyright John Maddock 2006-7.
+//  Use, modification and distribution are subject to the
+//  Boost Software License, Version 1.0. (See accompanying file
+//  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 #ifndef BOOST_MATH_HANDLE_TEST_RESULT
 #define BOOST_MATH_HANDLE_TEST_RESULT
@@ -8,6 +11,11 @@
 #include <boost/math/tools/precision.hpp>
 #include <boost/regex.hpp>
 #include <boost/test/test_tools.hpp>
+
+#if defined(BOOST_INTEL)
+#  pragma warning(disable:239)
+#  pragma warning(disable:264)
+#endif
 
 //
 // Every client of this header has to define this function,
@@ -127,11 +135,23 @@ void handle_test_result(const boost::math::tools::test_result<T>& result,
    {
       std::cout << "\n    worst case at row: "
          << row << "\n    { ";
+      if(std::numeric_limits<T>::digits10)
+      {
+         std::cout << std::setprecision(std::numeric_limits<T>::digits10 + 2);
+      }
+      else
+      {
+         std::cout << std::setprecision(std::numeric_limits<long double>::digits10 + 2);
+      }
       for(unsigned i = 0; i < worst.size(); ++i)
       {
          if(i)
             std::cout << ", ";
+#if defined(__SGI_STL_PORT)
+         std::cout << boost::math::tools::real_cast<double>(worst[i]);
+#else
          std::cout << worst[i];
+#endif
       }
       std::cout << " }";
    }

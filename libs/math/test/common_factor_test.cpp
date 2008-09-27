@@ -8,7 +8,7 @@
 //  See http://www.boost.org for most recent version including documentation.
 
 //  Revision History
-//  01 Dec 2006  Various fixes for old compilers (Joaquín M López Muñoz)
+//  01 Dec 2006  Various fixes for old compilers (Joaquin M Lopez Munoz)
 //  10 Nov 2006  Make long long and __int64 mutually exclusive (Daryle Walker)
 //  04 Nov 2006  Use more built-in numeric types, binary-GCD (Daryle Walker)
 //  03 Nov 2006  Use custom numeric types (Daryle Walker)
@@ -113,7 +113,7 @@ MyUnsigned2  dummy4;
 // Various types to test with each GCD/LCM
 typedef ::boost::mpl::list<signed char, short, int, long,
 #ifdef BOOST_HAS_LONG_LONG
- long long,
+ boost::long_long_type,
 #elif defined(BOOST_HAS_MS_INT64)
  __int64,
 #endif
@@ -121,7 +121,7 @@ typedef ::boost::mpl::list<signed char, short, int, long,
 typedef ::boost::mpl::list<unsigned char, unsigned short, unsigned,
  unsigned long,
 #ifdef BOOST_HAS_LONG_LONG
- unsigned long long,
+ boost::ulong_long_type,
 #elif defined(BOOST_HAS_MS_INT64)
  unsigned __int64,
 #endif
@@ -129,6 +129,7 @@ typedef ::boost::mpl::list<unsigned char, unsigned short, unsigned,
 
 }  // namespace
 
+#define BOOST_NO_MACRO_EXPAND /**/
 
 // Specialize numeric_limits for _some_ of our types
 namespace std
@@ -143,8 +144,8 @@ class numeric_limits< MyInt1 >
 public:
     BOOST_STATIC_CONSTANT(bool, is_specialized = limits_type::is_specialized);
 
-    static MyInt1 min() throw()  { return limits_type::min(); }
-    static MyInt1 max() throw()  { return limits_type::max(); }
+    static MyInt1 min BOOST_NO_MACRO_EXPAND() throw()  { return (limits_type::min)(); }
+    static MyInt1 max BOOST_NO_MACRO_EXPAND() throw()  { return (limits_type::max)(); }
 
     BOOST_STATIC_CONSTANT(int, digits      = limits_type::digits);
     BOOST_STATIC_CONSTANT(int, digits10    = limits_type::digits10);
@@ -190,8 +191,8 @@ class numeric_limits< MyUnsigned1 >
 public:
     BOOST_STATIC_CONSTANT(bool, is_specialized = limits_type::is_specialized);
 
-    static MyUnsigned1 min() throw()  { return limits_type::min(); }
-    static MyUnsigned1 max() throw()  { return limits_type::max(); }
+    static MyUnsigned1 min BOOST_NO_MACRO_EXPAND() throw()  { return (limits_type::min)(); }
+    static MyUnsigned1 max BOOST_NO_MACRO_EXPAND() throw()  { return (limits_type::max)(); }
 
     BOOST_STATIC_CONSTANT(int, digits      = limits_type::digits);
     BOOST_STATIC_CONSTANT(int, digits10    = limits_type::digits10);

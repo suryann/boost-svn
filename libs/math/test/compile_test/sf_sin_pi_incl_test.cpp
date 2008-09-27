@@ -3,7 +3,7 @@
 //  Boost Software License, Version 1.0. (See accompanying file
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 //
-// Basic sanity check that header <boost/math/special_functions/erf.hpp>
+// Basic sanity check that header <boost/math/special_functions/sin_pi.hpp>
 // #includes all the files that it needs to.
 //
 #include <boost/math/special_functions/sin_pi.hpp>
@@ -17,5 +17,7 @@ void check()
 {
    check_result<float>(boost::math::sin_pi<float>(f));
    check_result<double>(boost::math::sin_pi<double>(d));
+#ifndef BOOST_MATH_NO_LONG_DOUBLE_MATH_FUNCTIONS
    check_result<long double>(boost::math::sin_pi<long double>(l));
+#endif
 }

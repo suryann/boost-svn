@@ -13,7 +13,7 @@
 // events, occurrences, failures or arrivals occurring in a fixed time,
 // assuming these events occur with a known average or mean rate (lambda)
 // and are independent of the time since the last event.
-// The distribution was discovered by Siméon-Denis Poisson (1781–1840).
+// The distribution was discovered by Simeon-Denis Poisson (1781-1840).
 
 // Parameter lambda is the mean number of events in the given time interval.
 // The random variate k is the number of events, occurrences or arrivals.
@@ -38,6 +38,7 @@
 
 #include <boost/math/distributions/fwd.hpp>
 #include <boost/math/special_functions/gamma.hpp> // for incomplete gamma. gamma_q
+#include <boost/math/special_functions/trunc.hpp> // for incomplete gamma. gamma_q
 #include <boost/math/distributions/complement.hpp> // complements
 #include <boost/math/distributions/detail/common_error_handling.hpp> // error checks
 #include <boost/math/special_functions/fpclassify.hpp> // isnan.
@@ -233,16 +234,16 @@ namespace boost
     template <class RealType, class Policy>
     inline const std::pair<RealType, RealType> range(const poisson_distribution<RealType, Policy>& /* dist */)
     { // Range of permissible values for random variable k.
-	    using boost::math::tools::max_value;
-	    return std::pair<RealType, RealType>(0, max_value<RealType>()); // Max integer?
+       using boost::math::tools::max_value;
+       return std::pair<RealType, RealType>(0, max_value<RealType>()); // Max integer?
     }
 
     template <class RealType, class Policy>
     inline const std::pair<RealType, RealType> support(const poisson_distribution<RealType, Policy>& /* dist */)
     { // Range of supported values for random variable k.
-	    // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
-	    using boost::math::tools::max_value;
-	    return std::pair<RealType, RealType>(0,  max_value<RealType>());
+       // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
+       using boost::math::tools::max_value;
+       return std::pair<RealType, RealType>(0,  max_value<RealType>());
     }
 
     template <class RealType, class Policy>
@@ -334,22 +335,7 @@ namespace boost
       { // mean ^ k = 1, and k! = 1, so can simplify.
         return exp(-mean);
       }
-      using boost::math::unchecked_factorial;
-      RealType floork = floor(k);
-      if ((floork == k) // integral
-        && k < max_factorial<RealType>::value)
-      { // k is small enough (for float 34, double 170 ...) to use factorial(k).
-        return exp(-mean) * pow(mean, k) /
-          unchecked_factorial<RealType>(tools::real_cast<unsigned int>(floork));
-      }
-      else
-      { // Need to use log(factorial(k)) = lgamma(k+1)
-        // (e ^ -mean * mean ^ k) / k!
-        // == exp(log(e ^ -mean) + log (mean ^ k) - lgamma(k+1))
-        // exp( -mean + log(mean) * k - lgamma(k+1))
-        return exp(-mean + log(mean) * k - boost::math::lgamma(k+1, Policy()));
-        // return gamma_p_derivative(k+1, mean); // equivalent & also passes tests.
-      }
+      return boost::math::gamma_p_derivative(k+1, mean, Policy());
     } // pdf
 
     template <class RealType, class Policy>
@@ -480,10 +466,10 @@ namespace boost
       BOOST_MATH_STD_USING // ADL of std functions.
       // if(p == 0) NOT necessarily zero!
       // Not necessarily any special value of k because is unlimited.
-			if (p <= exp(-dist.mean()))
-			{ // if p <= cdf for 0 events (== pdf for 0 events), then quantile must be zero.
-				return 0;
-			}
+      if (p <= exp(-dist.mean()))
+      { // if p <= cdf for 0 events (== pdf for 0 events), then quantile must be zero.
+         return 0;
+      }
       return gamma_q_inva(dist.mean(), p, Policy()) - 1;
       */
       typedef typename Policy::discrete_quantile_type discrete_type;
@@ -549,9 +535,9 @@ namespace boost
       }
       /*
       if (-q <= boost::math::expm1(-dist.mean()))
-			{ // if q <= cdf(complement for 0 events, then quantile must be zero.
-				return 0;
-			}
+      { // if q <= cdf(complement for 0 events, then quantile must be zero.
+         return 0;
+      }
       return gamma_p_inva(dist.mean(), q, Policy()) -1;
       */
       typedef typename Policy::discrete_quantile_type discrete_type;

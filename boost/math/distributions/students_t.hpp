@@ -63,16 +63,16 @@ typedef students_t_distribution<double> students_t;
 template <class RealType, class Policy>
 inline const std::pair<RealType, RealType> range(const students_t_distribution<RealType, Policy>& /*dist*/)
 { // Range of permissible values for random variable x.
-	using boost::math::tools::max_value;
-	return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>());
+   using boost::math::tools::max_value;
+   return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>());
 }
 
 template <class RealType, class Policy>
 inline const std::pair<RealType, RealType> support(const students_t_distribution<RealType, Policy>& /*dist*/)
 { // Range of supported values for random variable x.
-	// This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
-	using boost::math::tools::max_value;
-	return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>());
+   // This is range where cdf rises from 0 to 1, and outside it, the pdf is zero.
+   using boost::math::tools::max_value;
+   return std::pair<RealType, RealType>(-max_value<RealType>(), max_value<RealType>());
 }
 
 template <class RealType, class Policy>
@@ -146,7 +146,7 @@ inline RealType cdf(const students_t_distribution<RealType, Policy>& dist, const
       RealType z = degrees_of_freedom / (degrees_of_freedom + t2);
       probability = ibeta(degrees_of_freedom / 2, static_cast<RealType>(0.5), z, Policy()) / 2;
    }
-   return (t > 0 ? 1	- probability : probability);
+   return (t > 0 ? 1   - probability : probability);
 } // cdf
 
 template <class RealType, class Policy>
@@ -277,7 +277,7 @@ RealType students_t_distribution<RealType, Policy>::find_degrees_of_freedom(
    boost::uintmax_t max_iter = policies::get_max_root_iterations<Policy>();
    std::pair<RealType, RealType> r = tools::bracket_and_solve_root(f, hint, RealType(2), false, tol, max_iter, Policy());
    RealType result = r.first + (r.second - r.first) / 2;
-   if(max_iter == policies::get_max_root_iterations<Policy>())
+   if(max_iter >= policies::get_max_root_iterations<Policy>())
    {
       policies::raise_evaluation_error<RealType>(function, "Unable to locate solution in a reasonable time:"
          " either there is no answer to how many degrees of freedom are required"

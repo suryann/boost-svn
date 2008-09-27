@@ -11,10 +11,14 @@
 #define BOOST_SINHC_HPP
 
 
+#ifdef _MSC_VER
+#pragma once
+#endif
+
 #include <boost/math/tools/config.hpp>
 #include <boost/math/tools/precision.hpp>
 #include <boost/math/special_functions/math_fwd.hpp>
-#include <cmath>
+#include <boost/config/no_tr1/cmath.hpp>
 #include <boost/limits.hpp>
 #include <string>
 #include <stdexcept>
@@ -47,7 +51,7 @@ namespace boost
         template<typename T>
         inline T    sinhc_pi_imp(const T x)
         {
-#ifdef    BOOST_NO_STDC_NAMESPACE
+#if defined(BOOST_NO_STDC_NAMESPACE) && !defined(__SUNPRO_CC)
             using    ::abs;
             using    ::sinh;
             using    ::sqrt;
@@ -161,3 +165,4 @@ namespace boost
 }
 
 #endif /* BOOST_SINHC_HPP */
+
